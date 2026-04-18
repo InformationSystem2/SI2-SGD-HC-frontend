@@ -5,14 +5,12 @@ export const routes: Routes = [
 
   {
     path: 'auth',
-    loadChildren: () => import('./shared/auth/auth.routes').then( m => m.authRoutes),
+    loadChildren: () => import('./features/auth/auth.routes').then( m => m.authRoutes),
   },
   {
     path: 'dashboard',
     // canActivate: [authGuard],
-    // loadComponent: () => import('./shared/dashboard/...') cuando lo crees
-    redirectTo: 'auth/login', // temporal
-    pathMatch: 'full',
+    loadChildren: () => import('./features/dashboard/dashboard.routes').then(m => m.dashboardRoutes),
   },
   {
     path: '',
