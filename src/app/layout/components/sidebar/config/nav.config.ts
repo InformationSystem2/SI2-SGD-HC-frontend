@@ -11,6 +11,11 @@ export const NAV_ITEMS: NavItem[] = [
     path: '/dashboard/documentos',
     icon: 'file-text',
   },
+  {
+    label: 'Roles',
+    path: '/roles/list',
+    icon: 'shield',
+  },
   // {
   //   label: 'Expedientes',
   //   path: '/dashboard/expedientes',
@@ -22,8 +27,12 @@ export const NAV_ITEMS: NavItem[] = [
   // },
   {
     label: 'Usuarios',
-    path: '/dashboard/usuarios',
+    path: '/usuarios/list',
     icon: 'users',
+    subItems: [
+      { label: 'Lista',      path: '/usuarios/list' },
+      { label: 'Registrar',  path: '/usuarios/register' },
+    ],
   },
   {
     label: 'Configuración',

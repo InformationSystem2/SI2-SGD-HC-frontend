@@ -10,6 +10,7 @@ import type { NavItem } from '../../models/nav-item.model';
 import { SidebarService } from '../../services/sidebar.service';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import {
+  faShieldHalved,
   faGaugeHigh,
   faFileLines,
   faFolderOpen,
@@ -25,6 +26,7 @@ const ICON_MAP: Record<string, IconDefinition> = {
   'folder-open':      faFolderOpen,
   'users':            faUsers,
   'settings':         faGear,
+  'shield': faShieldHalved,
 };
 
 @Component({

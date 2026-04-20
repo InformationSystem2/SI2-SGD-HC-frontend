@@ -1,0 +1,114 @@
+import { ChangeDetectionStrategy, Component, inject, OnInit } from '@angular/core';
+import { AbstractControl, FormBuilder, ReactiveFormsModule, ValidationErrors, Validators } from '@angular/forms';
+
+function passwordStrengthValidator(control: AbstractControl): ValidationErrors | null {
+  const value: string = control.value ?? '';
+  const errors: ValidationErrors = {};
+  if (value.length < 8)          errors['minlength']  = true;
+  if (!/[A-Z]/.test(value))      errors['uppercase']  = true;
+  if (!/[0-9]/.test(value))      errors['number']     = true;
+  return Object.keys(errors).length ? errors : null;
+}
+
+function passwordsMatchValidator(group: AbstractControl): ValidationErrors | null {
+  const pw  = group.get('password')?.value;
+  const cpw = group.get('confirmPassword')?.value;
+  return pw && cpw && pw !== cpw ? { passwordsMismatch: true } : null;
+}
+import { Router } from '@angular/router';
+import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
+import { UserService } from '../../services/user.service';
+import { faSpinner, faUserPlus } from '@fortawesome/free-solid-svg-icons';
+import { CreateUserRequest } from '../../models/user.model';
+import { RolesService } from '../../../roles/services/roles.service';
+
+@Component({
+  selector: 'app-user-register',
+  imports: [
+    ReactiveFormsModule,
+    FontAwesomeModule,
+  ],
+  templateUrl: './user-register.html',
+  changeDetection: ChangeDetectionStrategy.OnPush,
+})
+export class UserRegister implements OnInit {
+
+  private fb      = inject(FormBuilder);
+  private router  = inject(Router);
+  readonly userService  = inject(UserService);
+  readonly rolesService = inject(RolesService);
+
+  readonly faUserPlus = faUserPlus;
+  readonly faSpinner  = faSpinner;
+
+  readonly documentTypes = ['CI', 'PASSPORT', 'OTHER'];
+  readonly genders       = [
+    { value: 'male', label: 'Masculino' },
+    { value: 'female', label: 'Femenino'  },
+  ];
+
+  ngOnInit(): void {
+    this.rolesService.loadRoles().subscribe();
+  }
+
+
+  form = this.fb.group(
+    {
+      firstName:       ['', Validators.required],
+      lastName:        ['', Validators.required],
+      email:           ['', [Validators.required, Validators.email]],
+      password:        ['', [Validators.required, passwordStrengthValidator]],
+      confirmPassword: ['', Validators.required],
+      documentType:    [''],
+      documentNumber:  [''],
+      phone:           [''],
+      gender:          [''],
+      rolesIds:        [[] as number[], Validators.required],
+    },
+    { validators: passwordsMatchValidator },
+  );
+
+
+  toggleRole(id: number): void {
+    const current = this.form.value.rolesIds ?? [];
+    const updated = current.includes(id)
+      ? current.filter(role => role !== id)
+      : [...current, id];
+    this.form.patchValue({ rolesIds: updated });
+  }
+
+  isRoleSelected(id: number): boolean {
+    return (this.form.value.rolesIds ?? []).includes(id);
+  }
+
+
+  onSubmit(): void {
+    if (this.form.invalid) {
+      this.form.markAllAsTouched();
+      return;
+    }
+
+    const { documentType, documentNumber, phone, gender, confirmPassword, ...required } = this.form.value;
+
+    const payload: CreateUserRequest = {
+      ...required,
+      firstName:  required.firstName!,
+      lastName:   required.lastName!,
+      email:      required.email!,
+      password:   required.password!,
+      rolesIds:   required.rolesIds!,
+      // solo incluir opcionales si tienen valor
+      ...(documentType   ? { documentType }   : {}),
+      ...(documentNumber ? { documentNumber } : {}),
+      ...(phone          ? { phone }          : {}),
+      ...(gender         ? { gender }         : {}),
+    };
+
+    this.userService.createUser(payload).subscribe(() => {
+      this.form.reset();
+      this.router.navigate(['/dashboard/usuarios']);
+    });
+  }
+
+
+}
