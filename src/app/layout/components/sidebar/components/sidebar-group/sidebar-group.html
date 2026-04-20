@@ -1,0 +1,9 @@
+@if (label()) {
+  <p class="px-3 pt-4 pb-1 text-xs font-semibold text-slate-500 uppercase tracking-wider">
+    {{ label() }}
+  </p>
+}
+
+@for (item of items(); track item.path) {
+  <app-sidebar-item [item]="item" />
+},
