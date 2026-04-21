@@ -1,0 +1,80 @@
+<div class="max-w-lg mx-auto">
+
+  <h2 class="text-xl font-semibold text-white mb-6 flex items-center gap-2">
+    <fa-icon [icon]="faShieldHalved" />
+    {{ isEdit() ? 'Editar rol' : 'Nuevo rol' }}
+  </h2>
+
+  @if (rolesService.error()) {
+    <div class="mb-4 p-3 rounded-md bg-red-600/20 border border-red-500 text-red-400 text-sm">
+      {{ rolesService.error() }}
+    </div>
+  }
+
+  <form [formGroup]="form" (ngSubmit)="onSubmit()"
+        class="bg-slate-800 rounded-xl p-6 border border-slate-700 space-y-5">
+
+    <!-- Nombre -->
+    <div>
+      <label class="block text-sm text-slate-400 mb-1">
+        Nombre <span class="text-red-400">*</span>
+      </label>
+      <input formControlName="name" type="text"
+             class="w-full bg-slate-700 border border-slate-600 rounded-md px-3 py-2
+                    text-white placeholder-slate-500 focus:outline-none focus:border-orange-500
+                    transition-colors"
+             placeholder="Ej. ADMIN" />
+      @if (form.get('name')?.invalid && form.get('name')?.touched) {
+        <p class="text-red-400 text-xs mt-1">Requerido</p>
+      }
+    </div>
+
+    <!-- Descripción -->
+    <div>
+      <label class="block text-sm text-slate-400 mb-1">
+        Descripción <span class="text-red-400">*</span>
+      </label>
+      <textarea formControlName="description" rows="3"
+                class="w-full bg-slate-700 border border-slate-600 rounded-md px-3 py-2
+                       text-white placeholder-slate-500 focus:outline-none focus:border-orange-500
+                       transition-colors resize-none"
+                placeholder="Describe las responsabilidades de este rol...">
+      </textarea>
+      @if (form.get('description')?.invalid && form.get('description')?.touched) {
+        <p class="text-red-400 text-xs mt-1">Requerido</p>
+      }
+    </div>
+
+    <!-- Activo (solo en edición) -->
+    @if (isEdit()) {
+      <div class="flex items-center gap-3">
+        <input formControlName="active" type="checkbox" id="active"
+               class="w-4 h-4 accent-orange-500 cursor-pointer" />
+        <label for="active" class="text-sm text-slate-300 cursor-pointer">Rol activo</label>
+      </div>
+    }
+
+    <!-- Botones -->
+    <div class="flex gap-3 pt-2">
+      <button type="submit"
+              [disabled]="rolesService.loading()"
+              class="flex-1 flex items-center justify-center gap-2
+                     bg-orange-500 hover:bg-orange-600 disabled:opacity-50 disabled:cursor-not-allowed
+                     text-white font-semibold py-2.5 rounded-md transition-colors">
+        @if (rolesService.loading()) {
+          <fa-icon [icon]="faSpinner" class="animate-spin" />
+          Guardando...
+        } @else {
+          <fa-icon [icon]="faFloppyDisk" />
+          {{ isEdit() ? 'Guardar cambios' : 'Crear rol' }}
+        }
+      </button>
+      <button type="button" (click)="cancel()"
+              class="px-5 py-2.5 rounded-md bg-slate-700 hover:bg-slate-600
+                     text-slate-300 transition-colors">
+        Cancelar
+      </button>
+    </div>
+
+  </form>
+</div>
