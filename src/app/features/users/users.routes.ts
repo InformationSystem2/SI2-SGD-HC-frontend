@@ -12,8 +12,23 @@ export const usersRoutes: Routes = [
       import('./pages/user-register/user-register').then(m => m.UserRegister),
   },
   {
+    path: 'form/:id',
+    loadComponent: () =>
+      import('./pages/user-form/user-form').then(m => m.UserForm),
+  },
+  {
+    path: 'detail/:id',
+    loadComponent: () =>
+      import('./pages/user-detail/user-detail').then(m => m.UserDetail),
+  },
+  {
+    path: 'password/:id',
+    loadComponent: () =>
+      import('./pages/user-password/user-password').then(m => m.UserPassword),
+  },
+  {
     path: '',
-    redirectTo: 'register',
+    redirectTo: 'list',
     pathMatch: 'full',
   },
 ];

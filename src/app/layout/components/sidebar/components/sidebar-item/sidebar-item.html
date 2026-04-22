@@ -5,44 +5,45 @@
     routerLinkActive
     #rla="routerLinkActive"
     [routerLinkActiveOptions]="{ exact: true }"
-    [class]="'relative flex items-center py-2 px-3 my-1 font-medium rounded-md cursor-pointer transition-colors group ' +
-             (rla.isActive ? 'bg-orange-500 text-white' : 'hover:bg-slate-700 text-slate-300')"
+    [class]="'relative flex items-center py-2 px-3 my-0.5 font-medium rounded-lg cursor-pointer transition-colors group ' +
+             (rla.isActive
+               ? 'bg-hc-primary text-white shadow-sm'
+               : 'hover:bg-hc-hover text-hc-text-2 hover:text-hc-text')"
   >
-    <fa-icon [icon]="getIcon(item().icon)" class="w-5 text-center"></fa-icon>
-
+    <fa-icon [icon]="getIcon(item().icon)" class="w-5 text-center shrink-0"></fa-icon>
 
     <span
       class="overflow-hidden transition-all whitespace-nowrap"
-      [class]="sidebarService.expanded() ? 'w-52 ml-3' : 'w-0'"
+      [class]="sidebarService.expanded() ? 'w-52 ml-3 opacity-100' : 'w-0 opacity-0'"
     >
-      {{ item().label }}
+      {{ item().label | translate }}
     </span>
 
     @if (!sidebarService.expanded()) {
-      <div class="absolute left-full rounded-md px-2 py-1 ml-6
-                  bg-orange-500 text-white text-sm whitespace-nowrap
-                  invisible opacity-0 -translate-x-3 transition-all
+      <div class="absolute left-full rounded-lg px-3 py-1.5 ml-4
+                  bg-hc-primary text-white text-xs whitespace-nowrap shadow-lg
+                  invisible opacity-0 -translate-x-2 transition-all
                   group-hover:visible group-hover:opacity-100 group-hover:translate-x-0">
-        {{ item().label }}
+        {{ item().label | translate }}
       </div>
     }
   </a>
 
   @if (showSubmenu() && item().subItems?.length) {
     <div
-      class="absolute left-full top-0 ml-1
-             bg-slate-700 shadow-lg rounded-md border border-slate-600
-             z-50 min-w-[160px]"
+      class="absolute left-full top-0 ml-2
+             bg-hc-card shadow-xl rounded-xl border border-hc-border
+             z-50 min-w-[160px] overflow-hidden"
       (mouseenter)="onSubmenuEnter()"
       (mouseleave)="onMouseLeave()"
     >
       @for (sub of item().subItems!; track sub.path) {
         <a
           [routerLink]="sub.path"
-          class="block p-2 hover:bg-orange-500 hover:text-white
-                 text-slate-200 whitespace-nowrap transition-colors"
+          class="block px-4 py-2.5 hover:bg-hc-primary hover:text-white
+                 text-hc-text-2 whitespace-nowrap transition-colors text-sm"
         >
-          {{ sub.label }}
+          {{ sub.label | translate }}
         </a>
       }
     </div>

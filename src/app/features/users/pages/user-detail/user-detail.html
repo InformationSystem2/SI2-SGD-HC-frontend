@@ -1,0 +1,143 @@
+<div class="max-w-2xl mx-auto space-y-4">
+
+  <!-- Header -->
+  <div class="flex items-center gap-3">
+    <button (click)="back()"
+            class="p-2 rounded-lg bg-hc-muted hover:bg-hc-hover text-hc-text-2 transition-colors border border-hc-border">
+      <fa-icon [icon]="faArrowLeft" />
+    </button>
+    <h2 class="text-xl font-semibold text-hc-text flex items-center gap-2">
+      <fa-icon [icon]="faUser" class="text-hc-primary" />
+      {{ 'USERS.DETAIL_TITLE' | translate }}
+    </h2>
+  </div>
+
+  <!-- Loading -->
+  @if (loading()) {
+    <div class="flex justify-center py-16">
+      <fa-icon [icon]="faSpinner" class="animate-spin text-2xl text-hc-primary" />
+    </div>
+  }
+
+  <!-- Error -->
+  @if (error()) {
+    <div class="p-3 rounded-lg bg-hc-error-bg border border-hc-error/30 text-hc-error text-sm">
+      {{ error() }}
+    </div>
+  }
+
+  @if (user(); as u) {
+
+    <!-- Status badge -->
+    <div class="flex justify-end">
+      @if (u.isActive) {
+        <span class="flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-medium
+                     bg-hc-success-bg text-hc-success border border-hc-success/20">
+          <fa-icon [icon]="faCircleCheck" />
+          {{ 'USERS.STATUS_ACTIVE' | translate }}
+        </span>
+      } @else {
+        <span class="flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-medium
+                     bg-hc-muted text-hc-text-3 border border-hc-border">
+          <fa-icon [icon]="faCircleXmark" />
+          {{ 'USERS.STATUS_INACTIVE' | translate }}
+        </span>
+      }
+    </div>
+
+    <!-- Main card -->
+    <div class="bg-hc-card rounded-xl border border-hc-border shadow-sm overflow-hidden">
+
+      <!-- Identity section -->
+      <div class="px-6 py-4 border-b border-hc-border bg-hc-muted">
+        <p class="text-xs font-semibold uppercase tracking-wide text-hc-text-3">
+          {{ 'USERS.SECTION_IDENTITY' | translate }}
+        </p>
+      </div>
+      <div class="px-6 py-4 grid grid-cols-1 sm:grid-cols-2 gap-x-8 gap-y-4">
+        <div>
+          <p class="text-xs text-hc-text-3 mb-0.5">{{ 'USERS.FIELD_FIRST_NAME' | translate }}</p>
+          <p class="text-sm font-medium text-hc-text">{{ u.firstName }}</p>
+        </div>
+        <div>
+          <p class="text-xs text-hc-text-3 mb-0.5">{{ 'USERS.FIELD_LAST_NAME' | translate }}</p>
+          <p class="text-sm font-medium text-hc-text">{{ u.lastName }}</p>
+        </div>
+        <div>
+          <p class="text-xs text-hc-text-3 mb-0.5">{{ 'USERS.COL_USERNAME' | translate }}</p>
+          <p class="text-sm font-mono text-hc-text">{{ u.username }}</p>
+        </div>
+        <div>
+          <p class="text-xs text-hc-text-3 mb-0.5">{{ 'USERS.FIELD_GENDER' | translate }}</p>
+          <p class="text-sm text-hc-text">{{ u.gender || '—' }}</p>
+        </div>
+      </div>
+
+      <!-- Contact section -->
+      <div class="px-6 py-4 border-t border-b border-hc-border bg-hc-muted">
+        <p class="text-xs font-semibold uppercase tracking-wide text-hc-text-3">
+          {{ 'USERS.SECTION_CONTACT' | translate }}
+        </p>
+      </div>
+      <div class="px-6 py-4 grid grid-cols-1 sm:grid-cols-2 gap-x-8 gap-y-4">
+        <div class="flex items-start gap-2">
+          <fa-icon [icon]="faEnvelope" class="text-hc-text-3 mt-0.5 text-xs" />
+          <div>
+            <p class="text-xs text-hc-text-3 mb-0.5">{{ 'USERS.FIELD_EMAIL' | translate }}</p>
+            <p class="text-sm text-hc-text">{{ u.email }}</p>
+          </div>
+        </div>
+        <div class="flex items-start gap-2">
+          <fa-icon [icon]="faPhone" class="text-hc-text-3 mt-0.5 text-xs" />
+          <div>
+            <p class="text-xs text-hc-text-3 mb-0.5">{{ 'USERS.FIELD_PHONE' | translate }}</p>
+            <p class="text-sm text-hc-text">{{ u.phone || '—' }}</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Document section -->
+      <div class="px-6 py-4 border-t border-b border-hc-border bg-hc-muted">
+        <p class="text-xs font-semibold uppercase tracking-wide text-hc-text-3">
+          {{ 'USERS.SECTION_DOCUMENT' | translate }}
+        </p>
+      </div>
+      <div class="px-6 py-4 grid grid-cols-1 sm:grid-cols-2 gap-x-8 gap-y-4">
+        <div class="flex items-start gap-2">
+          <fa-icon [icon]="faIdCard" class="text-hc-text-3 mt-0.5 text-xs" />
+          <div>
+            <p class="text-xs text-hc-text-3 mb-0.5">{{ 'USERS.FIELD_DOC_TYPE' | translate }}</p>
+            <p class="text-sm text-hc-text">{{ u.documentType || '—' }}</p>
+          </div>
+        </div>
+        <div>
+          <p class="text-xs text-hc-text-3 mb-0.5">{{ 'USERS.FIELD_DOC_NUMBER' | translate }}</p>
+          <p class="text-sm font-mono text-hc-text">{{ u.documentNumber || '—' }}</p>
+        </div>
+      </div>
+
+      <!-- Roles section -->
+      <div class="px-6 py-4 border-t border-b border-hc-border bg-hc-muted">
+        <p class="text-xs font-semibold uppercase tracking-wide text-hc-text-3">
+          {{ 'USERS.COL_ROLES' | translate }}
+        </p>
+      </div>
+      <div class="px-6 py-4">
+        <div class="flex flex-wrap gap-2">
+          @for (name of getRoleNames(u.rolesIds); track name) {
+            <span class="flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-medium
+                         bg-hc-primary-100 text-hc-primary-dark border border-hc-primary/20">
+              <fa-icon [icon]="faShieldHalved" class="text-xs" />
+              {{ name }}
+            </span>
+          } @empty {
+            <span class="text-sm text-hc-text-3">— Sin roles asignados —</span>
+          }
+        </div>
+      </div>
+
+    </div>
+
+  }
+
+</div>

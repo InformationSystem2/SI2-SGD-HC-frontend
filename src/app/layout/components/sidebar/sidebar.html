@@ -1,40 +1,64 @@
 <aside
-  class="transition-all duration-300 bg-slate-800 border-r border-slate-700 shadow-sm flex flex-col h-screen sticky top-0 shrink-0"
-  [class]="sidebarService.expanded() ? 'w-64' : 'w-16'"
+  class="flex flex-col h-screen bg-hc-sidebar border-r border-hc-border shadow-sm shrink-0
+         fixed inset-y-0 left-0 z-40 transition-all duration-300
+         md:sticky md:top-0 md:translate-x-0"
+  [class.-translate-x-full]="!sidebarService.mobileOpen()"
+  [class.w-64]="sidebarService.expanded() || sidebarService.mobileOpen()"
+  [class.w-16]="!sidebarService.expanded() && !sidebarService.mobileOpen()"
 >
-  <nav class="h-full flex flex-col flex-1">
+  <nav class="h-full flex flex-col flex-1 overflow-hidden">
 
-    <!-- Botón toggle -->
-    <div class="p-4 pb-2 flex items-center">
+    <!-- Toggle button -->
+    <div class="p-4 pb-2 flex items-center justify-between">
+      @if (sidebarService.expanded() || sidebarService.mobileOpen()) {
+        <div class="flex items-center gap-2 overflow-hidden">
+          <div class="w-6 h-6 rounded bg-hc-primary flex items-center justify-center shrink-0">
+            <svg class="w-3.5 h-3.5 text-white" fill="currentColor" viewBox="0 0 24 24">
+              <path d="M19 3H5a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2V5a2 2 0 00-2-2zm-7 3a1 1 0 011 1v3h3a1 1 0 010 2h-3v3a1 1 0 01-2 0v-3H8a1 1 0 010-2h3V7a1 1 0 011-1z"/>
+            </svg>
+          </div>
+          <span class="text-hc-primary font-bold text-sm tracking-wide whitespace-nowrap">SGD·HC</span>
+        </div>
+      }
       <button
         (click)="sidebarService.toggle()"
-        class="p-1.5 rounded-lg bg-slate-700 hover:bg-slate-600 text-orange-500"
+        class="p-1.5 rounded-lg bg-hc-muted hover:bg-hc-hover text-hc-primary transition-colors"
+        [class.mx-auto]="!sidebarService.expanded() && !sidebarService.mobileOpen()"
       >
         <fa-icon [icon]="faBars"></fa-icon>
       </button>
     </div>
 
-    <!-- Ítems de navegación -->
+    <!-- Divider -->
+    <div class="mx-3 mb-2 border-t border-hc-border"></div>
+
+    <!-- Nav items -->
     <div class="flex-1 px-3 overflow-y-auto">
-      <app-sidebar-group [items]="navItems" />
+      <app-sidebar-group [items]="visibleNavItems()" />
     </div>
 
-    <!-- Footer: datos del usuario -->
-    <div class="border-t border-slate-600 flex p-3 items-center">
+    <!-- Footer: user info -->
+    <div class="border-t border-hc-border flex p-3 items-center">
       <img
-        src="https://ui-avatars.com/api/?background=ff6b35&color=fff"
-        class="w-10 h-10 rounded-md shrink-0"
+        [src]="avatarUrl()"
+        class="w-9 h-9 rounded-lg shrink-0 ring-2 ring-hc-primary/30"
         alt="avatar"
       />
       <div
         class="flex justify-between items-center overflow-hidden transition-all"
-        [class]="sidebarService.expanded() ? 'w-52 ml-3' : 'w-0'"
+        [class.w-52]="sidebarService.expanded() || sidebarService.mobileOpen()"
+        [class.w-0]="!sidebarService.expanded() && !sidebarService.mobileOpen()"
+        [class.ml-3]="sidebarService.expanded() || sidebarService.mobileOpen()"
       >
-        <div class="leading-4">
-          <h4 class="font-semibold text-white">Usuario</h4>
-          <span class="text-xs text-slate-400">usuario&#64;gmail.com</span>
+        <div class="leading-4 min-w-0">
+          <h4 class="font-semibold text-hc-text text-sm truncate">
+            {{ authService.username() ?? '—' }}
+          </h4>
+          @if (firstRole()) {
+            <span class="text-xs text-hc-text-3 truncate block">{{ firstRole() }}</span>
+          }
         </div>
-        <fa-icon [icon]="faEllipsisVertical" class="text-slate-400"></fa-icon>
+        <fa-icon [icon]="faEllipsisVertical" class="text-hc-text-3 shrink-0"></fa-icon>
       </div>
     </div>
 

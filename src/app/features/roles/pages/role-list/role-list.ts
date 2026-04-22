@@ -9,11 +9,12 @@ import {
   faShieldHalved,
 } from '@fortawesome/free-solid-svg-icons';
 import { RolesService } from '../../services/roles.service';
+import { TranslatePipe } from '@ngx-translate/core';
 
 
 @Component({
   selector: 'app-role-list',
-  imports: [FontAwesomeModule],
+  imports: [FontAwesomeModule, TranslatePipe],
   templateUrl: './role-list.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })

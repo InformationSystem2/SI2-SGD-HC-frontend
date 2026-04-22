@@ -9,6 +9,7 @@ import { RouterLink, RouterLinkActive } from '@angular/router';
 import type { NavItem } from '../../models/nav-item.model';
 import { SidebarService } from '../../services/sidebar.service';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
+import { TranslatePipe } from '@ngx-translate/core';
 import {
   faShieldHalved,
   faGaugeHigh,
@@ -17,6 +18,7 @@ import {
   faUsers,
   faGear,
   faCircle,
+  faHeartPulse,
   type IconDefinition,
 } from '@fortawesome/free-solid-svg-icons';
 
@@ -26,16 +28,13 @@ const ICON_MAP: Record<string, IconDefinition> = {
   'folder-open':      faFolderOpen,
   'users':            faUsers,
   'settings':         faGear,
-  'shield': faShieldHalved,
+  'shield':           faShieldHalved,
+  'heart-pulse':      faHeartPulse,
 };
 
 @Component({
   selector: 'app-sidebar-item',
-  imports: [
-    RouterLink,
-    RouterLinkActive,
-    FontAwesomeModule,
-  ],
+  imports: [RouterLink, RouterLinkActive, FontAwesomeModule, TranslatePipe],
   templateUrl: './sidebar-item.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
@@ -50,7 +49,6 @@ export class SidebarItem {
   readonly showSubmenu = signal(false);
 
   private timeout: ReturnType<typeof setTimeout> | null = null;
-
 
   onMouseEnter(): void {
     if (this.timeout) clearTimeout(this.timeout);
