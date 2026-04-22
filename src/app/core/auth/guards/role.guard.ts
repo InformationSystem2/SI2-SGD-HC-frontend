@@ -2,17 +2,16 @@ import { inject } from '@angular/core';
 import { CanActivateFn, Router } from '@angular/router';
 import { AuthService } from '../services/auth.service';
 
-const ADMIN_ROLES = ['ROLE_SUPERUSER', 'ROLE_ADMIN'];
+export function permissionGuard(permission: string): CanActivateFn {
+  return () => {
+    const auth   = inject(AuthService);
+    const router = inject(Router);
 
-export const adminGuard: CanActivateFn = () => {
-  const auth   = inject(AuthService);
-  const router = inject(Router);
+    if (!auth.isAuthenticated() || auth.isTokenExpired())
+      return router.createUrlTree(['/auth/login']);
 
-  if (!auth.isAuthenticated() || auth.isTokenExpired())
-    return router.createUrlTree(['/auth/login']);
-
-  const hasRole = auth.roles().some(r => ADMIN_ROLES.includes(r));
-  if (hasRole) return true;
-
-  return router.createUrlTree(['/dashboard/dashboard']);
-};
+    return auth.hasPermission(permission)
+      ? true
+      : router.createUrlTree(['/dashboard/dashboard']);
+  };
+}

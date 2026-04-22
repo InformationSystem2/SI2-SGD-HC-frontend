@@ -16,9 +16,8 @@ export class Sidebar {
   readonly sidebarService = inject(SidebarService);
   readonly authService    = inject(AuthService);
   readonly visibleNavItems = computed(() => {
-    const userRoles = this.authService.roles();
     return NAV_ITEMS.filter(item =>
-      !item.roles || item.roles.some(r => userRoles.includes(r))
+      !item.permissions || item.permissions.some(p => this.authService.hasPermission(p))
     );
   });
 

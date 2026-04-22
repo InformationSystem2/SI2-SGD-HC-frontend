@@ -7,6 +7,6 @@ export interface NavItem {
   label: string;
   path: string;
   icon: string;
-  roles?: string[];
+  permissions?: string[];
   subItems?: NavSubItem[];
 }
