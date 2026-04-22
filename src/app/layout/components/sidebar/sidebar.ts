@@ -15,7 +15,12 @@ import { AuthService } from '../../../core/auth/services/auth.service';
 export class Sidebar {
   readonly sidebarService = inject(SidebarService);
   readonly authService    = inject(AuthService);
-  readonly navItems = NAV_ITEMS;
+  readonly visibleNavItems = computed(() => {
+    const userRoles = this.authService.roles();
+    return NAV_ITEMS.filter(item =>
+      !item.roles || item.roles.some(r => userRoles.includes(r))
+    );
+  });
 
   readonly faBars            = faBars;
   readonly faEllipsisVertical = faEllipsisVertical;

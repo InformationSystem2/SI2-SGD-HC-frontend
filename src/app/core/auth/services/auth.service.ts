@@ -72,6 +72,25 @@ export class AuthService {
   }
 
 
+  register(data: {
+    email: string; firstName: string; lastName: string; password: string;
+    documentType?: string; documentNumber?: string; phone?: string; gender?: string;
+  }) {
+    this._state.update(s => ({ ...s, loading: true, error: null }));
+
+    return this.http.post<void>(`${environment.apiUrl}/auth/register`, data).pipe(
+      tap(() => {
+        this._state.update(s => ({ ...s, loading: false }));
+        this.router.navigate(['/auth/login']);
+      }),
+      catchError(err => {
+        const message = err.error?.message ?? 'Error al registrarse';
+        this._state.update(s => ({ ...s, loading: false, error: message }));
+        return EMPTY;
+      })
+    );
+  }
+
   logout() {
     localStorage.removeItem('accessToken');
     localStorage.removeItem('expiresAt');
