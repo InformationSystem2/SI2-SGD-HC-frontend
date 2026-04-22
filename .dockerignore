@@ -1,0 +1,17 @@
+.git
+.gitignore
+.github
+.vscode
+.idea
+node_modules
+dist
+build
+*.md
+*.log
+*.swp
+.swo
+.env.local
+.env.*.local
+.DS_Store
+coverage
+.angular
