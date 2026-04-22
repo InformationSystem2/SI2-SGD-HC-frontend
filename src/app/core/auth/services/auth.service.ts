@@ -41,6 +41,14 @@ export class AuthService {
     return Date.now() > exp;
   });
 
+  hasPermission(permission: string): boolean {
+    return this.roles().includes(permission);
+  }
+
+  hasAnyPermission(...permissions: string[]): boolean {
+    return permissions.some(p => this.roles().includes(p));
+  }
+
   login(credentials: LoginRequest) {
     this._state.update( s => ({ ...s, loading: true, error: null}));
 
