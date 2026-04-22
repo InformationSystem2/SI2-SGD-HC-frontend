@@ -19,7 +19,7 @@ COPY . .
 #    cat src/environments/environment.prod.ts && \
 #    grep -q "${API_URL}" src/environments/environment.prod.ts || (echo "ERROR: No se inyectó la URL correctamente" && exit 1)
 
-ARG API_URL=http://localhost:8081/api
+ARG API_URL=https://si2-sgd-hc-backend-623982872710.southamerica-west1.run.app/api
 RUN echo "Inyectando API_URL: ${API_URL}" && \
     sed -i "s|apiUrl:.*|apiUrl: '${API_URL}'|g" src/environments/environment.prod.ts && \
     echo "Contenido de environment.prod.ts corregido:" && \
