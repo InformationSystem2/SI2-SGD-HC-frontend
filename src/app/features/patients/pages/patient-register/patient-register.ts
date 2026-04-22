@@ -1,8 +1,11 @@
-import { ChangeDetectionStrategy, Component, inject, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
 import { AbstractControl, FormBuilder, ReactiveFormsModule, ValidationErrors, Validators } from '@angular/forms';
-import { RouterLink } from '@angular/router';
+import { Router } from '@angular/router';
+import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
+import { faSpinner, faUserPlus } from '@fortawesome/free-solid-svg-icons';
 import { TranslatePipe } from '@ngx-translate/core';
-import { AuthService } from '../../../../core/auth/services/auth.service';
+import { CreatePatientRequest } from '../../models/patient.model';
+import { PatientService } from '../../services/patient.service';
 
 function passwordStrengthValidator(control: AbstractControl): ValidationErrors | null {
   const value: string = control.value ?? '';
@@ -20,24 +23,27 @@ function passwordsMatchValidator(group: AbstractControl): ValidationErrors | nul
 }
 
 @Component({
-  selector: 'app-register',
-  imports: [ReactiveFormsModule, RouterLink, TranslatePipe],
-  templateUrl: './register.html',
+  selector: 'app-patient-register',
+  imports: [ReactiveFormsModule, FontAwesomeModule, TranslatePipe],
+  templateUrl: './patient-register.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class Register {
+export class PatientRegister {
 
-  private fb = inject(FormBuilder);
-  readonly auth = inject(AuthService);
+  private fb     = inject(FormBuilder);
+  private router = inject(Router);
+  readonly patientService = inject(PatientService);
 
-  readonly hidePassword = signal(true);
+  readonly faUserPlus = faUserPlus;
+  readonly faSpinner  = faSpinner;
+
   readonly documentTypes = ['CI', 'PASSPORT', 'OTHER'];
   readonly genders = [
     { value: 'male',   label: 'Masculino' },
     { value: 'female', label: 'Femenino'  },
   ];
 
-  protected form = this.fb.group(
+  form = this.fb.group(
     {
       firstName:       ['', Validators.required],
       lastName:        ['', Validators.required],
@@ -48,18 +54,19 @@ export class Register {
       documentNumber:  [''],
       phone:           [''],
       gender:          [''],
+      birthDate:       [''],
     },
     { validators: passwordsMatchValidator },
   );
 
-  protected onSubmit(): void {
+  onSubmit(): void {
     if (this.form.invalid) {
       this.form.markAllAsTouched();
       return;
     }
 
     const v = this.form.value;
-    this.auth.register({
+    const payload: CreatePatientRequest = {
       firstName: v.firstName!,
       lastName:  v.lastName!,
       email:     v.email!,
@@ -68,6 +75,16 @@ export class Register {
       ...(v.documentNumber ? { documentNumber: v.documentNumber } : {}),
       ...(v.phone          ? { phone: v.phone }                   : {}),
       ...(v.gender         ? { gender: v.gender }                 : {}),
-    }).subscribe();
+      ...(v.birthDate      ? { birthDate: v.birthDate }           : {}),
+    };
+
+    this.patientService.createPatient(payload).subscribe(() => {
+      this.form.reset();
+      this.router.navigate(['/pacientes/list']);
+    });
+  }
+
+  cancel(): void {
+    this.router.navigate(['/pacientes/list']);
   }
 }

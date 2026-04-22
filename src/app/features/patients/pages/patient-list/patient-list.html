@@ -1,0 +1,110 @@
+<div class="space-y-4">
+
+  <!-- Header -->
+  <div class="flex items-center justify-between">
+    <h2 class="text-xl font-semibold text-hc-text flex items-center gap-2">
+      <fa-icon [icon]="faUsers" class="text-hc-primary" />
+      {{ 'PATIENTS.TITLE' | translate }}
+    </h2>
+    <button
+      (click)="goToRegister()"
+      class="flex items-center gap-2 px-4 py-2 bg-hc-primary hover:bg-hc-primary-dark
+             text-white text-sm font-medium rounded-lg transition-colors shadow-sm"
+    >
+      <fa-icon [icon]="faUserPlus" />
+      {{ 'PATIENTS.NEW' | translate }}
+    </button>
+  </div>
+
+  <!-- Error -->
+  @if (patientService.error()) {
+    <div class="p-3 rounded-lg bg-hc-error-bg border border-hc-error/30 text-hc-error text-sm">
+      {{ patientService.error() }}
+    </div>
+  }
+
+  <!-- Loading -->
+  @if (patientService.loading()) {
+    <div class="flex justify-center py-12">
+      <fa-icon [icon]="faSpinner" class="animate-spin text-2xl text-hc-primary" />
+    </div>
+  }
+
+  <!-- Table -->
+  @if (!patientService.loading()) {
+    <div class="bg-hc-card rounded-xl border border-hc-border overflow-hidden shadow-sm overflow-x-auto">
+      <table class="w-full text-sm min-w-[640px]">
+        <thead>
+          <tr class="border-b border-hc-border bg-hc-muted text-hc-text-3 text-left">
+            <th class="px-4 py-3 font-semibold">{{ 'PATIENTS.COL_ID' | translate }}</th>
+            <th class="px-4 py-3 font-semibold">{{ 'PATIENTS.COL_NAME' | translate }}</th>
+            <th class="px-4 py-3 font-semibold">{{ 'PATIENTS.COL_EMAIL' | translate }}</th>
+            <th class="px-4 py-3 font-semibold">{{ 'PATIENTS.COL_BIRTH_DATE' | translate }}</th>
+            <th class="px-4 py-3 font-semibold">{{ 'PATIENTS.COL_STATUS' | translate }}</th>
+            <th class="px-4 py-3 font-semibold text-right">{{ 'PATIENTS.COL_ACTIONS' | translate }}</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (patient of patientService.patients(); track patient.id) {
+            <tr class="border-b border-hc-border/50 hover:bg-hc-hover transition-colors">
+              <td class="px-4 py-3 text-hc-text-3 font-mono text-xs">{{ patient.id }}</td>
+              <td class="px-4 py-3 text-hc-text font-medium">
+                {{ patient.firstName }} {{ patient.lastName }}
+              </td>
+              <td class="px-4 py-3 text-hc-text-2">{{ patient.email }}</td>
+              <td class="px-4 py-3 text-hc-text-2">{{ patient.birthDate ?? '—' }}</td>
+              <td class="px-4 py-3">
+                @if (patient.isActive) {
+                  <span class="flex items-center gap-1.5 text-hc-success text-xs font-medium">
+                    <fa-icon [icon]="faCircleCheck" />
+                    {{ 'PATIENTS.STATUS_ACTIVE' | translate }}
+                  </span>
+                } @else {
+                  <span class="flex items-center gap-1.5 text-hc-text-3 text-xs">
+                    <fa-icon [icon]="faCircleXmark" />
+                    {{ 'PATIENTS.STATUS_INACTIVE' | translate }}
+                  </span>
+                }
+              </td>
+              <td class="px-4 py-3 text-right">
+                <div class="flex items-center justify-end gap-1.5">
+                  <button
+                    (click)="goToDetail(patient.id)"
+                    class="p-1.5 rounded-md bg-hc-muted hover:bg-hc-primary/10 hover:text-hc-primary
+                           text-hc-text-2 transition-colors"
+                    [title]="'PATIENTS.VIEW' | translate"
+                  >
+                    <fa-icon [icon]="faEye" />
+                  </button>
+                  <button
+                    (click)="goToEdit(patient.id)"
+                    class="p-1.5 rounded-md bg-hc-muted hover:bg-hc-primary hover:text-white
+                           text-hc-text-2 transition-colors"
+                    [title]="'PATIENTS.EDIT' | translate"
+                  >
+                    <fa-icon [icon]="faPencil" />
+                  </button>
+                  <button
+                    (click)="delete(patient.id)"
+                    class="p-1.5 rounded-md bg-hc-muted hover:bg-hc-error hover:text-white
+                           text-hc-text-2 transition-colors"
+                    [title]="'PATIENTS.DELETE' | translate"
+                  >
+                    <fa-icon [icon]="faTrash" />
+                  </button>
+                </div>
+              </td>
+            </tr>
+          } @empty {
+            <tr>
+              <td colspan="6" class="px-4 py-10 text-center text-hc-text-3">
+                {{ 'PATIENTS.EMPTY' | translate }}
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+  }
+
+</div>

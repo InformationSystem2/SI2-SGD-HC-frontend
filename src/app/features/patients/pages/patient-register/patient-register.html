@@ -1,0 +1,196 @@
+<div class="max-w-2xl mx-auto">
+
+  <h2 class="text-xl font-semibold text-hc-text mb-6 flex items-center gap-2">
+    <fa-icon [icon]="faUserPlus" class="text-hc-primary" />
+    {{ 'PATIENTS.REGISTER_TITLE' | translate }}
+  </h2>
+
+  @if (patientService.success()) {
+    <div class="mb-4 p-3 rounded-lg bg-hc-success-bg border border-hc-success/20 text-hc-success text-sm">
+      {{ 'PATIENTS.SUCCESS' | translate }}
+    </div>
+  }
+
+  @if (patientService.error()) {
+    <div class="mb-4 p-3 rounded-lg bg-hc-error-bg border border-hc-error/30 text-hc-error text-sm">
+      {{ patientService.error() }}
+    </div>
+  }
+
+  <form [formGroup]="form" (ngSubmit)="onSubmit()"
+        class="bg-hc-card rounded-xl p-6 border border-hc-border shadow-sm space-y-5">
+
+    <!-- First name & Last name -->
+    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+      <div>
+        <label class="block text-sm font-medium text-hc-text-2 mb-1">
+          {{ 'PATIENTS.FIELD_FIRST_NAME' | translate }} <span class="text-hc-error">*</span>
+        </label>
+        <input formControlName="firstName" type="text"
+               class="w-full bg-hc-input border border-hc-border-i rounded-lg px-3 py-2
+                      text-hc-text placeholder:text-hc-text-3
+                      focus:outline-none focus:ring-2 focus:ring-hc-primary/30 focus:border-hc-primary transition-colors"
+               placeholder="Nombre" />
+        @if (form.get('firstName')?.invalid && form.get('firstName')?.touched) {
+          <p class="text-hc-error text-xs mt-1">{{ 'PATIENTS.VAL_REQUIRED' | translate }}</p>
+        }
+      </div>
+      <div>
+        <label class="block text-sm font-medium text-hc-text-2 mb-1">
+          {{ 'PATIENTS.FIELD_LAST_NAME' | translate }} <span class="text-hc-error">*</span>
+        </label>
+        <input formControlName="lastName" type="text"
+               class="w-full bg-hc-input border border-hc-border-i rounded-lg px-3 py-2
+                      text-hc-text placeholder:text-hc-text-3
+                      focus:outline-none focus:ring-2 focus:ring-hc-primary/30 focus:border-hc-primary transition-colors"
+               placeholder="Apellido" />
+        @if (form.get('lastName')?.invalid && form.get('lastName')?.touched) {
+          <p class="text-hc-error text-xs mt-1">{{ 'PATIENTS.VAL_REQUIRED' | translate }}</p>
+        }
+      </div>
+    </div>
+
+    <!-- Email -->
+    <div>
+      <label class="block text-sm font-medium text-hc-text-2 mb-1">
+        {{ 'PATIENTS.FIELD_EMAIL' | translate }} <span class="text-hc-error">*</span>
+      </label>
+      <input formControlName="email" type="email"
+             class="w-full bg-hc-input border border-hc-border-i rounded-lg px-3 py-2
+                    text-hc-text placeholder:text-hc-text-3
+                    focus:outline-none focus:ring-2 focus:ring-hc-primary/30 focus:border-hc-primary transition-colors"
+             placeholder="paciente@email.com" />
+      @if (form.get('email')?.invalid && form.get('email')?.touched) {
+        <p class="text-hc-error text-xs mt-1">{{ 'PATIENTS.VAL_EMAIL' | translate }}</p>
+      }
+    </div>
+
+    <!-- Password & Confirm -->
+    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+      <div>
+        <label class="block text-sm font-medium text-hc-text-2 mb-1">
+          {{ 'PATIENTS.FIELD_PASSWORD' | translate }} <span class="text-hc-error">*</span>
+        </label>
+        <input formControlName="password" type="password"
+               class="w-full bg-hc-input border border-hc-border-i rounded-lg px-3 py-2
+                      text-hc-text placeholder:text-hc-text-3
+                      focus:outline-none focus:ring-2 focus:ring-hc-primary/30 focus:border-hc-primary transition-colors"
+               placeholder="••••••••" />
+        @if (form.get('password')?.touched) {
+          @if (form.get('password')?.hasError('required')) {
+            <p class="text-hc-error text-xs mt-1">{{ 'PATIENTS.VAL_REQUIRED' | translate }}</p>
+          } @else if (form.get('password')?.hasError('minlength')) {
+            <p class="text-hc-error text-xs mt-1">{{ 'PATIENTS.VAL_MIN_PW' | translate }}</p>
+          } @else if (form.get('password')?.hasError('uppercase')) {
+            <p class="text-hc-error text-xs mt-1">{{ 'PATIENTS.VAL_UPPERCASE' | translate }}</p>
+          } @else if (form.get('password')?.hasError('number')) {
+            <p class="text-hc-error text-xs mt-1">{{ 'PATIENTS.VAL_NUMBER' | translate }}</p>
+          }
+        }
+      </div>
+      <div>
+        <label class="block text-sm font-medium text-hc-text-2 mb-1">
+          {{ 'PATIENTS.FIELD_CONFIRM_PASSWORD' | translate }} <span class="text-hc-error">*</span>
+        </label>
+        <input formControlName="confirmPassword" type="password"
+               class="w-full bg-hc-input border border-hc-border-i rounded-lg px-3 py-2
+                      text-hc-text placeholder:text-hc-text-3
+                      focus:outline-none focus:ring-2 focus:ring-hc-primary/30 focus:border-hc-primary transition-colors"
+               placeholder="••••••••" />
+        @if (form.get('confirmPassword')?.touched && form.hasError('passwordsMismatch')) {
+          <p class="text-hc-error text-xs mt-1">{{ 'PATIENTS.VAL_PW_MISMATCH' | translate }}</p>
+        }
+      </div>
+    </div>
+
+    <!-- Birth date -->
+    <div>
+      <label class="block text-sm font-medium text-hc-text-2 mb-1">
+        {{ 'PATIENTS.FIELD_BIRTH_DATE' | translate }}
+      </label>
+      <input formControlName="birthDate" type="date"
+             class="w-full bg-hc-input border border-hc-border-i rounded-lg px-3 py-2
+                    text-hc-text focus:outline-none focus:ring-2 focus:ring-hc-primary/30
+                    focus:border-hc-primary transition-colors" />
+    </div>
+
+    <!-- Document type & number -->
+    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+      <div>
+        <label class="block text-sm font-medium text-hc-text-2 mb-1">
+          {{ 'PATIENTS.FIELD_DOC_TYPE' | translate }}
+        </label>
+        <select formControlName="documentType"
+                class="w-full bg-hc-input border border-hc-border-i rounded-lg px-3 py-2
+                       text-hc-text focus:outline-none focus:ring-2 focus:ring-hc-primary/30
+                       focus:border-hc-primary transition-colors">
+          <option value="">— Seleccionar —</option>
+          @for (dt of documentTypes; track dt) {
+            <option [value]="dt">{{ dt }}</option>
+          }
+        </select>
+      </div>
+      <div>
+        <label class="block text-sm font-medium text-hc-text-2 mb-1">
+          {{ 'PATIENTS.FIELD_DOC_NUMBER' | translate }}
+        </label>
+        <input formControlName="documentNumber" type="text"
+               class="w-full bg-hc-input border border-hc-border-i rounded-lg px-3 py-2
+                      text-hc-text placeholder:text-hc-text-3
+                      focus:outline-none focus:ring-2 focus:ring-hc-primary/30 focus:border-hc-primary transition-colors"
+               placeholder="Número de documento" />
+      </div>
+    </div>
+
+    <!-- Phone & Gender -->
+    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+      <div>
+        <label class="block text-sm font-medium text-hc-text-2 mb-1">
+          {{ 'PATIENTS.FIELD_PHONE' | translate }}
+        </label>
+        <input formControlName="phone" type="tel"
+               class="w-full bg-hc-input border border-hc-border-i rounded-lg px-3 py-2
+                      text-hc-text placeholder:text-hc-text-3
+                      focus:outline-none focus:ring-2 focus:ring-hc-primary/30 focus:border-hc-primary transition-colors"
+               placeholder="+591 7xxxxxxx" />
+      </div>
+      <div>
+        <label class="block text-sm font-medium text-hc-text-2 mb-1">
+          {{ 'PATIENTS.FIELD_GENDER' | translate }}
+        </label>
+        <select formControlName="gender"
+                class="w-full bg-hc-input border border-hc-border-i rounded-lg px-3 py-2
+                       text-hc-text focus:outline-none focus:ring-2 focus:ring-hc-primary/30
+                       focus:border-hc-primary transition-colors">
+          <option value="">— Seleccionar —</option>
+          @for (g of genders; track g.value) {
+            <option [value]="g.value">{{ g.label }}</option>
+          }
+        </select>
+      </div>
+    </div>
+
+    <!-- Actions -->
+    <div class="flex gap-3 pt-2">
+      <button type="submit"
+              [disabled]="patientService.loading()"
+              class="flex-1 flex items-center justify-center gap-2
+                     bg-hc-primary hover:bg-hc-primary-dark disabled:opacity-50 disabled:cursor-not-allowed
+                     text-white font-semibold py-2.5 rounded-lg transition-colors shadow-sm">
+        @if (patientService.loading()) {
+          <fa-icon [icon]="faSpinner" class="animate-spin" />
+          {{ 'PATIENTS.CREATING' | translate }}
+        } @else {
+          <fa-icon [icon]="faUserPlus" />
+          {{ 'PATIENTS.CREATE_BTN' | translate }}
+        }
+      </button>
+      <button type="button" (click)="cancel()"
+              class="px-5 py-2.5 rounded-lg bg-hc-muted hover:bg-hc-hover
+                     text-hc-text-2 transition-colors border border-hc-border">
+        {{ 'PATIENTS.CANCEL' | translate }}
+      </button>
+    </div>
+
+  </form>
+</div>

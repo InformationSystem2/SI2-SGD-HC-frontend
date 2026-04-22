@@ -7,5 +7,6 @@ export interface NavItem {
   label: string;
   path: string;
   icon: string;
+  permissions?: string[];
   subItems?: NavSubItem[];
 }
