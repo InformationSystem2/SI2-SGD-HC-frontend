@@ -2,40 +2,31 @@ import type { NavItem } from '../models/nav-item.model';
 
 export const NAV_ITEMS: NavItem[] = [
   {
-    label: 'Dashboard',
+    label: 'NAV.DASHBOARD',
     path: '/dashboard/dashboard',
     icon: 'layout-dashboard',
   },
   {
-    label: 'Documentos',
+    label: 'NAV.DOCUMENTS',
     path: '/dashboard/documentos',
     icon: 'file-text',
   },
   {
-    label: 'Roles',
+    label: 'NAV.ROLES',
     path: '/roles/list',
     icon: 'shield',
   },
-  // {
-  //   label: 'Expedientes',
-  //   path: '/dashboard/expedientes',
-  //   icon: 'folder-open',
-  //   subItems: [
-  //     { label: 'Activos',    path: '/dashboard/expedientes/activos' },
-  //     { label: 'Archivados', path: '/dashboard/expedientes/archivados' },
-  //   ],
-  // },
   {
-    label: 'Usuarios',
+    label: 'NAV.USERS',
     path: '/usuarios/list',
     icon: 'users',
     subItems: [
-      { label: 'Lista',      path: '/usuarios/list' },
-      { label: 'Registrar',  path: '/usuarios/register' },
+      { label: 'NAV.USER_LIST',     path: '/usuarios/list' },
+      { label: 'NAV.USER_REGISTER', path: '/usuarios/register' },
     ],
   },
   {
-    label: 'Configuración',
+    label: 'NAV.SETTINGS',
     path: '/dashboard/configuracion',
     icon: 'settings',
   },

@@ -1,18 +1,10 @@
 <div class="max-w-2xl mx-auto">
 
   <h2 class="text-xl font-semibold text-hc-text mb-6 flex items-center gap-2">
-    <fa-icon [icon]="faUserPlus" class="text-hc-primary" />
-    {{ 'USERS.REGISTER_TITLE' | translate }}
+    <fa-icon [icon]="faUsers" class="text-hc-primary" />
+    {{ 'USERS.EDIT_TITLE' | translate }}
   </h2>
 
-  <!-- Success alert -->
-  @if (userService.success()) {
-    <div class="mb-4 p-3 rounded-lg bg-hc-success-bg border border-hc-success/20 text-hc-success text-sm">
-      {{ 'USERS.SUCCESS' | translate }}
-    </div>
-  }
-
-  <!-- Error alert -->
   @if (userService.error()) {
     <div class="mb-4 p-3 rounded-lg bg-hc-error-bg border border-hc-error/30 text-hc-error text-sm">
       {{ userService.error() }}
@@ -50,66 +42,6 @@
                [placeholder]="'USERS.PH_LAST_NAME' | translate" />
         @if (form.get('lastName')?.invalid && form.get('lastName')?.touched) {
           <p class="text-hc-error text-xs mt-1">{{ 'USERS.VAL_REQUIRED' | translate }}</p>
-        }
-      </div>
-    </div>
-
-    <!-- Email -->
-    <div>
-      <label class="block text-sm font-medium text-hc-text-2 mb-1">
-        {{ 'USERS.FIELD_EMAIL' | translate }} <span class="text-hc-error">*</span>
-      </label>
-      <input formControlName="email" type="email"
-             class="w-full bg-hc-input border border-hc-border-i rounded-lg px-3 py-2
-                    text-hc-text placeholder:text-hc-text-3
-                    focus:outline-none focus:ring-2 focus:ring-hc-primary/30 focus:border-hc-primary
-                    transition-colors"
-             [placeholder]="'USERS.PH_EMAIL' | translate" />
-      @if (form.get('email')?.invalid && form.get('email')?.touched) {
-        <p class="text-hc-error text-xs mt-1">{{ 'USERS.VAL_EMAIL' | translate }}</p>
-      }
-    </div>
-
-    <!-- Password & Confirm -->
-    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-      <div>
-        <label class="block text-sm font-medium text-hc-text-2 mb-1">
-          {{ 'USERS.FIELD_PASSWORD' | translate }} <span class="text-hc-error">*</span>
-        </label>
-        <input formControlName="password" type="password"
-               class="w-full bg-hc-input border border-hc-border-i rounded-lg px-3 py-2
-                      text-hc-text placeholder:text-hc-text-3
-                      focus:outline-none focus:ring-2 focus:ring-hc-primary/30 focus:border-hc-primary
-                      transition-colors"
-               [placeholder]="'USERS.PH_PASSWORD' | translate" />
-        @if (form.get('password')?.touched) {
-          @if (form.get('password')?.hasError('required')) {
-            <p class="text-hc-error text-xs mt-1">{{ 'USERS.VAL_REQUIRED' | translate }}</p>
-          } @else if (form.get('password')?.hasError('minlength')) {
-            <p class="text-hc-error text-xs mt-1">{{ 'USERS.VAL_MIN_PW' | translate }}</p>
-          } @else if (form.get('password')?.hasError('uppercase')) {
-            <p class="text-hc-error text-xs mt-1">{{ 'USERS.VAL_UPPERCASE' | translate }}</p>
-          } @else if (form.get('password')?.hasError('number')) {
-            <p class="text-hc-error text-xs mt-1">{{ 'USERS.VAL_NUMBER' | translate }}</p>
-          }
-        }
-      </div>
-      <div>
-        <label class="block text-sm font-medium text-hc-text-2 mb-1">
-          {{ 'USERS.FIELD_CONFIRM_PASSWORD' | translate }} <span class="text-hc-error">*</span>
-        </label>
-        <input formControlName="confirmPassword" type="password"
-               class="w-full bg-hc-input border border-hc-border-i rounded-lg px-3 py-2
-                      text-hc-text placeholder:text-hc-text-3
-                      focus:outline-none focus:ring-2 focus:ring-hc-primary/30 focus:border-hc-primary
-                      transition-colors"
-               [placeholder]="'USERS.PH_CONFIRM' | translate" />
-        @if (form.get('confirmPassword')?.touched) {
-          @if (form.get('confirmPassword')?.hasError('required')) {
-            <p class="text-hc-error text-xs mt-1">{{ 'USERS.VAL_REQUIRED' | translate }}</p>
-          } @else if (form.hasError('passwordsMismatch')) {
-            <p class="text-hc-error text-xs mt-1">{{ 'USERS.VAL_PW_MISMATCH' | translate }}</p>
-          }
         }
       </div>
     </div>
@@ -172,6 +104,15 @@
       </div>
     </div>
 
+    <!-- Active -->
+    <div class="flex items-center gap-3">
+      <input formControlName="isActive" type="checkbox" id="isActive"
+             class="w-4 h-4 accent-hc-primary cursor-pointer" />
+      <label for="isActive" class="text-sm text-hc-text-2 cursor-pointer">
+        {{ 'USERS.FIELD_ACTIVE' | translate }}
+      </label>
+    </div>
+
     <!-- Roles -->
     <div>
       <label class="block text-sm font-medium text-hc-text-2 mb-2">
@@ -198,7 +139,7 @@
       }
     </div>
 
-    <!-- Submit -->
+    <!-- Actions -->
     <div class="flex gap-3 pt-2">
       <button type="submit"
               [disabled]="userService.loading()"
@@ -207,10 +148,10 @@
                      text-white font-semibold py-2.5 rounded-lg transition-colors shadow-sm">
         @if (userService.loading()) {
           <fa-icon [icon]="faSpinner" class="animate-spin" />
-          {{ 'USERS.CREATING' | translate }}
+          {{ 'USERS.SAVING' | translate }}
         } @else {
-          <fa-icon [icon]="faUserPlus" />
-          {{ 'USERS.CREATE_BTN' | translate }}
+          <fa-icon [icon]="faFloppyDisk" />
+          {{ 'USERS.SAVE_CHANGES' | translate }}
         }
       </button>
       <button type="button" (click)="cancel()"

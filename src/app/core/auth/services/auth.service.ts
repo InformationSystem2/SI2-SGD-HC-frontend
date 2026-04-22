@@ -13,20 +13,27 @@ export class AuthService {
   private http = inject(HttpClient);
   private router = inject(Router);
 
-  private _state  = signal<AuthState>({
-    accessToken: localStorage.getItem('accessToken'),
-    username: null,
-    roles: null,
-    expiresAt: Number(localStorage.getItem('expiresAt')) || null,
-    loading: false,
-    error: null,
+  private _state = signal<AuthState>((() => {
+    const accessToken = localStorage.getItem('accessToken');
+    const expiresAt   = Number(localStorage.getItem('expiresAt')) || null;
+    let username: string | null = null;
+    let roles: string[] | null  = null;
+    if (accessToken) {
+      try {
+        const payload = JSON.parse(atob(accessToken.split('.')[1]));
+        username = payload.sub   ?? null;
+        roles    = payload.roles ?? null;
+      } catch { /* token malformado */ }
+    }
+    return { accessToken, username, roles, expiresAt, loading: false, error: null };
+  })());
 
-  });
-
-  readonly accessToken = computed(() => this._state().accessToken);
+  readonly accessToken     = computed(() => this._state().accessToken);
   readonly isAuthenticated = computed(() => !!this._state().accessToken);
-  readonly isLoading = computed(() => this._state().loading);
-  readonly error = computed(() => this._state().error);
+  readonly isLoading       = computed(() => this._state().loading);
+  readonly error           = computed(() => this._state().error);
+  readonly username        = computed(() => this._state().username);
+  readonly roles           = computed(() => this._state().roles ?? []);
 
   readonly isTokenExpired = computed(() => {
     const exp = this._state().expiresAt;

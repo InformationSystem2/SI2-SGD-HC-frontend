@@ -1,2 +1,108 @@
-/* You can add global styles to this file, and also import other style files */
 @import "tailwindcss";
+
+/* Dark mode via .dark class on <html> */
+@custom-variant dark (&:where(.dark, .dark *));
+
+/*
+  Medical / Clinical Records — Design System
+  Primary: Teal (trust, health, clinical)
+  Neutrals: Slate (professional, clean)
+*/
+@theme {
+  /* Brand — Teal */
+  --color-hc-primary:      #0D9488;
+  --color-hc-primary-dark: #0F766E;
+  --color-hc-primary-50:   #F0FDFA;
+  --color-hc-primary-100:  #CCFBF1;
+
+  /* Accent — Sky blue */
+  --color-hc-accent:       #0EA5E9;
+  --color-hc-accent-dark:  #0284C7;
+
+  /* Semantic surfaces — override via CSS vars below */
+  --color-hc-app:          var(--hc-bg-app);
+  --color-hc-surface:      var(--hc-bg-surface);
+  --color-hc-card:         var(--hc-bg-card);
+  --color-hc-muted:        var(--hc-bg-muted);
+  --color-hc-hover:        var(--hc-bg-hover);
+  --color-hc-input:        var(--hc-bg-input);
+  --color-hc-sidebar:      var(--hc-bg-sidebar);
+  --color-hc-navbar:       var(--hc-bg-navbar);
+
+  /* Semantic borders */
+  --color-hc-border:       var(--hc-border);
+  --color-hc-border-i:     var(--hc-border-input);
+
+  /* Semantic text */
+  --color-hc-text:         var(--hc-text-primary);
+  --color-hc-text-2:       var(--hc-text-secondary);
+  --color-hc-text-3:       var(--hc-text-muted);
+  --color-hc-on-primary:   #FFFFFF;
+
+  /* Status */
+  --color-hc-success:      #10B981;
+  --color-hc-success-bg:   #ECFDF5;
+  --color-hc-error:        #EF4444;
+  --color-hc-error-bg:     #FEF2F2;
+  --color-hc-warning:      #F59E0B;
+  --color-hc-warning-bg:   #FFFBEB;
+  --color-hc-info:         #3B82F6;
+  --color-hc-info-bg:      #EFF6FF;
+}
+
+/* ─── Light Theme (default) ─────────────────────────── */
+:root {
+  --hc-bg-app:        #F0F9FF;
+  --hc-bg-surface:    #FFFFFF;
+  --hc-bg-sidebar:    #FFFFFF;
+  --hc-bg-navbar:     #FFFFFF;
+  --hc-bg-card:       #FFFFFF;
+  --hc-bg-muted:      #F8FAFC;
+  --hc-bg-hover:      #F0FDFA;
+  --hc-bg-input:      #FFFFFF;
+  --hc-border:        #E2E8F0;
+  --hc-border-input:  #CBD5E1;
+  --hc-text-primary:  #0F172A;
+  --hc-text-secondary:#475569;
+  --hc-text-muted:    #94A3B8;
+}
+
+/* ─── Dark Theme ─────────────────────────────────────── */
+.dark {
+  --hc-bg-app:        #020C18;
+  --hc-bg-surface:    #0A1628;
+  --hc-bg-sidebar:    #0C1A30;
+  --hc-bg-navbar:     #0C1A30;
+  --hc-bg-card:       #112240;
+  --hc-bg-muted:      #172B4D;
+  --hc-bg-hover:      #1A3360;
+  --hc-bg-input:      #172B4D;
+  --hc-border:        #1E3A5F;
+  --hc-border-input:  #2A4A73;
+  --hc-text-primary:  #E2EBF4;
+  --hc-text-secondary:#9EB4CC;
+  --hc-text-muted:    #5A7FA0;
+}
+
+/* ─── Base styles ────────────────────────────────────── */
+html, body {
+  height: 100%;
+}
+
+body {
+  background-color: var(--hc-bg-app);
+  color: var(--hc-text-primary);
+  transition: background-color 0.2s ease, color 0.2s ease;
+}
+
+/* Smooth transitions for theme switching */
+*, *::before, *::after {
+  transition-property: background-color, border-color, color;
+  transition-duration: 150ms;
+  transition-timing-function: ease;
+}
+
+/* Override for elements that should NOT transition (animations, transforms) */
+.no-transition {
+  transition: none !important;
+}

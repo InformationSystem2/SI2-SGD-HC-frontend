@@ -1,85 +1,123 @@
-
 <div class="space-y-4">
 
-  <!-- Cabecera -->
+  <!-- Header -->
   <div class="flex items-center justify-between">
-    <h2 class="text-xl font-semibold text-white flex items-center gap-2">
-      <fa-icon [icon]="faUsers" />
-      Usuarios
+    <h2 class="text-xl font-semibold text-hc-text flex items-center gap-2">
+      <fa-icon [icon]="faUsers" class="text-hc-primary" />
+      {{ 'USERS.TITLE' | translate }}
     </h2>
     <button
       (click)="goToRegister()"
-      class="flex items-center gap-2 px-4 py-2 bg-orange-500 hover:bg-orange-600
-             text-white text-sm font-medium rounded-md transition-colors"
+      class="flex items-center gap-2 px-4 py-2 bg-hc-primary hover:bg-hc-primary-dark
+             text-white text-sm font-medium rounded-lg transition-colors shadow-sm"
     >
       <fa-icon [icon]="faUserPlus" />
-      Nuevo usuario
+      {{ 'USERS.NEW_USER' | translate }}
     </button>
   </div>
 
   <!-- Error -->
   @if (userService.error()) {
-    <div class="p-3 rounded-md bg-red-600/20 border border-red-500 text-red-400 text-sm">
+    <div class="p-3 rounded-lg bg-hc-error-bg border border-hc-error/30 text-hc-error text-sm">
       {{ userService.error() }}
     </div>
   }
 
   <!-- Loading -->
   @if (userService.loading()) {
-    <div class="flex justify-center py-12 text-slate-400">
-      <fa-icon [icon]="faSpinner" class="animate-spin text-2xl" />
+    <div class="flex justify-center py-12 text-hc-text-3">
+      <fa-icon [icon]="faSpinner" class="animate-spin text-2xl text-hc-primary" />
     </div>
   }
 
-  <!-- Tabla -->
+  <!-- Table -->
   @if (!userService.loading()) {
-    <div class="bg-slate-800 rounded-xl border border-slate-700 overflow-hidden">
-      <table class="w-full text-sm">
+    <div class="bg-hc-card rounded-xl border border-hc-border overflow-hidden shadow-sm overflow-x-auto">
+      <table class="w-full text-sm min-w-[640px]">
         <thead>
-          <tr class="border-b border-slate-700 text-slate-400 text-left">
-            <th class="px-4 py-3 font-medium">#</th>
-            <th class="px-4 py-3 font-medium">Nombre</th>
-            <th class="px-4 py-3 font-medium">Email</th>
-            <th class="px-4 py-3 font-medium">Roles</th>
-            <th class="px-4 py-3 font-medium">Estado</th>
+          <tr class="border-b border-hc-border bg-hc-muted text-hc-text-3 text-left">
+            <th class="px-4 py-3 font-semibold">{{ 'USERS.COL_ID' | translate }}</th>
+            <th class="px-4 py-3 font-semibold">{{ 'USERS.COL_NAME' | translate }}</th>
+            <th class="px-4 py-3 font-semibold">{{ 'USERS.COL_EMAIL' | translate }}</th>
+            <th class="px-4 py-3 font-semibold">{{ 'USERS.COL_ROLES' | translate }}</th>
+            <th class="px-4 py-3 font-semibold">{{ 'USERS.COL_STATUS' | translate }}</th>
+            <th class="px-4 py-3 font-semibold text-right">{{ 'USERS.COL_ACTIONS' | translate }}</th>
           </tr>
         </thead>
         <tbody>
           @for (user of userService.users(); track user.id) {
-            <tr class="border-b border-slate-700/50 hover:bg-slate-700/30 transition-colors">
-              <td class="px-4 py-3 text-slate-500">{{ user.id }}</td>
-              <td class="px-4 py-3 text-white font-medium">
+            <tr class="border-b border-hc-border/50 hover:bg-hc-hover transition-colors">
+              <td class="px-4 py-3 text-hc-text-3 font-mono text-xs">{{ user.id }}</td>
+              <td class="px-4 py-3 text-hc-text font-medium">
                 {{ user.firstName }} {{ user.lastName }}
               </td>
-              <td class="px-4 py-3 text-slate-300">{{ user.email }}</td>
+              <td class="px-4 py-3 text-hc-text-2">{{ user.email }}</td>
               <td class="px-4 py-3">
                 <div class="flex flex-wrap gap-1">
-                  @for (role of user.roles; track role.id) {
+                  @for (name of getRoleNames(user.rolesIds); track name) {
                     <span class="px-2 py-0.5 rounded-full text-xs
-                                 bg-orange-500/10 text-orange-400 border border-orange-500/20">
-                      {{ role.name }}
+                                 bg-hc-primary-100 text-hc-primary-dark border border-hc-primary/20 font-medium">
+                      {{ name }}
                     </span>
                   }
                 </div>
               </td>
               <td class="px-4 py-3">
-                @if (user.active) {
-                  <span class="flex items-center gap-1 text-green-400 text-xs">
+                @if (user.isActive) {
+                  <span class="flex items-center gap-1.5 text-hc-success text-xs font-medium">
                     <fa-icon [icon]="faCircleCheck" />
-                    Activo
+                    {{ 'USERS.STATUS_ACTIVE' | translate }}
                   </span>
                 } @else {
-                  <span class="flex items-center gap-1 text-slate-500 text-xs">
+                  <span class="flex items-center gap-1.5 text-hc-text-3 text-xs">
                     <fa-icon [icon]="faCircleXmark" />
-                    Inactivo
+                    {{ 'USERS.STATUS_INACTIVE' | translate }}
                   </span>
                 }
+              </td>
+              <td class="px-4 py-3 text-right">
+                <div class="flex items-center justify-end gap-1.5">
+                  <button
+                    (click)="goToDetail(user.id)"
+                    class="p-1.5 rounded-md bg-hc-muted hover:bg-hc-primary/10 hover:text-hc-primary
+                           text-hc-text-2 transition-colors"
+                    [title]="'USERS.VIEW' | translate"
+                  >
+                    <fa-icon [icon]="faEye" />
+                  </button>
+                  <button
+                    (click)="goToEdit(user.id)"
+                    class="p-1.5 rounded-md bg-hc-muted hover:bg-hc-primary hover:text-white
+                           text-hc-text-2 transition-colors"
+                    [title]="'USERS.EDIT' | translate"
+                  >
+                    <fa-icon [icon]="faPencil" />
+                  </button>
+                  @if (isSuperuser()) {
+                    <button
+                      (click)="goToPassword(user.id)"
+                      class="p-1.5 rounded-md bg-hc-muted hover:bg-amber-500 hover:text-white
+                             text-hc-text-2 transition-colors"
+                      [title]="'USERS.CHANGE_PASSWORD' | translate"
+                    >
+                      <fa-icon [icon]="faKey" />
+                    </button>
+                  }
+                  <button
+                    (click)="delete(user.id)"
+                    class="p-1.5 rounded-md bg-hc-muted hover:bg-hc-error hover:text-white
+                           text-hc-text-2 transition-colors"
+                    [title]="'USERS.DELETE' | translate"
+                  >
+                    <fa-icon [icon]="faTrash" />
+                  </button>
+                </div>
               </td>
             </tr>
           } @empty {
             <tr>
-              <td colspan="5" class="px-4 py-8 text-center text-slate-500">
-                No hay usuarios registrados.
+              <td colspan="6" class="px-4 py-10 text-center text-hc-text-3">
+                {{ 'USERS.EMPTY' | translate }}
               </td>
             </tr>
           }

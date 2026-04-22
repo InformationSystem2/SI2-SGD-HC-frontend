@@ -21,13 +21,11 @@ import { UserService } from '../../services/user.service';
 import { faSpinner, faUserPlus } from '@fortawesome/free-solid-svg-icons';
 import { CreateUserRequest } from '../../models/user.model';
 import { RolesService } from '../../../roles/services/roles.service';
+import { TranslatePipe } from '@ngx-translate/core';
 
 @Component({
   selector: 'app-user-register',
-  imports: [
-    ReactiveFormsModule,
-    FontAwesomeModule,
-  ],
+  imports: [ReactiveFormsModule, FontAwesomeModule, TranslatePipe],
   templateUrl: './user-register.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
@@ -97,7 +95,6 @@ export class UserRegister implements OnInit {
       email:      required.email!,
       password:   required.password!,
       rolesIds:   required.rolesIds!,
-      // solo incluir opcionales si tienen valor
       ...(documentType   ? { documentType }   : {}),
       ...(documentNumber ? { documentNumber } : {}),
       ...(phone          ? { phone }          : {}),
@@ -106,9 +103,11 @@ export class UserRegister implements OnInit {
 
     this.userService.createUser(payload).subscribe(() => {
       this.form.reset();
-      this.router.navigate(['/dashboard/usuarios']);
+      this.router.navigate(['/usuarios/list']);
     });
   }
 
-
+  cancel(): void {
+    this.router.navigate(['/usuarios/list']);
+  }
 }

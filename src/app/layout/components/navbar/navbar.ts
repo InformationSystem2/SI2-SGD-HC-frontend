@@ -1,15 +1,27 @@
 import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
-import { faRightFromBracket } from '@fortawesome/free-solid-svg-icons';
+import { faBars, faRightFromBracket, faMoon, faSun, faLanguage } from '@fortawesome/free-solid-svg-icons';
 import { AuthService } from '../../../core/auth/services/auth.service';
+import { ThemeService } from '../../../core/services/theme.service';
+import { LanguageService } from '../../../core/services/language.service';
+import { SidebarService } from '../sidebar/services/sidebar.service';
+import { TranslatePipe } from '@ngx-translate/core';
 
 @Component({
   selector: 'app-navbar',
-  imports: [FontAwesomeModule],
+  imports: [FontAwesomeModule, TranslatePipe],
   templateUrl: './navbar.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class Navbar {
-  readonly authService = inject(AuthService);
-  readonly faLogout = faRightFromBracket;
+  readonly authService    = inject(AuthService);
+  readonly themeService   = inject(ThemeService);
+  readonly langService    = inject(LanguageService);
+  readonly sidebarService = inject(SidebarService);
+
+  readonly faLogout   = faRightFromBracket;
+  readonly faMoon     = faMoon;
+  readonly faSun      = faSun;
+  readonly faLanguage = faLanguage;
+  readonly faBars     = faBars;
 }
