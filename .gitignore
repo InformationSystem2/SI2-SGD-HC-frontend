@@ -19,6 +19,7 @@ yarn-error.log
 *.launch
 .settings/
 *.sublime-workspace
+.claude/
 
 # Visual Studio Code
 .vscode/*
@@ -46,5 +47,3 @@ Thumbs.db
 
 # brayan
 ayudas-copilot
-
-.claude
