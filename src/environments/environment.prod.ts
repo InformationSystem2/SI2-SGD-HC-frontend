@@ -1,4 +1,4 @@
 export const environment = {
   production: true,
-  apiUrl: 'API_URL'
+  apiUrl: 'https://medical-records-cafpc3d3byerfwfr.brazilsouth-01.azurewebsites.net/api'
 };
