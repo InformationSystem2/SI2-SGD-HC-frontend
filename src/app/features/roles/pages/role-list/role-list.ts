@@ -37,11 +37,11 @@ export class RoleList implements OnInit{
     this.router.navigate(['/roles/form']);
   }
 
-  goToEdit(id: number): void {
+  goToEdit(id: string): void {
     this.router.navigate(['/roles/form', id]);
   }
 
-  delete(id: number): void {
+  delete(id: string): void {
     if (!confirm('¿Eliminar este rol?')) return;
     this.rolesService.deleteRole(id).subscribe();
   }

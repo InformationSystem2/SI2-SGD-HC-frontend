@@ -1,6 +1,6 @@
 import { HttpClient } from '@angular/common/http';
 import { inject, Injectable, signal } from '@angular/core';
-import { CreateUserRequest, CreateUserResponse, UpdateUserRequest, User } from '../models/user.model';
+import { CreateUserRequest, UpdateUserRequest, User } from '../models/user.model';
 import { environment } from '../../../../environments/environment';
 import { catchError, EMPTY, tap } from 'rxjs';
 
@@ -33,7 +33,7 @@ export class UserService {
     );
   }
 
-  getUser(id: number) {
+  getUser(id: string) {
     return this.http.get<User>(`${this.BASE}/${id}`);
   }
 
@@ -42,7 +42,7 @@ export class UserService {
     this.error.set(null);
     this.success.set(false);
 
-    return this.http.post<CreateUserResponse>(this.BASE, data).pipe(
+    return this.http.post<User>(this.BASE, data).pipe(
       tap(() => {
         this.loading.set(false);
         this.success.set(true);
@@ -55,7 +55,7 @@ export class UserService {
     );
   }
 
-  updateUser(id: number, data: UpdateUserRequest) {
+  updateUser(id: string, data: UpdateUserRequest) {
     this.loading.set(true);
     this.error.set(null);
     this.success.set(false);
@@ -74,7 +74,7 @@ export class UserService {
     );
   }
 
-  deleteUser(id: number) {
+  deleteUser(id: string) {
     this.loading.set(true);
     this.error.set(null);
 

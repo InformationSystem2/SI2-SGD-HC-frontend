@@ -31,10 +31,10 @@ export class Register {
   readonly auth = inject(AuthService);
 
   readonly hidePassword = signal(true);
-  readonly documentTypes = ['CI', 'PASSPORT', 'OTHER'];
+  readonly documentTypes = ['CI', 'PASAPORTE'];
   readonly genders = [
-    { value: 'male',   label: 'Masculino' },
-    { value: 'female', label: 'Femenino'  },
+    { value: 'MALE',   label: 'Masculino' },
+    { value: 'FEMALE', label: 'Femenino'  },
   ];
 
   protected form = this.fb.group(

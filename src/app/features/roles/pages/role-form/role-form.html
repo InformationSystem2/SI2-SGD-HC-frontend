@@ -50,9 +50,9 @@
     <!-- Active (edit only) -->
     @if (isEdit()) {
       <div class="flex items-center gap-3">
-        <input formControlName="active" type="checkbox" id="active"
+        <input formControlName="isActive" type="checkbox" id="isActive"
                class="w-4 h-4 accent-hc-primary cursor-pointer" />
-        <label for="active" class="text-sm text-hc-text-2 cursor-pointer">
+        <label for="isActive" class="text-sm text-hc-text-2 cursor-pointer">
           {{ 'ROLES.FIELD_ACTIVE' | translate }}
         </label>
       </div>

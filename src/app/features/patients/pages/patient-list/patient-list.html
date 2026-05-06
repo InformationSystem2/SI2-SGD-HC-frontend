@@ -38,9 +38,9 @@
           <tr class="border-b border-hc-border bg-hc-muted text-hc-text-3 text-left">
             <th class="px-4 py-3 font-semibold">{{ 'PATIENTS.COL_ID' | translate }}</th>
             <th class="px-4 py-3 font-semibold">{{ 'PATIENTS.COL_NAME' | translate }}</th>
-            <th class="px-4 py-3 font-semibold">{{ 'PATIENTS.COL_EMAIL' | translate }}</th>
+            <th class="px-4 py-3 font-semibold">{{ 'PATIENTS.COL_GENDER' | translate }}</th>
             <th class="px-4 py-3 font-semibold">{{ 'PATIENTS.COL_BIRTH_DATE' | translate }}</th>
-            <th class="px-4 py-3 font-semibold">{{ 'PATIENTS.COL_STATUS' | translate }}</th>
+            <th class="px-4 py-3 font-semibold">{{ 'PATIENTS.COL_PHONE' | translate }}</th>
             <th class="px-4 py-3 font-semibold text-right">{{ 'PATIENTS.COL_ACTIONS' | translate }}</th>
           </tr>
         </thead>
@@ -51,21 +51,9 @@
               <td class="px-4 py-3 text-hc-text font-medium">
                 {{ patient.firstName }} {{ patient.lastName }}
               </td>
-              <td class="px-4 py-3 text-hc-text-2">{{ patient.email }}</td>
+              <td class="px-4 py-3 text-hc-text-2">{{ patient.gender ?? '—' }}</td>
               <td class="px-4 py-3 text-hc-text-2">{{ patient.birthDate ?? '—' }}</td>
-              <td class="px-4 py-3">
-                @if (patient.isActive) {
-                  <span class="flex items-center gap-1.5 text-hc-success text-xs font-medium">
-                    <fa-icon [icon]="faCircleCheck" />
-                    {{ 'PATIENTS.STATUS_ACTIVE' | translate }}
-                  </span>
-                } @else {
-                  <span class="flex items-center gap-1.5 text-hc-text-3 text-xs">
-                    <fa-icon [icon]="faCircleXmark" />
-                    {{ 'PATIENTS.STATUS_INACTIVE' | translate }}
-                  </span>
-                }
-              </td>
+              <td class="px-4 py-3 text-hc-text-2">{{ patient.phone ?? '—' }}</td>
               <td class="px-4 py-3 text-right">
                 <div class="flex items-center justify-end gap-1.5">
                   <button

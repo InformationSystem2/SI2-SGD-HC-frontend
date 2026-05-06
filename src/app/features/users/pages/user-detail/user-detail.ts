@@ -39,7 +39,7 @@ export class UserDetail implements OnInit {
   readonly error   = signal<string | null>(null);
 
   ngOnInit(): void {
-    const id = Number(this.route.snapshot.paramMap.get('id'));
+    const id = this.route.snapshot.paramMap.get('id')!;
     this.rolesService.loadRoles().subscribe();
     this.userService.getUser(id).subscribe({
       next:  u  => { this.user.set(u); this.loading.set(false); },
@@ -47,7 +47,7 @@ export class UserDetail implements OnInit {
     });
   }
 
-  getRoleNames(ids: number[]): string[] {
+  getRoleNames(ids: string[]): string[] {
     return (ids ?? []).map(id => {
       const role = this.rolesService.roles().find(r => r.id === id);
       return role?.name ?? `#${id}`;
