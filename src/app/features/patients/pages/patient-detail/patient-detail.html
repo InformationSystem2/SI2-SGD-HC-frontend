@@ -27,11 +27,7 @@
       </div>
       <div>
         <h2 class="text-xl font-semibold text-hc-text">{{ p.firstName }} {{ p.lastName }}</h2>
-        <p class="text-sm text-hc-text-3">{{ p.username }}</p>
-        <span [class]="'mt-1 inline-block px-2 py-0.5 rounded-full text-xs font-medium ' +
-                       (p.isActive ? 'bg-hc-success/10 text-hc-success' : 'bg-hc-muted text-hc-text-3')">
-          {{ (p.isActive ? 'PATIENTS.STATUS_ACTIVE' : 'PATIENTS.STATUS_INACTIVE') | translate }}
-        </span>
+        <p class="text-sm text-hc-text-3">{{ p.documentType }} {{ p.documentNumber }}</p>
       </div>
     </div>
 
@@ -43,12 +39,12 @@
       </h3>
       <dl class="grid grid-cols-1 sm:grid-cols-2 gap-4">
         <div>
-          <dt class="text-xs text-hc-text-3">{{ 'PATIENTS.FIELD_EMAIL' | translate }}</dt>
-          <dd class="text-sm text-hc-text mt-0.5">{{ p.email }}</dd>
-        </div>
-        <div>
           <dt class="text-xs text-hc-text-3">{{ 'PATIENTS.FIELD_BIRTH_DATE' | translate }}</dt>
           <dd class="text-sm text-hc-text mt-0.5">{{ p.birthDate ?? '—' }}</dd>
+        </div>
+        <div>
+          <dt class="text-xs text-hc-text-3">{{ 'PATIENTS.FIELD_ADDRESS' | translate }}</dt>
+          <dd class="text-sm text-hc-text mt-0.5">{{ p.address ?? '—' }}</dd>
         </div>
         <div>
           <dt class="text-xs text-hc-text-3">{{ 'PATIENTS.FIELD_GENDER' | translate }}</dt>

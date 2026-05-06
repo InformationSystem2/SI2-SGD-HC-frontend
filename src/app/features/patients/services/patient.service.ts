@@ -32,7 +32,7 @@ export class PatientService {
     );
   }
 
-  getPatient(id: number) {
+  getPatient(id: string) {
     return this.http.get<Patient>(`${this.BASE}/${id}`);
   }
 
@@ -54,7 +54,7 @@ export class PatientService {
     );
   }
 
-  updatePatient(id: number, data: UpdatePatientRequest) {
+  updatePatient(id: string, data: UpdatePatientRequest) {
     this.loading.set(true);
     this.error.set(null);
     this.success.set(false);
@@ -73,7 +73,7 @@ export class PatientService {
     );
   }
 
-  deletePatient(id: number) {
+  deletePatient(id: string) {
     this.loading.set(true);
     this.error.set(null);
 

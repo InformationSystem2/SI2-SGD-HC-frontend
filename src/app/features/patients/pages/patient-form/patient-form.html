@@ -118,25 +118,16 @@
         </div>
       </div>
 
-      <!-- Active -->
-      <div class="flex items-center gap-3">
-        <input formControlName="isActive" type="checkbox" id="isActive"
-               class="w-4 h-4 rounded border-hc-border-i accent-hc-primary" />
-        <label for="isActive" class="text-sm font-medium text-hc-text-2">
-          {{ 'PATIENTS.FIELD_ACTIVE' | translate }}
-        </label>
-      </div>
-
-      <!-- New password (optional) -->
+      <!-- Address -->
       <div>
         <label class="block text-sm font-medium text-hc-text-2 mb-1">
-          {{ 'PATIENTS.FIELD_NEW_PASSWORD' | translate }}
+          {{ 'PATIENTS.FIELD_ADDRESS' | translate }}
         </label>
-        <input formControlName="password" type="password"
+        <input formControlName="address" type="text"
                class="w-full bg-hc-input border border-hc-border-i rounded-lg px-3 py-2
                       text-hc-text placeholder:text-hc-text-3
                       focus:outline-none focus:ring-2 focus:ring-hc-primary/30 focus:border-hc-primary transition-colors"
-               placeholder="Dejar en blanco para mantener" />
+               [placeholder]="'PATIENTS.PH_ADDRESS' | translate" />
       </div>
 
       <!-- Actions -->

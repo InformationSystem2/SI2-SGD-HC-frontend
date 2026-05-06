@@ -1,20 +1,20 @@
 export interface Role {
-  id:             number;
+  id:             string;
   name:           string;
   description:    string;
-  active:         boolean;
-  permissionsIds: number[];
+  isActive:       boolean;
+  permissionsIds: string[];
 }
 
 export interface CreateRoleRequest {
   name:           string;
   description:    string;
-  permissionsIds: number[];
+  permissionsIds: string[];
 }
 
 export interface UpdateRoleRequest {
   name:           string;
   description:    string;
-  active:         boolean;
-  permissionsIds: number[];
+  isActive:       boolean;
+  permissionsIds: string[];
 }

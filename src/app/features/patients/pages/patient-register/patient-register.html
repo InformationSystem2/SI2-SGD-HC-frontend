@@ -50,59 +50,6 @@
       </div>
     </div>
 
-    <!-- Email -->
-    <div>
-      <label class="block text-sm font-medium text-hc-text-2 mb-1">
-        {{ 'PATIENTS.FIELD_EMAIL' | translate }} <span class="text-hc-error">*</span>
-      </label>
-      <input formControlName="email" type="email"
-             class="w-full bg-hc-input border border-hc-border-i rounded-lg px-3 py-2
-                    text-hc-text placeholder:text-hc-text-3
-                    focus:outline-none focus:ring-2 focus:ring-hc-primary/30 focus:border-hc-primary transition-colors"
-             placeholder="paciente@email.com" />
-      @if (form.get('email')?.invalid && form.get('email')?.touched) {
-        <p class="text-hc-error text-xs mt-1">{{ 'PATIENTS.VAL_EMAIL' | translate }}</p>
-      }
-    </div>
-
-    <!-- Password & Confirm -->
-    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-      <div>
-        <label class="block text-sm font-medium text-hc-text-2 mb-1">
-          {{ 'PATIENTS.FIELD_PASSWORD' | translate }} <span class="text-hc-error">*</span>
-        </label>
-        <input formControlName="password" type="password"
-               class="w-full bg-hc-input border border-hc-border-i rounded-lg px-3 py-2
-                      text-hc-text placeholder:text-hc-text-3
-                      focus:outline-none focus:ring-2 focus:ring-hc-primary/30 focus:border-hc-primary transition-colors"
-               placeholder="••••••••" />
-        @if (form.get('password')?.touched) {
-          @if (form.get('password')?.hasError('required')) {
-            <p class="text-hc-error text-xs mt-1">{{ 'PATIENTS.VAL_REQUIRED' | translate }}</p>
-          } @else if (form.get('password')?.hasError('minlength')) {
-            <p class="text-hc-error text-xs mt-1">{{ 'PATIENTS.VAL_MIN_PW' | translate }}</p>
-          } @else if (form.get('password')?.hasError('uppercase')) {
-            <p class="text-hc-error text-xs mt-1">{{ 'PATIENTS.VAL_UPPERCASE' | translate }}</p>
-          } @else if (form.get('password')?.hasError('number')) {
-            <p class="text-hc-error text-xs mt-1">{{ 'PATIENTS.VAL_NUMBER' | translate }}</p>
-          }
-        }
-      </div>
-      <div>
-        <label class="block text-sm font-medium text-hc-text-2 mb-1">
-          {{ 'PATIENTS.FIELD_CONFIRM_PASSWORD' | translate }} <span class="text-hc-error">*</span>
-        </label>
-        <input formControlName="confirmPassword" type="password"
-               class="w-full bg-hc-input border border-hc-border-i rounded-lg px-3 py-2
-                      text-hc-text placeholder:text-hc-text-3
-                      focus:outline-none focus:ring-2 focus:ring-hc-primary/30 focus:border-hc-primary transition-colors"
-               placeholder="••••••••" />
-        @if (form.get('confirmPassword')?.touched && form.hasError('passwordsMismatch')) {
-          <p class="text-hc-error text-xs mt-1">{{ 'PATIENTS.VAL_PW_MISMATCH' | translate }}</p>
-        }
-      </div>
-    </div>
-
     <!-- Birth date -->
     <div>
       <label class="block text-sm font-medium text-hc-text-2 mb-1">
@@ -168,6 +115,18 @@
           }
         </select>
       </div>
+    </div>
+
+    <!-- Address -->
+    <div>
+      <label class="block text-sm font-medium text-hc-text-2 mb-1">
+        {{ 'PATIENTS.FIELD_ADDRESS' | translate }}
+      </label>
+      <input formControlName="address" type="text"
+             class="w-full bg-hc-input border border-hc-border-i rounded-lg px-3 py-2
+                    text-hc-text placeholder:text-hc-text-3
+                    focus:outline-none focus:ring-2 focus:ring-hc-primary/30 focus:border-hc-primary transition-colors"
+             [placeholder]="'PATIENTS.PH_ADDRESS' | translate" />
     </div>
 
     <!-- Actions -->

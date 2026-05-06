@@ -27,10 +27,10 @@ export class RoleForm implements OnInit {
   readonly faSpinner      = faSpinner;
   readonly faFloppyDisk   = faFloppyDisk;
 
-  readonly editId = signal<number | null>(null);
+  readonly editId = signal<string | null>(null);
   readonly isEdit = signal(false);
 
-  readonly selectedPermissionIds = signal<number[]>([]);
+  readonly selectedPermissionIds = signal<string[]>([]);
 
   readonly permissionsByModule = computed(() => {
     const groups: Record<string, Permission[]> = {};
@@ -46,7 +46,7 @@ export class RoleForm implements OnInit {
   form = this.fb.group({
     name:        ['', Validators.required],
     description: ['', Validators.required],
-    active:      [true],
+    isActive:    [true],
   });
 
   ngOnInit(): void {
@@ -54,22 +54,21 @@ export class RoleForm implements OnInit {
 
     const id = this.route.snapshot.paramMap.get('id');
     if (id) {
-      const numId = Number(id);
-      this.editId.set(numId);
+      this.editId.set(id);
       this.isEdit.set(true);
 
-      this.rolesService.getRole(numId).subscribe(role => {
+      this.rolesService.getRole(id).subscribe(role => {
         this.form.patchValue({
           name:        role.name,
           description: role.description,
-          active:      role.active,
+          isActive:    role.isActive,
         });
         this.selectedPermissionIds.set(role.permissionsIds ?? []);
       });
     }
   }
 
-  togglePermission(id: number): void {
+  togglePermission(id: string): void {
     this.selectedPermissionIds.update(current =>
       current.includes(id)
         ? current.filter(p => p !== id)
@@ -77,7 +76,7 @@ export class RoleForm implements OnInit {
     );
   }
 
-  isPermissionSelected(id: number): boolean {
+  isPermissionSelected(id: string): boolean {
     return this.selectedPermissionIds().includes(id);
   }
 
@@ -87,7 +86,7 @@ export class RoleForm implements OnInit {
       return;
     }
 
-    const { name, description, active } = this.form.value;
+    const { name, description, isActive } = this.form.value;
     const permissionsIds = this.selectedPermissionIds();
 
     if (this.isEdit()) {
@@ -95,7 +94,7 @@ export class RoleForm implements OnInit {
         .updateRole(this.editId()!, {
           name:        name!,
           description: description!,
-          active:      active!,
+          isActive:    isActive!,
           permissionsIds,
         })
         .subscribe(() => this.router.navigate(['/roles/list']));

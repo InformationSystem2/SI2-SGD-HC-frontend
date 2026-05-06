@@ -1,38 +1,31 @@
-export type DocumentType = 'CI' | 'PASSPORT' | 'OTHER';
-export type Gender       = 'male' | 'female';
+export type DocumentType = 'CI' | 'PASAPORTE';
+export type Gender       = 'MALE' | 'FEMALE';
 
 export interface CreateUserRequest {
+  documentType?:   string;
+  documentNumber?: string;
   email:           string;
   firstName:       string;
   lastName:        string;
   password:        string;
-  rolesIds:        number[];
-  documentType?:   string;
-  documentNumber?: string;
   phone?:          string;
   gender?:         string;
+  rolesIds:        string[];
 }
 
 export interface UpdateUserRequest {
-  firstName:       string;
-  lastName:        string;
-  isActive:        boolean;
-  rolesIds:        number[];
   documentType?:   string;
   documentNumber?: string;
-  phone?:          string;
+  firstName:       string;
+  lastName:        string;
   password?:       string;
-}
-
-export interface CreateUserResponse {
-  id:        number;
-  email:     string;
-  firstName: string;
-  lastName:  string;
+  phone?:          string;
+  isActive:        boolean;
+  rolesIds:        string[];
 }
 
 export interface User {
-  id:              number;
+  id:              string;
   username:        string;
   email:           string;
   firstName:       string;
@@ -42,5 +35,5 @@ export interface User {
   documentNumber?: string;
   gender?:         string;
   isActive:        boolean;
-  rolesIds:        number[];
+  rolesIds:        string[];
 }

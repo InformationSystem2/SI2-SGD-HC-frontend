@@ -27,7 +27,7 @@ export class PatientDetail implements OnInit {
   readonly patient  = signal<Patient | null>(null);
 
   ngOnInit(): void {
-    const id = Number(this.route.snapshot.paramMap.get('id'));
+    const id = this.route.snapshot.paramMap.get('id')!;
     this.loading.set(true);
 
     this.patientService.getPatient(id).subscribe({

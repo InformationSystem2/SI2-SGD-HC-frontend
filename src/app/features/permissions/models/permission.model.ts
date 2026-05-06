@@ -1,8 +1,8 @@
 export interface Permission {
-  id:          number;
+  id:          string;
   name:        string;
   module:      string;
   action:      string;
   description: string;
-  active:      boolean;
+  isActive:    boolean;
 }

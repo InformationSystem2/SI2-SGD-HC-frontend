@@ -4,5 +4,17 @@
             "externalTemplate": true,
             "skipStyle": true
         }
-    }
+    },
+    "sqltools.connections": [
+        {
+            "ssh": "Disabled",
+            "previewLimit": 50,
+            "server": "uagrm-si2.postgres.database.azure.com",
+            "port": 5432,
+            "driver": "PostgreSQL",
+            "name": "Prueba",
+            "database": "postgres",
+            "username": "admin_mecanico"
+        }
+    ]
 }

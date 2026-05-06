@@ -48,7 +48,7 @@
               <td class="px-4 py-3 text-hc-text font-medium">{{ role.name }}</td>
               <td class="px-4 py-3 text-hc-text-2">{{ role.description }}</td>
               <td class="px-4 py-3">
-                @if (role.active) {
+                @if (role.isActive) {
                   <span class="px-2.5 py-0.5 rounded-full text-xs font-medium
                                bg-hc-success-bg text-hc-success border border-hc-success/20">
                     {{ 'ROLES.STATUS_ACTIVE' | translate }}

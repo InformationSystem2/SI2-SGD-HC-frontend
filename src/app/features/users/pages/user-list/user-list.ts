@@ -42,7 +42,7 @@ export class UserList implements OnInit {
     this.rolesService.loadRoles().subscribe();
   }
 
-  getRoleNames(ids: number[]): string[] {
+  getRoleNames(ids: string[]): string[] {
     return (ids ?? []).map(id => {
       const role = this.rolesService.roles().find(r => r.id === id);
       return role?.name ?? `#${id}`;
@@ -53,19 +53,19 @@ export class UserList implements OnInit {
     this.router.navigate(['/usuarios/register']);
   }
 
-  goToDetail(id: number): void {
+  goToDetail(id: string): void {
     this.router.navigate(['/usuarios/detail', id]);
   }
 
-  goToEdit(id: number): void {
+  goToEdit(id: string): void {
     this.router.navigate(['/usuarios/form', id]);
   }
 
-  goToPassword(id: number): void {
+  goToPassword(id: string): void {
     this.router.navigate(['/usuarios/password', id]);
   }
 
-  delete(id: number): void {
+  delete(id: string): void {
     if (!confirm('¿Eliminar este usuario?')) return;
     this.userService.deleteUser(id).subscribe();
   }
