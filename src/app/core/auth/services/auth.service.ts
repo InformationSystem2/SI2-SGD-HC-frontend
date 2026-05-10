@@ -58,6 +58,7 @@ export class AuthService {
         const payload = this.decodeToken(response.accessToken);
 
         localStorage.setItem('accessToken', response.accessToken);
+        localStorage.setItem('tenantSlug', payload.tenantSlug || '');
         localStorage.setItem('expiresAt', String(Date.now() + response.expiresIn));
 
         this._state.set({
@@ -72,7 +73,7 @@ export class AuthService {
         this.router.navigate(['/dashboard']);
       }),
       catchError( err => {
-        const message = err.error?.message ?? 'credenciales incorrectas';
+        const message = err.error?.message ?? 'ERRORS.LOGIN_FAILED';
         this._state.update( s => ({ ...s, loading: false, error: message }));
         return EMPTY;
       })
@@ -80,27 +81,10 @@ export class AuthService {
   }
 
 
-  register(data: {
-    email: string; firstName: string; lastName: string; password: string;
-    documentType?: string; documentNumber?: string; phone?: string; gender?: string;
-  }) {
-    this._state.update(s => ({ ...s, loading: true, error: null }));
-
-    return this.http.post<void>(`${environment.apiUrl}/auth/register`, data).pipe(
-      tap(() => {
-        this._state.update(s => ({ ...s, loading: false }));
-        this.router.navigate(['/auth/login']);
-      }),
-      catchError(err => {
-        const message = err.error?.message ?? 'Error al registrarse';
-        this._state.update(s => ({ ...s, loading: false, error: message }));
-        return EMPTY;
-      })
-    );
-  }
 
   logout() {
     localStorage.removeItem('accessToken');
+    localStorage.removeItem('tenantSlug');
     localStorage.removeItem('expiresAt');
     this._state.set({
       accessToken: null,
@@ -114,12 +98,12 @@ export class AuthService {
   }
 
 
-  private decodeToken(token: string): { sub?: string; roles?: string[] } {
-  try {
-    const payload = token.split('.')[1];
-    return JSON.parse(atob(payload));
-  } catch {
-    return {};
+  private decodeToken(token: string): { sub?: string; roles?: string[]; tenantSlug?: string; tenantId?: string } {
+    try {
+      const payload = token.split('.')[1];
+      return JSON.parse(atob(payload));
+    } catch {
+      return {};
+    }
   }
-}
 }
