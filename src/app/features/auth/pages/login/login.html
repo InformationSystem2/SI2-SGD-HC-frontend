@@ -93,7 +93,7 @@
         <!-- Server error -->
         @if (auth.error()) {
           <div class="rounded-lg bg-hc-error-bg border border-hc-error/30 px-4 py-3 text-sm text-hc-error text-center">
-            {{ auth.error() }}
+            {{ auth.error()! | translate }}
           </div>
         }
 
@@ -121,10 +121,10 @@
 
       <!-- Register link -->
       <p class="mt-6 text-center text-sm text-hc-text-3">
-        {{ 'AUTH.NO_ACCOUNT' | translate }}
-        <a routerLink="/auth/register"
+        {{ 'TENANTS.WANT_REGISTER' | translate }}
+        <a routerLink="/tenants/register"
            class="text-hc-primary hover:underline font-medium">
-          {{ 'AUTH.REGISTER_LINK' | translate }}
+          {{ 'TENANTS.REGISTER_LINK' | translate }}
         </a>
       </p>
 
