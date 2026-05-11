@@ -1,6 +1,7 @@
 import {
   ChangeDetectionStrategy,
   Component,
+  HostListener,
   inject,
   OnInit,
   signal,
@@ -9,8 +10,9 @@ import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import {
-  faArrowLeft, faFileWord, faSpinner, faCircleCheck,
-  faTriangleExclamation, faUpload, faPlus,
+  faArrowLeft, faFileWord, faFileExcel, faFilePowerpoint,
+  faSpinner, faCircleCheck, faTriangleExclamation,
+  faUpload, faPlus, faExpand, faCompress,
 } from '@fortawesome/free-solid-svg-icons';
 import { TranslatePipe } from '@ngx-translate/core';
 import { DocumentEditorModule } from '@onlyoffice/document-editor-angular';
@@ -50,11 +52,22 @@ export class DocumentEditorPage implements OnInit {
 
   readonly faArrowLeft           = faArrowLeft;
   readonly faFileWord            = faFileWord;
+  readonly faFileExcel           = faFileExcel;
+  readonly faFilePowerpoint      = faFilePowerpoint;
   readonly faSpinner             = faSpinner;
   readonly faCircleCheck         = faCircleCheck;
   readonly faTriangleExclamation = faTriangleExclamation;
   readonly faUpload              = faUpload;
   readonly faPlus                = faPlus;
+  readonly faExpand              = faExpand;
+  readonly faCompress            = faCompress;
+
+  readonly fullscreen = signal(false);
+
+  toggleFullscreen(): void { this.fullscreen.update(v => !v); }
+
+  @HostListener('document:keydown.escape')
+  onEscape(): void { if (this.fullscreen()) this.fullscreen.set(false); }
 
   readonly session      = signal<OOSession | null>(null);
   readonly editorConfig = signal<object | null>(null);

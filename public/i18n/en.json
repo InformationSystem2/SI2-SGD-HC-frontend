@@ -1,5 +1,5 @@
 {
-  "APP_NAME": "DMS · Clinical Records",
+  "APP_NAME": "DOCUSALUD",
   "AUTH": {
     "TITLE": "Document Management System",
     "SUBTITLE": "Clinical Records",
@@ -54,11 +54,29 @@
     "PATIENT_LIST": "List",
     "PATIENT_REGISTER": "Register"
   },
+  "DASHBOARD": {
+    "WELCOME": "Welcome",
+    "STAT_PATIENTS": "Patients",
+    "STAT_DOCS": "Documents",
+    "STAT_COMPLETED": "Completed",
+    "STAT_PENDING": "Pending sign.",
+    "QUICK_ACTIONS": "Quick actions",
+    "ACTION_NEW_PATIENT": "New patient",
+    "ACTION_NEW_PATIENT_DESC": "Register clinical record",
+    "ACTION_UPLOAD_DOC": "Upload document",
+    "ACTION_UPLOAD_DOC_DESC": "Attach file to record",
+    "ACTION_TEMPLATES": "Clinical templates",
+    "ACTION_TEMPLATES_DESC": "Manage medical forms",
+    "RECENT_DOCS": "Recent documents",
+    "VIEW_ALL": "View all",
+    "NO_DOCS": "No documents yet"
+  },
   "NAVBAR": {
     "MENU": "Menu",
     "LOGOUT": "Logout",
     "TOGGLE_THEME": "Toggle theme",
-    "TOGGLE_LANG": "ES"
+    "TOGGLE_LANG": "ES",
+    "SYSTEM_ONLINE": "Online"
   },
   "USERS": {
     "TITLE": "Users",
@@ -136,6 +154,8 @@
     "COL_PHONE": "Phone",
     "COL_ACTIONS": "Actions",
     "EMPTY": "No patients registered.",
+    "SEARCH_EMPTY": "No results for your search.",
+    "SEARCH_PLACEHOLDER": "Search by name, document or phone...",
     "NOT_FOUND": "Patient not found.",
     "FIELD_FIRST_NAME": "First Name",
     "FIELD_LAST_NAME": "Last Name",
@@ -174,6 +194,7 @@
     "FIELD_NOTES": "Notes",
     "PH_NOTES": "Brief document description...",
     "OPTIONAL": "optional",
+    "COL_NAME": "Document name",
     "COL_DATE": "Date",
     "COL_TEMPLATE": "Template / Type",
     "COL_PATIENT": "Patient",
@@ -201,6 +222,9 @@
     "PH_FIELD_LABEL": "Visible label",
     "PH_FIELD_TYPE": "Type",
     "PH_FIELD_REQUIRED": "Req.",
+    "PH_FIELD_REQUIRED_ON": "Required",
+    "PH_FIELD_REQUIRED_OFF": "Optional",
+    "REMOVE_FIELD": "Remove field",
     "SELECT_OPTION": "— Select —",
     "FIELD_OPTIONS": "Options",
     "ADD_OPTION": "Add option",

@@ -70,17 +70,21 @@
             <div class="grid grid-cols-3 gap-2">
               @for (t of docTypes; track t.value) {
                 <button type="button" (click)="setDocType(t.value)"
-                  class="flex flex-col items-center gap-1 px-3 py-2.5 rounded-lg border text-sm
-                         font-medium transition-colors"
+                  class="flex flex-col items-center gap-2 px-3 py-3 rounded-xl border text-sm
+                         font-medium transition-all"
                   [class]="docType() === t.value
-                    ? 'border-hc-primary bg-hc-primary/10 text-hc-primary'
-                    : 'border-hc-border bg-hc-surface text-hc-text-2 hover:bg-hc-hover'">
-                  <span class="text-lg">
-                    @if (t.value === 'WORD')  { 📄 }
-                    @if (t.value === 'CELL')  { 📊 }
-                    @if (t.value === 'SLIDE') { 📑 }
+                    ? 'border-hc-primary bg-hc-primary/10 text-hc-primary shadow-sm scale-[1.02]'
+                    : 'border-hc-border bg-hc-surface text-hc-text-2 hover:bg-hc-hover hover:border-hc-primary/40'">
+                  <!-- Icono con fondo corporativo -->
+                  <span class="w-10 h-10 rounded-lg flex items-center justify-center text-white text-base shadow-sm"
+                    [class]="t.value === 'WORD'  ? 'bg-[#2B7CD3]' :
+                             t.value === 'CELL'  ? 'bg-[#217346]' :
+                                                   'bg-[#C43E1C]'">
+                    @if (t.value === 'WORD')  { <fa-icon [icon]="faFileWord" /> }
+                    @if (t.value === 'CELL')  { <fa-icon [icon]="faFileExcel" /> }
+                    @if (t.value === 'SLIDE') { <fa-icon [icon]="faFilePowerpoint" /> }
                   </span>
-                  <span class="text-xs">{{ t.label }}</span>
+                  <span class="text-xs leading-tight text-center">{{ t.label }}</span>
                 </button>
               }
             </div>
@@ -259,32 +263,68 @@
   <!-- ── Editor OnlyOffice ──────────────────────────────────────────────────── -->
   @if (session() && editorConfig()) {
 
-    <div class="flex items-center justify-between gap-4 shrink-0
-                px-4 py-2 rounded-lg border border-hc-border bg-hc-card text-sm">
-      <span class="text-hc-text-2">
-        @if (mode() === 'view') {
-          Documento en modo solo lectura. Para editar ve a la acción Editar.
-        } @else {
-          {{ 'DOCUMENTS.EDITOR_SAVE_HINT' | translate }}
-        }
-      </span>
-      @if (saved()) {
-        <span class="flex items-center gap-1.5 text-green-600 font-medium">
-          <fa-icon [icon]="faCircleCheck" />
-          {{ 'DOCUMENTS.EDITOR_SAVED' | translate }}
-        </span>
-      }
-    </div>
+    <!-- Wrapper: normal o fullscreen -->
+    <div [class]="fullscreen()
+      ? 'fixed inset-0 z-[9999] flex flex-col bg-hc-surface'
+      : 'flex-1 flex flex-col gap-2 min-h-0'">
 
-    <div class="flex-1 rounded-xl overflow-hidden border border-hc-border shadow-sm min-h-[600px]">
-      <document-editor
-        id="sgd-doc-editor"
-        [documentServerUrl]="docServerUrl"
-        [config]="editorConfig()!"
-        [events_onDocumentStateChange]="onDocumentStateChange"
-        height="100%"
-        width="100%"
-      ></document-editor>
+      <!-- Barra de estado + controles -->
+      <div class="flex items-center justify-between gap-4 shrink-0 px-4 py-2 text-sm"
+           [class]="fullscreen()
+             ? 'bg-hc-navbar border-b border-hc-border shadow-sm'
+             : 'rounded-lg border border-hc-border bg-hc-card'">
+
+        <!-- Izquierda: hint / modo -->
+        <div class="flex items-center gap-3 min-w-0">
+          @if (mode() === 'view') {
+            <span class="hc-badge-muted shrink-0">Solo lectura</span>
+            <span class="text-hc-text-2 text-xs truncate hidden sm:block">
+              Para editar ve a la acción Editar en el listado.
+            </span>
+          } @else {
+            <span class="text-hc-text-2 text-xs truncate hidden sm:block">
+              {{ 'DOCUMENTS.EDITOR_SAVE_HINT' | translate }}
+            </span>
+          }
+          @if (saved()) {
+            <span class="flex items-center gap-1.5 text-hc-success font-medium shrink-0">
+              <fa-icon [icon]="faCircleCheck" />
+              {{ 'DOCUMENTS.EDITOR_SAVED' | translate }}
+            </span>
+          }
+        </div>
+
+        <!-- Derecha: botón pantalla completa -->
+        <button
+          (click)="toggleFullscreen()"
+          [title]="fullscreen() ? 'Salir de pantalla completa (Esc)' : 'Pantalla completa'"
+          class="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium
+                 border border-hc-border bg-hc-muted hover:bg-hc-primary hover:text-white
+                 hover:border-hc-primary text-hc-text-2 transition-colors shrink-0"
+        >
+          @if (fullscreen()) {
+            <fa-icon [icon]="faCompress" />
+            <span class="hidden sm:inline">Salir</span>
+          } @else {
+            <fa-icon [icon]="faExpand" />
+            <span class="hidden sm:inline">Pantalla completa</span>
+          }
+        </button>
+      </div>
+
+      <!-- Editor -->
+      <div class="flex-1 overflow-hidden"
+           [class]="fullscreen() ? '' : 'rounded-xl border border-hc-border shadow-sm min-h-[520px]'">
+        <document-editor
+          id="sgd-doc-editor"
+          [documentServerUrl]="docServerUrl"
+          [config]="editorConfig()!"
+          [events_onDocumentStateChange]="onDocumentStateChange"
+          height="100%"
+          width="100%"
+        ></document-editor>
+      </div>
+
     </div>
   }
 

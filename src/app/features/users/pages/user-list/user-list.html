@@ -1,114 +1,85 @@
 <div class="space-y-4">
 
-  <!-- Header -->
-  <div class="flex items-center justify-between">
-    <h2 class="text-xl font-semibold text-hc-text flex items-center gap-2">
+  <div class="hc-page-header">
+    <h2 class="hc-page-title">
       <fa-icon [icon]="faUsers" class="text-hc-primary" />
       {{ 'USERS.TITLE' | translate }}
     </h2>
-    <button
-      (click)="goToRegister()"
-      class="flex items-center gap-2 px-4 py-2 bg-hc-primary hover:bg-hc-primary-dark
-             text-white text-sm font-medium rounded-lg transition-colors shadow-sm"
-    >
+    <button (click)="goToRegister()" class="hc-btn-primary">
       <fa-icon [icon]="faUserPlus" />
       {{ 'USERS.NEW_USER' | translate }}
     </button>
   </div>
 
-  <!-- Error -->
   @if (userService.error()) {
-    <div class="p-3 rounded-lg bg-hc-error-bg border border-hc-error/30 text-hc-error text-sm">
-      {{ userService.error() }}
-    </div>
+    <div class="hc-alert-error">{{ userService.error() }}</div>
   }
 
-  <!-- Loading -->
   @if (userService.loading()) {
-    <div class="flex justify-center py-12 text-hc-text-3">
+    <div class="flex justify-center py-12">
       <fa-icon [icon]="faSpinner" class="animate-spin text-2xl text-hc-primary" />
     </div>
   }
 
-  <!-- Table -->
   @if (!userService.loading()) {
-    <div class="bg-hc-card rounded-xl border border-hc-border overflow-hidden shadow-sm overflow-x-auto">
-      <table class="w-full text-sm min-w-[640px]">
+    <div class="hc-table-wrap">
+      <table class="hc-table min-w-[640px]">
         <thead>
-          <tr class="border-b border-hc-border bg-hc-muted text-hc-text-3 text-left">
-            <th class="px-4 py-3 font-semibold">{{ 'USERS.COL_ID' | translate }}</th>
-            <th class="px-4 py-3 font-semibold">{{ 'USERS.COL_NAME' | translate }}</th>
-            <th class="px-4 py-3 font-semibold">{{ 'USERS.COL_EMAIL' | translate }}</th>
-            <th class="px-4 py-3 font-semibold">{{ 'USERS.COL_ROLES' | translate }}</th>
-            <th class="px-4 py-3 font-semibold">{{ 'USERS.COL_STATUS' | translate }}</th>
-            <th class="px-4 py-3 font-semibold text-right">{{ 'USERS.COL_ACTIONS' | translate }}</th>
+          <tr>
+            <th>{{ 'USERS.COL_ID' | translate }}</th>
+            <th>{{ 'USERS.COL_NAME' | translate }}</th>
+            <th>{{ 'USERS.COL_EMAIL' | translate }}</th>
+            <th>{{ 'USERS.COL_ROLES' | translate }}</th>
+            <th>{{ 'USERS.COL_STATUS' | translate }}</th>
+            <th class="text-right">{{ 'USERS.COL_ACTIONS' | translate }}</th>
           </tr>
         </thead>
         <tbody>
           @for (user of paged(); track user.id) {
-            <tr class="border-b border-hc-border/50 hover:bg-hc-hover transition-colors">
-              <td class="px-4 py-3 text-hc-text-3 font-mono text-xs">{{ user.id }}</td>
-              <td class="px-4 py-3 text-hc-text font-medium">
-                {{ user.firstName }} {{ user.lastName }}
-              </td>
-              <td class="px-4 py-3 text-hc-text-2">{{ user.email }}</td>
-              <td class="px-4 py-3">
+            <tr>
+              <td class="text-hc-text-3 font-mono text-xs">{{ user.id }}</td>
+              <td class="font-medium text-hc-text">{{ user.firstName }} {{ user.lastName }}</td>
+              <td class="text-hc-text-2">{{ user.email }}</td>
+              <td>
                 <div class="flex flex-wrap gap-1">
                   @for (name of getRoleNames(user.rolesIds); track name) {
-                    <span class="px-2 py-0.5 rounded-full text-xs
-                                 bg-hc-primary-100 text-hc-primary-dark border border-hc-primary/20 font-medium">
-                      {{ name }}
-                    </span>
+                    <span class="hc-badge-primary">{{ name }}</span>
                   }
                 </div>
               </td>
-              <td class="px-4 py-3">
+              <td>
                 @if (user.isActive) {
-                  <span class="flex items-center gap-1.5 text-hc-success text-xs font-medium">
+                  <span class="flex items-center gap-1.5 hc-badge-success">
                     <fa-icon [icon]="faCircleCheck" />
                     {{ 'USERS.STATUS_ACTIVE' | translate }}
                   </span>
                 } @else {
-                  <span class="flex items-center gap-1.5 text-hc-text-3 text-xs">
+                  <span class="flex items-center gap-1.5 hc-badge-muted">
                     <fa-icon [icon]="faCircleXmark" />
                     {{ 'USERS.STATUS_INACTIVE' | translate }}
                   </span>
                 }
               </td>
-              <td class="px-4 py-3 text-right">
+              <td>
                 <div class="flex items-center justify-end gap-1.5">
-                  <button
-                    (click)="goToDetail(user.id)"
-                    class="p-1.5 rounded-md bg-hc-muted hover:bg-hc-primary/10 hover:text-hc-primary
-                           text-hc-text-2 transition-colors"
-                    [title]="'USERS.VIEW' | translate"
-                  >
+                  <button (click)="goToDetail(user.id)" class="hc-btn-icon-primary"
+                          [title]="'USERS.VIEW' | translate">
                     <fa-icon [icon]="faEye" />
                   </button>
-                  <button
-                    (click)="goToEdit(user.id)"
-                    class="p-1.5 rounded-md bg-hc-muted hover:bg-hc-primary hover:text-white
-                           text-hc-text-2 transition-colors"
-                    [title]="'USERS.EDIT' | translate"
-                  >
+                  <button (click)="goToEdit(user.id)"
+                          class="p-1.5 rounded-md bg-hc-muted hover:bg-hc-primary hover:text-white text-hc-text-2 transition-colors"
+                          [title]="'USERS.EDIT' | translate">
                     <fa-icon [icon]="faPencil" />
                   </button>
                   @if (isSuperuser()) {
-                    <button
-                      (click)="goToPassword(user.id)"
-                      class="p-1.5 rounded-md bg-hc-muted hover:bg-amber-500 hover:text-white
-                             text-hc-text-2 transition-colors"
-                      [title]="'USERS.CHANGE_PASSWORD' | translate"
-                    >
+                    <button (click)="goToPassword(user.id)"
+                            class="p-1.5 rounded-md bg-hc-muted hover:bg-amber-500 hover:text-white text-hc-text-2 transition-colors"
+                            [title]="'USERS.CHANGE_PASSWORD' | translate">
                       <fa-icon [icon]="faKey" />
                     </button>
                   }
-                  <button
-                    (click)="delete(user.id)"
-                    class="p-1.5 rounded-md bg-hc-muted hover:bg-hc-error hover:text-white
-                           text-hc-text-2 transition-colors"
-                    [title]="'USERS.DELETE' | translate"
-                  >
+                  <button (click)="delete(user.id)" class="hc-btn-icon-danger"
+                          [title]="'USERS.DELETE' | translate">
                     <fa-icon [icon]="faTrash" />
                   </button>
                 </div>
@@ -116,43 +87,28 @@
             </tr>
           } @empty {
             <tr>
-              <td colspan="6" class="px-4 py-10 text-center text-hc-text-3">
-                {{ 'USERS.EMPTY' | translate }}
-              </td>
+              <td colspan="6" class="hc-table-empty">{{ 'USERS.EMPTY' | translate }}</td>
             </tr>
           }
         </tbody>
       </table>
 
-      <!-- Paginación -->
       @if (totalPages() > 1) {
-        <div class="flex items-center justify-between px-4 py-3 border-t border-hc-border bg-hc-muted/30">
+        <div class="hc-pagination">
           <span class="text-xs text-hc-text-3">
-            {{ page() * PAGE_SIZE + 1 }}–{{ page() * PAGE_SIZE + paged().length }}
-            de {{ totalItems() }}
+            {{ page() * PAGE_SIZE + 1 }}–{{ page() * PAGE_SIZE + paged().length }} de {{ totalItems() }}
           </span>
           <div class="flex items-center gap-1">
-            <button (click)="prevPage()" [disabled]="page() === 0"
-              class="px-2.5 py-1.5 rounded-md text-xs font-medium bg-hc-muted hover:bg-hc-hover
-                     text-hc-text-2 disabled:opacity-40 disabled:cursor-not-allowed transition-colors">
-              ‹
-            </button>
+            <button (click)="prevPage()" [disabled]="page() === 0" class="hc-page-btn">‹</button>
             @for (p of visiblePages(); track p) {
-              <button (click)="goToPage(p)"
-                class="px-2.5 py-1.5 rounded-md text-xs font-medium transition-colors"
-                [class]="p === page() ? 'bg-hc-primary text-white' : 'bg-hc-muted hover:bg-hc-hover text-hc-text-2'">
+              <button (click)="goToPage(p)" [class]="p === page() ? 'hc-page-btn-active' : 'hc-page-btn'">
                 {{ p + 1 }}
               </button>
             }
-            <button (click)="nextPage()" [disabled]="page() === totalPages() - 1"
-              class="px-2.5 py-1.5 rounded-md text-xs font-medium bg-hc-muted hover:bg-hc-hover
-                     text-hc-text-2 disabled:opacity-40 disabled:cursor-not-allowed transition-colors">
-              ›
-            </button>
+            <button (click)="nextPage()" [disabled]="page() === totalPages() - 1" class="hc-page-btn">›</button>
           </div>
         </div>
       }
-
     </div>
   }
 

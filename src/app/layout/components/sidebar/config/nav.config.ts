@@ -45,9 +45,4 @@ export const NAV_ITEMS: NavItem[] = [
       { label: 'NAV.PATIENT_REGISTER', path: '/pacientes/register' },
     ],
   },
-  {
-    label: 'NAV.SETTINGS',
-    path: '/dashboard/configuracion',
-    icon: 'settings',
-  },
 ];

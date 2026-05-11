@@ -1,4 +1,4 @@
-<header class="h-14 bg-hc-navbar border-b border-hc-border shadow-sm flex items-center justify-between px-4 md:px-6">
+<header class="h-14 bg-hc-navbar border-b border-[var(--hc-border-sidebar)] shadow-sm flex items-center justify-between px-4 md:px-6 shrink-0">
 
   <!-- Left: hamburger (mobile) + brand -->
   <div class="flex items-center gap-3">
@@ -10,14 +10,19 @@
       <fa-icon [icon]="faBars" />
     </button>
 
-    <span class="text-hc-primary font-bold text-base tracking-wide flex items-center gap-2">
-      <span class="w-7 h-7 rounded-md bg-hc-primary flex items-center justify-center shrink-0">
-        <svg class="w-4 h-4 text-white" fill="currentColor" viewBox="0 0 24 24">
-          <path d="M19 3H5a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2V5a2 2 0 00-2-2zm-7 3a1 1 0 011 1v3h3a1 1 0 010 2h-3v3a1 1 0 01-2 0v-3H8a1 1 0 010-2h3V7a1 1 0 011-1z"/>
-        </svg>
+    <div class="flex items-center gap-2">
+      <img src="iconSGDpng.png" alt="DOCUSALUD" class="w-7 h-7 rounded-md object-cover shrink-0" />
+      <span class="hidden sm:block text-hc-primary font-bold text-sm tracking-wide">DOCUSALUD</span>
+    </div>
+
+    <!-- Divider + tenant/clinic indicator -->
+    <div class="hidden md:flex items-center gap-2 pl-2 border-l border-hc-border">
+      <span class="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-md
+                   bg-hc-primary/8 text-hc-primary text-xs font-medium">
+        <span class="w-1.5 h-1.5 rounded-full bg-hc-success inline-block"></span>
+        {{ 'NAVBAR.SYSTEM_ONLINE' | translate }}
       </span>
-      <span class="hidden sm:inline">{{ 'APP_NAME' | translate }}</span>
-    </span>
+    </div>
   </div>
 
   <!-- Right: controls -->
@@ -47,17 +52,27 @@
       {{ 'NAVBAR.TOGGLE_LANG' | translate }}
     </button>
 
-    <!-- Username -->
-    <span class="text-hc-text-2 text-sm hidden md:block truncate max-w-32">
-      {{ authService.username() }}
-    </span>
+    <!-- Divider -->
+    <div class="hidden md:block w-px h-5 bg-hc-border mx-0.5"></div>
+
+    <!-- User pill -->
+    <div class="hidden md:flex items-center gap-2 px-2.5 py-1.5 rounded-lg bg-hc-muted border border-hc-border">
+      <div class="w-5 h-5 rounded-full bg-hc-primary/20 flex items-center justify-center">
+        <span class="text-hc-primary text-xs font-bold leading-none">
+          {{ (authService.username() ?? '?')[0].toUpperCase() }}
+        </span>
+      </div>
+      <span class="text-hc-text-2 text-sm truncate max-w-28 font-medium">
+        {{ authService.username() }}
+      </span>
+    </div>
 
     <!-- Logout -->
     <button
       (click)="authService.logout()"
       class="flex items-center gap-2 px-2.5 py-1.5 rounded-md
              bg-hc-muted hover:bg-hc-error hover:text-white
-             text-hc-text-2 text-sm transition-colors"
+             text-hc-text-2 text-sm transition-colors border border-hc-border hover:border-hc-error"
     >
       <fa-icon [icon]="faLogout" />
       <span class="hidden sm:inline">{{ 'NAVBAR.LOGOUT' | translate }}</span>
