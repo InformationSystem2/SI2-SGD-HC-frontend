@@ -3,7 +3,7 @@
   <!-- Header -->
   <div class="flex items-center gap-3">
     <button (click)="back()" class="hc-btn-icon">
-      <fa-icon [icon]="faArrowLeft" />
+      <fa-icon [icon]="faArrowLeft"/>
     </button>
     <h2 class="hc-page-title">
       {{ (isEdit() ? 'DOCUMENTS.EDIT_TEMPLATE' : 'DOCUMENTS.NEW_TEMPLATE') | translate }}
@@ -12,7 +12,7 @@
 
   @if (loading()) {
     <div class="flex justify-center py-12">
-      <fa-icon [icon]="faSpinner" class="animate-spin text-2xl text-hc-primary" />
+      <fa-icon [icon]="faSpinner" class="animate-spin text-2xl text-hc-primary"/>
     </div>
   }
 
@@ -28,7 +28,7 @@
           <label for="name" class="hc-label">{{ 'DOCUMENTS.FIELD_NAME' | translate }}</label>
           <input id="name" formControlName="name" type="text" class="hc-input"
                  [placeholder]="'DOCUMENTS.PH_TEMPLATE_NAME' | translate"
-                 [class.border-hc-error]="form.get('name')?.invalid && form.get('name')?.touched" />
+                 [class.border-hc-error]="form.get('name')?.invalid && form.get('name')?.touched"/>
           @if (form.get('name')?.invalid && form.get('name')?.touched) {
             <span class="text-xs text-hc-error mt-1 block">{{ 'DOCUMENTS.VAL_REQUIRED' | translate }}</span>
           }
@@ -48,10 +48,10 @@
       <div class="px-5 py-3 bg-hc-muted border-b border-hc-border flex items-center justify-between">
         <p class="hc-section-label">{{ 'DOCUMENTS.SCHEMA_FIELDS' | translate }}</p>
         <button type="button" (click)="addField()"
-          class="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-hc-primary/10
+                class="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-hc-primary/10
                  hover:bg-hc-primary hover:text-white text-hc-primary
                  text-xs font-medium transition-colors border border-hc-primary/20">
-          <fa-icon [icon]="faPlus" />
+          <fa-icon [icon]="faPlus"/>
           {{ 'DOCUMENTS.ADD_FIELD' | translate }}
         </button>
       </div>
@@ -76,7 +76,7 @@
                 <input type="text" [value]="field.name"
                        (input)="updateField(fi, { name: $any($event.target).value })"
                        [placeholder]="'DOCUMENTS.PH_FIELD_KEY' | translate"
-                       class="hc-input text-sm" />
+                       class="hc-input text-sm"/>
               </div>
 
               <div>
@@ -84,7 +84,7 @@
                 <input type="text" [value]="field.label"
                        (input)="updateField(fi, { label: $any($event.target).value })"
                        [placeholder]="'DOCUMENTS.PH_FIELD_LABEL' | translate"
-                       class="hc-input text-sm" />
+                       class="hc-input text-sm"/>
               </div>
 
               <div>
@@ -126,7 +126,7 @@
                              text-hc-error/70 hover:text-white hover:bg-hc-error
                              border border-transparent hover:border-hc-error
                              transition-colors disabled:opacity-30 disabled:cursor-not-allowed">
-                <fa-icon [icon]="faTrash" />
+                <fa-icon [icon]="faTrash"/>
                 {{ 'DOCUMENTS.REMOVE_FIELD' | translate }}
               </button>
 
@@ -139,10 +139,10 @@
                 <div class="flex items-center justify-between mb-1">
                   <span class="hc-section-label">{{ 'DOCUMENTS.FIELD_OPTIONS' | translate }}</span>
                   <button type="button" (click)="addOption(fi)"
-                    class="flex items-center gap-1 px-2.5 py-1 rounded-md text-xs font-medium
+                          class="flex items-center gap-1 px-2.5 py-1 rounded-md text-xs font-medium
                            bg-hc-muted border border-hc-border text-hc-text-2
                            hover:bg-hc-primary/10 hover:text-hc-primary transition-colors">
-                    <fa-icon [icon]="faPlus" class="text-[10px]" />
+                    <fa-icon [icon]="faPlus" class="text-[10px]"/>
                     {{ 'DOCUMENTS.ADD_OPTION' | translate }}
                   </button>
                 </div>
@@ -158,17 +158,17 @@
                            [placeholder]="'DOCUMENTS.PH_OPTION_KEY' | translate"
                            class="flex-1 rounded-lg border border-hc-border bg-hc-card px-2.5 py-1.5
                                   text-xs text-hc-text placeholder:text-hc-text-3
-                                  focus:outline-none focus:ring-2 focus:ring-hc-primary/50" />
+                                  focus:outline-none focus:ring-2 focus:ring-hc-primary/50"/>
                     <input type="text" [value]="opt.value"
                            (input)="updateOption(fi, oi, { value: $any($event.target).value })"
                            [placeholder]="'DOCUMENTS.PH_OPTION_LABEL' | translate"
                            class="flex-1 rounded-lg border border-hc-border bg-hc-card px-2.5 py-1.5
                                   text-xs text-hc-text placeholder:text-hc-text-3
-                                  focus:outline-none focus:ring-2 focus:ring-hc-primary/50" />
+                                  focus:outline-none focus:ring-2 focus:ring-hc-primary/50"/>
                     <button type="button" (click)="removeOption(fi, oi)"
                             class="p-1.5 rounded-md text-hc-error/60 hover:text-white hover:bg-hc-error
                                    transition-colors shrink-0" title="Eliminar opción">
-                      <fa-icon [icon]="faTrash" class="text-[11px]" />
+                      <fa-icon [icon]="faTrash" class="text-[11px]"/>
                     </button>
                   </div>
                 }
@@ -192,10 +192,10 @@
       <button type="button" (click)="onSubmit()" [disabled]="templateService.loading()"
               class="hc-btn-primary px-6 py-2.5">
         @if (templateService.loading()) {
-          <fa-icon [icon]="faSpinner" class="animate-spin" />
+          <fa-icon [icon]="faSpinner" class="animate-spin"/>
           {{ 'DOCUMENTS.SAVING' | translate }}
         } @else {
-          <fa-icon [icon]="faFloppyDisk" />
+          <fa-icon [icon]="faFloppyDisk"/>
           {{ 'DOCUMENTS.SAVE_BTN' | translate }}
         }
       </button>
