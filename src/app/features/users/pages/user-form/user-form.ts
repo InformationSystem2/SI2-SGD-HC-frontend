@@ -38,10 +38,10 @@ export class UserForm implements OnInit {
   form = this.fb.group({
     firstName:      ['', Validators.required],
     lastName:       ['', Validators.required],
-    documentType:   [''],
-    documentNumber: [''],
+    documentType:   ['', Validators.required],
+    documentNumber: ['', Validators.required],
     phone:          [''],
-    gender:         [''],
+    gender:         ['', Validators.required],
     isActive:       [true],
     rolesIds:       [[] as string[], Validators.required],
   });

@@ -38,18 +38,24 @@
       </div>
       <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
         <div>
-          <label class="hc-label">{{ 'USERS.FIELD_DOC_TYPE' | translate }}</label>
+          <label class="hc-label">{{ 'USERS.FIELD_DOC_TYPE' | translate }}<span class="text-hc-error">*</span></label>
           <select formControlName="documentType" class="hc-select">
             <option value="">{{ 'USERS.PH_SELECT' | translate }}</option>
             @for (dt of documentTypes; track dt) {
               <option [value]="dt">{{ dt }}</option>
             }
           </select>
+          @if (form.get('documentType')?.invalid && form.get('documentType')?.touched) {
+            <p class="text-hc-error text-xs mt-1">{{ 'USERS.VAL_REQUIRED' | translate }}</p>
+          }
         </div>
         <div>
-          <label class="hc-label">{{ 'USERS.FIELD_DOC_NUMBER' | translate }}</label>
+          <label class="hc-label">{{ 'USERS.FIELD_DOC_NUMBER' | translate }}<span class="text-hc-error">*</span></label>
           <input formControlName="documentNumber" type="text" class="hc-input"
                  [placeholder]="'USERS.PH_DOC_NUMBER' | translate" />
+          @if (form.get('documentNumber')?.invalid && form.get('documentNumber')?.touched) {
+            <p class="text-hc-error text-xs mt-1">{{ 'USERS.VAL_REQUIRED' | translate }}</p>
+          }
         </div>
       </div>
       <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">

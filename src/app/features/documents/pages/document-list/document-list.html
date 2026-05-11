@@ -57,13 +57,6 @@
               </td>
               <td>
                 <div class="flex items-center justify-end gap-1.5">
-                  @if (doc.fileUrl) {
-                    <button (click)="openInViewer(doc.id)"
-                            class="p-1.5 rounded-md bg-hc-muted hover:bg-indigo-100 hover:text-indigo-600 text-hc-text-2 transition-colors"
-                            title="Ver archivo">
-                      <fa-icon [icon]="faBookOpen" />
-                    </button>
-                  }
                   <button (click)="view(doc.id)" class="hc-btn-icon-primary" title="Ver detalle">
                     <fa-icon [icon]="faEye" />
                   </button>

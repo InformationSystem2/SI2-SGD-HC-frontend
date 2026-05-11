@@ -14,7 +14,6 @@ export const NAV_ITEMS: NavItem[] = [
     subItems: [
       { label: 'NAV.DOCUMENT_LIST',        path: '/documentos/list' },
       { label: 'NAV.DOCUMENT_UPLOAD',      path: '/documentos/upload' },
-      { label: 'NAV.DOCUMENT_EDITOR',      path: '/documentos/editor' },
       { label: 'NAV.DOCUMENT_TEMPLATES',   path: '/documentos/templates' },
       { label: 'NAV.DOCUMENT_TEMPLATE_NEW', path: '/documentos/templates/new' },
     ],

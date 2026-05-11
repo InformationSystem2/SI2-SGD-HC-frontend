@@ -49,7 +49,7 @@
       <table class="hc-table min-w-[640px]">
         <thead>
           <tr>
-            <th>{{ 'PATIENTS.COL_ID' | translate }}</th>
+            <th>{{ 'PATIENTS.COL_DOC_NUMBER' | translate }}</th>
             <th>{{ 'PATIENTS.COL_NAME' | translate }}</th>
             <th>{{ 'PATIENTS.COL_GENDER' | translate }}</th>
             <th>{{ 'PATIENTS.COL_BIRTH_DATE' | translate }}</th>
@@ -60,7 +60,7 @@
         <tbody>
           @for (patient of paged(); track patient.id) {
             <tr>
-              <td class="text-hc-text-3 font-mono text-xs">{{ patient.id }}</td>
+              <td class="text-hc-text-3 font-mono text-xs">{{ patient.documentNumber ?? '—' }}</td>
               <td class="font-medium text-hc-text">
                 {{ patient.firstName }} {{ patient.lastName }}
               </td>

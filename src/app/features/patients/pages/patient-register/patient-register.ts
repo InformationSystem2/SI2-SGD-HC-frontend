@@ -35,8 +35,8 @@ export class PatientRegister {
     documentNumber: [''],
     phone:          [''],
     address:        [''],
-    gender:         [''],
-    birthDate:      [''],
+    gender:         ['', Validators.required],
+    birthDate:      ['', Validators.required],
   });
 
   onSubmit(): void {

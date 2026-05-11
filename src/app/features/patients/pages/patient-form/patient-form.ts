@@ -40,8 +40,8 @@ export class PatientForm implements OnInit {
     documentNumber: [''],
     phone:          [''],
     address:        [''],
-    gender:         [''],
-    birthDate:      [''],
+    gender:         ['', Validators.required],
+    birthDate:      ['', Validators.required],
   });
 
   ngOnInit(): void {
@@ -57,8 +57,8 @@ export class PatientForm implements OnInit {
           documentNumber: patient.documentNumber ?? '',
           phone:          patient.phone ?? '',
           address:        patient.address ?? '',
-          gender:         patient.gender ?? '',
-          birthDate:      patient.birthDate ?? '',
+          gender:         patient.gender,
+          birthDate:      patient.birthDate,
         });
         this.loadingPatient.set(false);
       },
