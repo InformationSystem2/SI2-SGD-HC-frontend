@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, inject, OnInit } from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed, inject, OnInit, signal } from '@angular/core';
 import { Router } from '@angular/router';
 import {
   faEye, faPencil, faSpinner, faTrash, faUserPlus, faUsers,
@@ -24,6 +24,25 @@ export class PatientList implements OnInit {
   readonly faPencil   = faPencil;
   readonly faTrash    = faTrash;
   readonly faEye      = faEye;
+
+  readonly PAGE_SIZE    = 20;
+  readonly page         = signal(0);
+  readonly totalItems   = computed(() => this.patientService.patients().length);
+  readonly totalPages   = computed(() => Math.ceil(this.totalItems() / this.PAGE_SIZE) || 1);
+  readonly paged        = computed(() => {
+    const s = this.page() * this.PAGE_SIZE;
+    return this.patientService.patients().slice(s, s + this.PAGE_SIZE);
+  });
+  readonly visiblePages = computed(() => {
+    const total = this.totalPages(), cur = this.page();
+    const start = Math.max(0, Math.min(cur - 2, total - 5));
+    const end   = Math.min(total - 1, start + 4);
+    return Array.from({ length: end - start + 1 }, (_, i) => start + i);
+  });
+
+  prevPage()          { this.page.update(p => Math.max(0, p - 1)); }
+  nextPage()          { this.page.update(p => Math.min(this.totalPages() - 1, p + 1)); }
+  goToPage(n: number) { this.page.set(n); }
 
   ngOnInit(): void {
     this.patientService.getPatients().subscribe();

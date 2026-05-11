@@ -45,7 +45,7 @@
           </tr>
         </thead>
         <tbody>
-          @for (patient of patientService.patients(); track patient.id) {
+          @for (patient of paged(); track patient.id) {
             <tr class="border-b border-hc-border/50 hover:bg-hc-hover transition-colors">
               <td class="px-4 py-3 text-hc-text-3 font-mono text-xs">{{ patient.id }}</td>
               <td class="px-4 py-3 text-hc-text font-medium">
@@ -92,6 +92,36 @@
           }
         </tbody>
       </table>
+
+      <!-- Paginación -->
+      @if (totalPages() > 1) {
+        <div class="flex items-center justify-between px-4 py-3 border-t border-hc-border bg-hc-muted/30">
+          <span class="text-xs text-hc-text-3">
+            {{ page() * PAGE_SIZE + 1 }}–{{ page() * PAGE_SIZE + paged().length }}
+            de {{ totalItems() }}
+          </span>
+          <div class="flex items-center gap-1">
+            <button (click)="prevPage()" [disabled]="page() === 0"
+              class="px-2.5 py-1.5 rounded-md text-xs font-medium bg-hc-muted hover:bg-hc-hover
+                     text-hc-text-2 disabled:opacity-40 disabled:cursor-not-allowed transition-colors">
+              ‹
+            </button>
+            @for (p of visiblePages(); track p) {
+              <button (click)="goToPage(p)"
+                class="px-2.5 py-1.5 rounded-md text-xs font-medium transition-colors"
+                [class]="p === page() ? 'bg-hc-primary text-white' : 'bg-hc-muted hover:bg-hc-hover text-hc-text-2'">
+                {{ p + 1 }}
+              </button>
+            }
+            <button (click)="nextPage()" [disabled]="page() === totalPages() - 1"
+              class="px-2.5 py-1.5 rounded-md text-xs font-medium bg-hc-muted hover:bg-hc-hover
+                     text-hc-text-2 disabled:opacity-40 disabled:cursor-not-allowed transition-colors">
+              ›
+            </button>
+          </div>
+        </div>
+      }
+
     </div>
   }
 

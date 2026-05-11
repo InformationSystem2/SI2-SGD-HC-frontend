@@ -1,0 +1,116 @@
+<div class="space-y-6 max-w-3xl mx-auto">
+
+  <!-- Header -->
+  <div class="flex items-center gap-3">
+    <button (click)="back()"
+      class="p-2 rounded-lg hover:bg-hc-hover text-hc-text-2 transition-colors">
+      <fa-icon [icon]="faArrowLeft" />
+    </button>
+    <fa-icon [icon]="faFileLines" class="text-hc-primary text-xl" />
+    <h2 class="text-xl font-semibold text-hc-text">Detalle del documento</h2>
+  </div>
+
+  <!-- Loading -->
+  @if (loading()) {
+    <div class="flex justify-center py-16">
+      <fa-icon [icon]="faSpinner" class="animate-spin text-2xl text-hc-primary" />
+    </div>
+  }
+
+  <!-- Error -->
+  @if (error()) {
+    <div class="p-4 rounded-lg bg-hc-error-bg border border-hc-error/30 text-hc-error text-sm">
+      {{ error() }}
+    </div>
+  }
+
+  @if (doc(); as d) {
+    <!-- Ficha principal -->
+    <div class="bg-hc-card rounded-xl border border-hc-border shadow-sm overflow-hidden">
+
+      <!-- Título -->
+      <div class="px-6 py-4 border-b border-hc-border bg-hc-muted/40">
+        <p class="text-lg font-semibold text-hc-text">{{ docTitle() }}</p>
+        <span class="mt-1 inline-block px-2.5 py-0.5 rounded-full text-xs font-medium"
+              [class]="statusClass(d.status)">
+          {{ statusLabel(d.status) }}
+        </span>
+      </div>
+
+      <!-- Campos principales -->
+      <div class="grid grid-cols-1 sm:grid-cols-2 gap-0 divide-y sm:divide-y-0 sm:divide-x divide-hc-border">
+
+        <div class="px-6 py-4 space-y-4">
+          <div>
+            <p class="text-xs text-hc-text-3 uppercase tracking-wide font-medium">Paciente</p>
+            <p class="text-hc-text mt-0.5">{{ d.patientName }}</p>
+          </div>
+          <div>
+            <p class="text-xs text-hc-text-3 uppercase tracking-wide font-medium">Cargado por</p>
+            <p class="text-hc-text mt-0.5">{{ d.uploaderName }}</p>
+          </div>
+          <div>
+            <p class="text-xs text-hc-text-3 uppercase tracking-wide font-medium">Fecha de emisión</p>
+            <p class="text-hc-text mt-0.5">{{ d.issueDate }}</p>
+          </div>
+          @if (d.expiryDate) {
+            <div>
+              <p class="text-xs text-hc-text-3 uppercase tracking-wide font-medium">Fecha de vencimiento</p>
+              <p class="text-hc-text mt-0.5">{{ d.expiryDate }}</p>
+            </div>
+          }
+          <div>
+            <p class="text-xs text-hc-text-3 uppercase tracking-wide font-medium">Tipo</p>
+            <p class="text-hc-text mt-0.5">{{ d.isExternalSource ? 'Externo' : 'Plantilla' }}</p>
+          </div>
+        </div>
+
+        <div class="px-6 py-4 space-y-4">
+          <div>
+            <p class="text-xs text-hc-text-3 uppercase tracking-wide font-medium">Plantilla</p>
+            <p class="text-hc-text mt-0.5">{{ d.templateName }}</p>
+          </div>
+          <div>
+            <p class="text-xs text-hc-text-3 uppercase tracking-wide font-medium">ID del documento</p>
+            <p class="text-hc-text-2 font-mono text-xs mt-0.5 break-all">{{ d.id }}</p>
+          </div>
+          <div>
+            <p class="text-xs text-hc-text-3 uppercase tracking-wide font-medium">ID del paciente</p>
+            <p class="text-hc-text-2 font-mono text-xs mt-0.5 break-all">{{ d.patientId }}</p>
+          </div>
+          @if (d.fileUrl) {
+            <div>
+              <p class="text-xs text-hc-text-3 uppercase tracking-wide font-medium">Archivo</p>
+              <button (click)="openInViewer()"
+                class="text-hc-primary hover:underline text-sm flex items-center gap-1 mt-0.5">
+                <fa-icon [icon]="faBookOpen" />
+                Abrir documento
+              </button>
+            </div>
+          }
+        </div>
+
+      </div>
+    </div>
+
+    <!-- Contenido clínico -->
+    @if (contentEntries().length > 0) {
+      <div class="bg-hc-card rounded-xl border border-hc-border shadow-sm">
+        <div class="px-6 py-3 border-b border-hc-border bg-hc-muted/40">
+          <p class="text-sm font-semibold text-hc-text">Contenido clínico</p>
+        </div>
+        <div class="divide-y divide-hc-border/50">
+          @for (entry of contentEntries(); track entry.key) {
+            <div class="px-6 py-3 flex gap-4">
+              <p class="text-xs text-hc-text-3 uppercase tracking-wide font-medium w-40 shrink-0 capitalize pt-0.5">
+                {{ entry.key }}
+              </p>
+              <p class="text-hc-text text-sm">{{ entry.value }}</p>
+            </div>
+          }
+        </div>
+      </div>
+    }
+  }
+
+</div>

@@ -1,25 +1,39 @@
 <div class="relative" (mouseenter)="onMouseEnter()" (mouseleave)="onMouseLeave()">
 
+  <!-- ── Ítem principal ─────────────────────────────────────────────────── -->
   <a
-    [routerLink]="item().path"
+    [routerLink]="hasSubItems() && sidebarService.expanded() ? null : item().path"
     routerLinkActive
     #rla="routerLinkActive"
-    [routerLinkActiveOptions]="{ exact: true }"
-    [class]="'relative flex items-center py-2 px-3 my-0.5 font-medium rounded-lg cursor-pointer transition-colors group ' +
+    [routerLinkActiveOptions]="{ exact: false }"
+    (click)="hasSubItems() && sidebarService.expanded() ? toggleAccordion($event) : null"
+    [class]="'relative flex items-center py-2 px-3 my-0.5 font-medium rounded-lg transition-colors group cursor-pointer ' +
              (rla.isActive
                ? 'bg-hc-primary text-white shadow-sm'
                : 'hover:bg-hc-hover text-hc-text-2 hover:text-hc-text')"
   >
+    <!-- Icono -->
     <fa-icon [icon]="getIcon(item().icon)" class="w-5 text-center shrink-0"></fa-icon>
 
+    <!-- Label (solo en sidebar expandido) -->
     <span
-      class="overflow-hidden transition-all whitespace-nowrap"
-      [class]="sidebarService.expanded() ? 'w-52 ml-3 opacity-100' : 'w-0 opacity-0'"
+      class="overflow-hidden transition-all whitespace-nowrap flex-1"
+      [class]="sidebarService.expanded() ? 'w-40 ml-3 opacity-100' : 'w-0 opacity-0'"
     >
       {{ item().label | translate }}
     </span>
 
-    @if (!sidebarService.expanded()) {
+    <!-- Chevron acordeón (solo expandido + tiene sub-items) -->
+    @if (sidebarService.expanded() && hasSubItems()) {
+      <fa-icon
+        [icon]="faChevronDown"
+        class="text-xs transition-transform duration-200 shrink-0"
+        [class.rotate-180]="open()"
+      ></fa-icon>
+    }
+
+    <!-- Tooltip colapsado (sin sub-items) -->
+    @if (!sidebarService.expanded() && !hasSubItems()) {
       <div class="absolute left-full rounded-lg px-3 py-1.5 ml-4
                   bg-hc-primary text-white text-xs whitespace-nowrap shadow-lg
                   invisible opacity-0 -translate-x-2 transition-all
@@ -29,17 +43,39 @@
     }
   </a>
 
-  @if (showSubmenu() && item().subItems?.length) {
-    <div
-      class="absolute left-full top-0 ml-2
-             bg-hc-card shadow-xl rounded-xl border border-hc-border
-             z-50 min-w-[160px] overflow-hidden"
-      (mouseenter)="onSubmenuEnter()"
-      (mouseleave)="onMouseLeave()"
-    >
+  <!-- ── Modo EXPANDIDO: acordeón inline ──────────────────────────────────── -->
+  @if (sidebarService.expanded() && hasSubItems() && open()) {
+    <div class="mt-0.5 ml-8 space-y-0.5 pb-1">
       @for (sub of item().subItems!; track sub.path) {
         <a
           [routerLink]="sub.path"
+          routerLinkActive="text-hc-primary font-semibold"
+          class="block px-3 py-1.5 rounded-lg text-sm text-hc-text-2
+                 hover:bg-hc-hover hover:text-hc-text transition-colors"
+        >
+          {{ sub.label | translate }}
+        </a>
+      }
+    </div>
+  }
+
+  <!-- ── Modo COLAPSADO: popup flotante al hover ───────────────────────────── -->
+  @if (!sidebarService.expanded() && hasSubItems() && open()) {
+    <div
+      class="absolute left-full top-0 ml-2
+             bg-hc-card shadow-xl rounded-xl border border-hc-border
+             z-50 min-w-[180px] overflow-hidden py-1"
+      (mouseenter)="onPopupEnter()"
+      (mouseleave)="onMouseLeave()"
+    >
+      <!-- Label del padre como cabecera del popup -->
+      <p class="px-4 py-2 text-xs font-semibold text-hc-text-3 uppercase tracking-wider border-b border-hc-border">
+        {{ item().label | translate }}
+      </p>
+      @for (sub of item().subItems!; track sub.path) {
+        <a
+          [routerLink]="sub.path"
+          routerLinkActive="bg-hc-primary/10 text-hc-primary font-medium"
           class="block px-4 py-2.5 hover:bg-hc-primary hover:text-white
                  text-hc-text-2 whitespace-nowrap transition-colors text-sm"
         >

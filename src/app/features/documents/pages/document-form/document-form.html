@@ -1,0 +1,130 @@
+<div class="space-y-6 max-w-2xl mx-auto">
+
+  <!-- Header de página -->
+  <div class="flex items-center gap-3">
+    <button
+      (click)="back()"
+      class="p-2 rounded-lg bg-hc-muted hover:bg-hc-hover text-hc-text-2
+             transition-colors"
+      [title]="'DOCUMENTS.BACK' | translate"
+    >
+      <fa-icon [icon]="faArrowLeft" />
+    </button>
+    <div class="flex items-center gap-2">
+      <fa-icon [icon]="faFileSignature" class="text-hc-primary text-xl" />
+      <h2 class="text-xl font-semibold text-hc-text">
+        {{ 'DOCUMENTS.NEW_TITLE' | translate }}
+      </h2>
+    </div>
+  </div>
+
+  <!-- Loading template -->
+  @if (loadingTemplate()) {
+    <div class="flex justify-center py-12">
+      <fa-icon [icon]="faSpinner" class="animate-spin text-2xl text-hc-primary" />
+    </div>
+  }
+
+  <!-- Template no encontrado -->
+  @if (notFound()) {
+    <div class="p-4 rounded-lg bg-hc-error-bg border border-hc-error/30 text-hc-error text-sm">
+      {{ 'DOCUMENTS.TEMPLATE_NOT_FOUND' | translate }}
+    </div>
+  }
+
+  @if (!loadingTemplate() && !notFound() && template()) {
+
+    <!-- Info de la plantilla seleccionada -->
+    <div class="bg-hc-card rounded-xl border border-hc-border p-4 shadow-sm">
+      <p class="text-xs text-hc-text-3 uppercase tracking-wide mb-1">
+        {{ 'DOCUMENTS.TEMPLATE_LABEL' | translate }}
+      </p>
+      <p class="font-semibold text-hc-text">{{ template()!.name }}</p>
+      @if (template()!.description) {
+        <p class="text-sm text-hc-text-2 mt-0.5">{{ template()!.description }}</p>
+      }
+    </div>
+
+    <!-- Formulario de cabecera -->
+    <div class="bg-hc-card rounded-xl border border-hc-border p-5 shadow-sm space-y-4">
+      <h3 class="text-sm font-semibold text-hc-text-2 uppercase tracking-wide">
+        {{ 'DOCUMENTS.SECTION_HEADER' | translate }}
+      </h3>
+
+      <form [formGroup]="headerForm" class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+
+        <div class="flex flex-col gap-1">
+          <label for="patientId" class="text-sm font-medium text-hc-text-2">
+            {{ 'DOCUMENTS.FIELD_PATIENT' | translate }}
+          </label>
+
+          @if (patientService.loading()) {
+            <div class="flex items-center gap-2 px-3 py-2 rounded-lg border border-hc-border bg-hc-surface text-xs text-hc-text-3">
+              <fa-icon [icon]="faSpinner" class="animate-spin" />
+              {{ 'DOCUMENTS.LOADING_PATIENTS' | translate }}
+            </div>
+          } @else {
+            <select
+              id="patientId"
+              formControlName="patientId"
+              class="rounded-lg border border-hc-border bg-hc-surface px-3 py-2
+                     text-sm text-hc-text
+                     focus:outline-none focus:ring-2 focus:ring-hc-primary/50"
+              [class.border-hc-error]="headerForm.get('patientId')?.invalid && headerForm.get('patientId')?.touched"
+            >
+              <option value="">{{ 'DOCUMENTS.SELECT_PATIENT' | translate }}</option>
+              @for (patient of patients(); track patient.id) {
+                <option [value]="patient.id">{{ patientLabel(patient) }}</option>
+              }
+            </select>
+          }
+
+          @if (headerForm.get('patientId')?.invalid && headerForm.get('patientId')?.touched) {
+            <span class="text-xs text-hc-error">{{ 'DOCUMENTS.VAL_REQUIRED' | translate }}</span>
+          }
+        </div>
+
+        <div class="flex flex-col gap-1">
+          <label for="issueDate" class="text-sm font-medium text-hc-text-2">
+            {{ 'DOCUMENTS.FIELD_ISSUE_DATE' | translate }}
+          </label>
+          <input
+            id="issueDate"
+            formControlName="issueDate"
+            type="date"
+            class="rounded-lg border border-hc-border bg-hc-surface px-3 py-2
+                   text-sm text-hc-text
+                   focus:outline-none focus:ring-2 focus:ring-hc-primary/50"
+            [class.border-hc-error]="headerForm.get('issueDate')?.invalid && headerForm.get('issueDate')?.touched"
+          />
+          @if (headerForm.get('issueDate')?.invalid && headerForm.get('issueDate')?.touched) {
+            <span class="text-xs text-hc-error">{{ 'DOCUMENTS.VAL_REQUIRED' | translate }}</span>
+          }
+        </div>
+
+      </form>
+    </div>
+
+    <!-- Error del servicio de documentos -->
+    @if (documentService.error()) {
+      <div class="p-3 rounded-lg bg-hc-error-bg border border-hc-error/30 text-hc-error text-sm">
+        {{ documentService.error() }}
+      </div>
+    }
+
+    <!-- Formulario dinámico -->
+    <div class="bg-hc-card rounded-xl border border-hc-border p-5 shadow-sm space-y-4">
+      <h3 class="text-sm font-semibold text-hc-text-2 uppercase tracking-wide">
+        {{ 'DOCUMENTS.SECTION_CLINICAL' | translate }}
+      </h3>
+
+      <app-dynamic-form
+        [uiSchema]="uiSchema"
+        [submitting]="documentService.loading()"
+        (submitted)="onClinicalContentReady($event)"
+      />
+    </div>
+
+  }
+
+</div>
