@@ -10,6 +10,10 @@ export const routes: Routes = [
     loadChildren: () => import('./features/auth/auth.routes').then(m => m.authRoutes),
   },
   {
+    path: 'tenants',
+    loadChildren: () => import('./features/tenants/tenants.routes').then(m => m.tenantsRoutes),
+  },
+  {
     path: 'dashboard',
     component: MainLayout,
     canActivate: [authGuard],
