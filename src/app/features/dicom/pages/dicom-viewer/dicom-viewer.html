@@ -1,0 +1,332 @@
+<!-- Pantalla de carga inicial (API) -->
+@if (loading()) {
+  <div class="flex h-screen items-center justify-center bg-hc-app">
+    <div class="text-center">
+      <div class="mx-auto mb-4 h-10 w-10 animate-spin rounded-full border-4 border-hc-border border-t-hc-primary"></div>
+      <p class="text-sm text-hc-text-3">{{ 'DICOM.LOADING' | translate }}</p>
+    </div>
+  </div>
+}
+
+<!-- Error de carga -->
+@else if (error()) {
+  <div class="flex h-screen items-center justify-center bg-hc-app">
+    <div class="max-w-sm rounded-xl border border-hc-border bg-hc-card p-6 text-center">
+      <p class="mb-4 text-sm text-hc-error">{{ error() }}</p>
+      <button (click)="back()" class="hc-btn-secondary text-sm">{{ 'DICOM.BACK' | translate }}</button>
+    </div>
+  </div>
+}
+
+<!-- Visor principal -->
+@else {
+  <div #viewerContainer class="flex h-screen flex-col overflow-hidden bg-hc-app text-hc-text">
+
+    <!-- ── Header ─────────────────────────────────────────────────────────── -->
+    <header class="flex h-12 shrink-0 items-center gap-2 border-b border-hc-border bg-hc-surface px-2 sm:gap-3 sm:px-4">
+
+      <!-- Toggle sidebar -->
+      <button (click)="toggleSidebar()"
+              [title]="'DICOM.TOGGLE_SIDEBAR' | translate"
+              class="flex items-center justify-center rounded-md p-1.5 text-hc-text-3 hover:bg-hc-muted hover:text-hc-text transition-colors">
+        <lucide-angular [img]="sidebarOpen() ? PanelLeftClose : PanelLeftOpen" [size]="16"></lucide-angular>
+      </button>
+
+      <button (click)="back()"
+              class="flex items-center gap-1.5 rounded-md px-2 py-1 text-xs text-hc-text-3 hover:bg-hc-muted hover:text-hc-text transition-colors">
+        <lucide-angular [img]="ArrowLeft" [size]="14"></lucide-angular>
+        <span class="hidden sm:inline">{{ 'DICOM.BACK' | translate }}</span>
+      </button>
+
+      <div class="hidden h-5 w-px bg-hc-border sm:block"></div>
+
+      @if (study(); as s) {
+        <lucide-angular [img]="Layers" [size]="14" class="hidden text-hc-primary sm:inline"></lucide-angular>
+        <span class="text-sm font-medium text-hc-text truncate max-w-[40vw] sm:max-w-xs">
+          {{ s.studyDescription ?? ('DICOM.STUDY_NO_DESCRIPTION' | translate) }}
+        </span>
+        @if (s.studyDate) {
+          <span class="hidden text-xs text-hc-text-3 sm:inline">· {{ s.studyDate }}</span>
+        }
+        @if (s.accessionNumber) {
+          <span class="hidden rounded bg-hc-muted px-1.5 py-0.5 text-xs text-hc-text-3 md:inline">
+            ACC: {{ s.accessionNumber }}
+          </span>
+        }
+      }
+    </header>
+
+    <!-- ── Cuerpo ──────────────────────────────────────────────────────────── -->
+    <div class="relative flex flex-1 overflow-hidden">
+
+      <!-- Backdrop móvil cuando el sidebar está abierto -->
+      @if (sidebarOpen()) {
+        <div (click)="closeSidebar()"
+             class="absolute inset-0 z-20 bg-black/40 md:hidden"></div>
+      }
+
+      <!-- Panel lateral: series + instancias de la serie activa -->
+      <!--
+        Móvil: overlay con `absolute` + translate (sale completamente fuera).
+        Desktop (md+): pasa a `static`, el ancho 0 / 56 lo expulsa o muestra en el flex.
+      -->
+      <aside [class]="'absolute inset-y-0 left-0 z-30 flex w-72 shrink-0 flex-col gap-1
+                       overflow-y-auto border-r border-hc-border bg-hc-surface p-2 shadow-xl
+                       transition-all duration-200
+                       md:static md:z-0 md:shadow-none ' +
+                      (sidebarOpen()
+                        ? 'translate-x-0 md:w-56'
+                        : '-translate-x-full md:translate-x-0 md:w-0 md:overflow-hidden md:border-r-0 md:p-0')">
+
+        <div class="flex items-center justify-between px-2 py-1">
+          <p class="text-xs font-semibold uppercase tracking-wider text-hc-text-3">
+            {{ 'DICOM.SERIES' | translate }}
+          </p>
+          <button (click)="closeSidebar()"
+                  [title]="'DICOM.TOGGLE_SIDEBAR' | translate"
+                  class="rounded p-1 text-hc-text-3 hover:bg-hc-muted hover:text-hc-text md:hidden">
+            <lucide-angular [img]="PanelLeftClose" [size]="14"></lucide-angular>
+          </button>
+        </div>
+
+        @if (study(); as s) {
+          @for (series of s.series; track series.id) {
+
+            <!-- Cabecera de serie: chevron (toggle) + cuerpo (load) -->
+            <div class="flex flex-col gap-1">
+              <div [class]="'group flex w-full items-start gap-1 rounded-lg border transition-colors ' +
+                            (activeSeries()?.id === series.id
+                              ? 'border-hc-primary/50 bg-hc-primary/10 text-hc-primary'
+                              : 'border-transparent hover:border-hc-border hover:bg-hc-muted text-hc-text-2')">
+
+                <!-- Botón chevron: SOLO toggle de expansión, no carga la serie -->
+                <button type="button"
+                        (click)="toggleSeries(series.id)"
+                        [title]="(isSeriesExpanded(series.id) ? 'WORKFLOW.HISTORY_HIDE_CONTENT' : 'WORKFLOW.HISTORY_SHOW_CONTENT') | translate"
+                        class="flex shrink-0 items-center justify-center rounded-l-lg p-2 text-hc-text-3 hover:text-hc-text">
+                  <lucide-angular
+                    [img]="isSeriesExpanded(series.id) ? ChevronDown : ChevronRight"
+                    [size]="14"></lucide-angular>
+                </button>
+
+                <!-- Botón cuerpo: carga la serie -->
+                <button type="button"
+                        (click)="loadSeries(series)"
+                        class="flex min-w-0 flex-1 items-start gap-2 rounded-r-lg py-2.5 pr-3 text-left">
+                  <div class="flex min-w-0 flex-1 flex-col gap-1">
+                    <span [class]="'self-start rounded px-1.5 py-0.5 text-[10px] font-bold ' + modalityBadgeClass(series.modality)">
+                      {{ series.modality }}
+                    </span>
+                    <span class="text-xs font-medium leading-snug truncate">{{ seriesLabel(series) }}</span>
+                    <span class="text-[10px] text-hc-text-3">{{ series.instances.length }} {{ 'DICOM.IMAGES' | translate }}</span>
+                  </div>
+                </button>
+              </div>
+
+              <!-- Instancias plegables (cuando la serie está expandida) -->
+              @if (isSeriesExpanded(series.id) && activeSeries()?.id === series.id && activeInstances().length > 0) {
+                <div class="mb-1 ml-2 flex flex-col gap-0.5 border-l border-hc-border pl-2">
+                  @for (inst of activeInstances(); track inst.id; let i = $index) {
+                    <button
+                      (click)="jumpTo(i)"
+                      [class]="'flex w-full items-center gap-2 rounded px-2 py-1 text-left transition-colors ' +
+                               (currentIndex() === i
+                                 ? 'bg-hc-primary/20 text-hc-primary'
+                                 : 'text-hc-text-3 hover:bg-hc-muted hover:text-hc-text-2')">
+                      <span class="font-mono text-[10px] text-hc-text-3 w-6 shrink-0">{{ i + 1 }}</span>
+                      <span class="text-[11px] truncate">{{ instanceLabel(inst, i) }}</span>
+                    </button>
+                  }
+                </div>
+              }
+            </div>
+          }
+        }
+      </aside>
+
+      <!-- Área del visor -->
+      <div class="flex flex-1 flex-col overflow-hidden">
+
+        <!-- ── Barra de herramientas ─────────────────────────────────────── -->
+        <div class="flex h-auto min-h-11 shrink-0 flex-wrap items-center gap-1 border-b border-hc-border bg-hc-surface px-2 py-1 sm:px-3">
+
+          <!-- Herramientas -->
+          @for (tool of tools; track tool.name) {
+            <button
+              (click)="selectTool(tool.name)"
+              [title]="tool.tooltip | translate"
+              [class]="'flex items-center gap-1.5 rounded-md px-2 py-1.5 text-xs font-medium transition-colors sm:px-2.5 ' +
+                       (activeTool() === tool.name
+                         ? 'bg-hc-primary text-white shadow'
+                         : 'text-hc-text-3 hover:bg-hc-muted hover:text-hc-text')">
+              <lucide-angular [img]="tool.icon" [size]="13" [strokeWidth]="activeTool() === tool.name ? 2.5 : 2"></lucide-angular>
+              <span class="hidden sm:inline">{{ tool.label | translate }}</span>
+            </button>
+          }
+
+          <div class="mx-1 hidden h-5 w-px bg-hc-border sm:block"></div>
+
+          <!-- Reset -->
+          <button (click)="resetView()" [title]="'DICOM.RESET_TITLE' | translate"
+                  class="flex items-center gap-1.5 rounded-md px-2 py-1.5 text-xs text-hc-text-3 hover:bg-hc-muted hover:text-hc-text transition-colors sm:px-2.5">
+            <lucide-angular [img]="RotateCcw" [size]="13"></lucide-angular>
+            <span class="hidden sm:inline">{{ 'DICOM.RESET' | translate }}</span>
+          </button>
+
+          <!-- Selector de LUT / Colormap -->
+          <div [class]="'flex items-center gap-1 rounded-md px-1 py-0.5 transition-colors ' +
+                        (colormap() !== 'Grayscale'
+                          ? 'bg-gradient-to-r from-red-500/20 via-yellow-400/20 to-blue-500/20'
+                          : 'bg-hc-muted/40')">
+            <lucide-angular [img]="Palette" [size]="13"
+                            [class]="colormap() !== 'Grayscale' ? 'text-hc-primary' : 'text-hc-text-3'">
+            </lucide-angular>
+            <select [value]="colormap()"
+                    (change)="setColormap($any($event.target).value)"
+                    [title]="'DICOM.LUT_SELECT' | translate"
+                    class="cursor-pointer rounded bg-transparent py-0.5 text-[11px] text-hc-text-2 focus:outline-none">
+              @for (p of lutPresets; track p.id) {
+                <option [value]="p.id">{{ p.label }}</option>
+              }
+            </select>
+          </div>
+
+          <!-- Selector de zoom de la lupa (visible solo cuando la lupa está activa) -->
+          @if (activeTool() === 'Magnify') {
+            <div class="flex items-center gap-1 rounded-md bg-hc-primary/10 px-1.5 py-0.5 border border-hc-primary/30">
+              <lucide-angular [img]="Search" [size]="12" class="text-hc-primary"></lucide-angular>
+              <select [value]="magnifyZoom()"
+                      (change)="setMagnifyZoom(+($any($event.target).value))"
+                      [title]="'DICOM.MAGNIFY_ZOOM' | translate"
+                      class="cursor-pointer rounded bg-transparent py-0.5 text-[11px] font-medium text-hc-primary focus:outline-none">
+                @for (z of magnifyZoomOptions; track z) {
+                  <option [value]="z">{{ z }}×</option>
+                }
+              </select>
+            </div>
+          }
+
+          <div class="flex-1"></div>
+
+          <!-- Botón pantalla completa -->
+          <button (click)="toggleFullscreen()"
+                  [title]="(isFullscreen() ? 'DICOM.EXIT_FULLSCREEN' : 'DICOM.FULLSCREEN') | translate"
+                  class="flex items-center gap-1.5 rounded-md px-2 py-1.5 text-xs text-hc-text-3 hover:bg-hc-muted hover:text-hc-text transition-colors sm:px-2.5">
+            <lucide-angular [img]="isFullscreen() ? Minimize : Maximize" [size]="13"></lucide-angular>
+            <span class="hidden sm:inline">{{ (isFullscreen() ? 'DICOM.EXIT_FULLSCREEN' : 'DICOM.FULLSCREEN') | translate }}</span>
+          </button>
+
+          <!-- ─── Reproducción automática (cine-mode) ─── -->
+          @if (totalImages() > 1) {
+            <div class="flex items-center gap-1 rounded-md bg-hc-muted/40 px-1 py-0.5">
+
+              <button (click)="togglePlay()"
+                      [title]="(playing() ? 'DICOM.PAUSE' : 'DICOM.PLAY') | translate"
+                      class="flex items-center justify-center rounded-md p-1.5 text-hc-text-2 hover:bg-hc-primary/20 hover:text-hc-primary transition-colors">
+                <lucide-angular [img]="playing() ? Pause : Play" [size]="14"></lucide-angular>
+              </button>
+
+              <!-- Selector de FPS -->
+              <div class="flex items-center gap-1 px-1">
+                <lucide-angular [img]="Gauge" [size]="12" class="text-hc-text-3"></lucide-angular>
+                <select [value]="fps()"
+                        (change)="setFps(+($any($event.target).value))"
+                        [title]="'DICOM.SPEED' | translate"
+                        class="cursor-pointer rounded bg-transparent text-[11px] text-hc-text-2 focus:outline-none">
+                  @for (s of speedOptions; track s) {
+                    <option [value]="s">{{ s }} fps</option>
+                  }
+                </select>
+              </div>
+
+              <button (click)="toggleLoop()"
+                      [title]="'DICOM.LOOP' | translate"
+                      [class]="'flex items-center justify-center rounded-md p-1.5 transition-colors ' +
+                               (loop() ? 'text-hc-primary bg-hc-primary/15' : 'text-hc-text-3 hover:bg-hc-muted hover:text-hc-text-2')">
+                <lucide-angular [img]="Repeat" [size]="13"></lucide-angular>
+              </button>
+            </div>
+
+            <div class="mx-1 hidden h-5 w-px bg-hc-border sm:block"></div>
+          }
+
+          <!-- Navegación de instancias (manual frame-by-frame) -->
+          <div class="flex items-center gap-1">
+            <button (click)="navigate(-1)"
+                    [disabled]="currentIndex() === 0"
+                    [title]="'DICOM.PREV_FRAME' | translate"
+                    class="rounded-md p-1.5 text-hc-text-3 hover:bg-hc-muted hover:text-hc-text disabled:cursor-not-allowed disabled:opacity-30 transition-colors">
+              <lucide-angular [img]="ChevronLeft" [size]="15"></lucide-angular>
+            </button>
+
+            <span class="min-w-[70px] text-center text-xs text-hc-text-3 sm:min-w-[80px]">
+              @if (totalImages() > 0) {
+                <span class="font-mono text-hc-text">{{ currentIndex() + 1 }}</span>
+                <span> / {{ totalImages() }}</span>
+              }
+            </span>
+
+            <button (click)="navigate(1)"
+                    [disabled]="currentIndex() >= totalImages() - 1"
+                    [title]="'DICOM.NEXT_FRAME' | translate"
+                    class="rounded-md p-1.5 text-hc-text-3 hover:bg-hc-muted hover:text-hc-text disabled:cursor-not-allowed disabled:opacity-30 transition-colors">
+              <lucide-angular [img]="ChevronRight" [size]="15"></lucide-angular>
+            </button>
+          </div>
+        </div>
+
+        <!-- ── Viewport Cornerstone3D ─────────────────────────────────────── -->
+        <div class="relative flex-1 overflow-hidden bg-black">
+
+          <!-- Spinner mientras Cornerstone carga -->
+          @if (viewerLoading()) {
+            <div class="absolute inset-0 z-10 flex items-center justify-center bg-black/70">
+              <div class="h-8 w-8 animate-spin rounded-full border-4 border-slate-700 border-t-teal-400"></div>
+            </div>
+          }
+
+          <div #viewport class="h-full w-full" style="min-height: 300px;"></div>
+
+          <!-- Barra de progreso (cine-mode) -->
+          @if (totalImages() > 1) {
+            <div class="pointer-events-none absolute inset-x-0 bottom-0 h-1 bg-black/40">
+              <div class="h-full bg-hc-primary transition-all"
+                   [style.width.%]="totalImages() > 0 ? ((currentIndex() + 1) / totalImages()) * 100 : 0"></div>
+            </div>
+          }
+        </div>
+
+        <!-- ── Barra de estado ─────────────────────────────────────────────── -->
+        <div class="flex h-8 shrink-0 items-center gap-3 border-t border-hc-border bg-hc-surface px-2 sm:gap-4 sm:px-4">
+          <lucide-angular [img]="Info" [size]="11" class="text-hc-text-3"></lucide-angular>
+
+          @if (activeSeries(); as s) {
+            <span class="truncate text-[11px] text-hc-text-3">
+              {{ s.modality }} · {{ s.bodyPart ?? ('DICOM.NO_REGION' | translate) }}
+            </span>
+          }
+
+          <div class="hidden h-3 w-px bg-hc-border sm:block"></div>
+
+          <span class="hidden text-[11px] text-hc-text-3 sm:inline">
+            WW: <span class="font-mono text-hc-text-2">{{ windowWidth() }}</span>
+          </span>
+          <span class="hidden text-[11px] text-hc-text-3 sm:inline">
+            WC: <span class="font-mono text-hc-text-2">{{ windowCenter() }}</span>
+          </span>
+
+          <div class="flex-1"></div>
+
+          @if (playing()) {
+            <span class="flex items-center gap-1 text-[11px] text-hc-primary">
+              <span class="h-1.5 w-1.5 animate-pulse rounded-full bg-hc-primary"></span>
+              {{ fps() }} fps
+            </span>
+          }
+
+          <span class="hidden text-[11px] text-hc-text-3 opacity-60 sm:inline">Cornerstone3D v2</span>
+        </div>
+      </div>
+    </div>
+  </div>
+}

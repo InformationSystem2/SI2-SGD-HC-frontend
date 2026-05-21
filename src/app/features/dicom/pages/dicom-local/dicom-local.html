@@ -1,0 +1,293 @@
+<div #viewerContainer class="flex h-screen flex-col overflow-hidden bg-hc-app text-hc-text">
+
+  <!-- ── Header ──────────────────────────────────────────────────────────── -->
+  <header class="flex h-12 shrink-0 items-center gap-2 border-b border-hc-border bg-hc-surface px-2 sm:gap-3 sm:px-4">
+
+    @if (files().length > 0) {
+      <button (click)="toggleSidebar()"
+              [title]="'DICOM.TOGGLE_SIDEBAR' | translate"
+              class="flex items-center justify-center rounded-md p-1.5 text-hc-text-3 hover:bg-hc-muted hover:text-hc-text transition-colors">
+        <lucide-angular [img]="sidebarOpen() ? PanelLeftClose : PanelLeftOpen" [size]="16"></lucide-angular>
+      </button>
+    }
+
+    <button (click)="back()"
+            class="flex items-center gap-1.5 rounded-md px-2 py-1 text-xs text-hc-text-3 hover:bg-hc-muted hover:text-hc-text transition-colors">
+      <lucide-angular [img]="ArrowLeft" [size]="14"></lucide-angular>
+      <span class="hidden sm:inline">{{ 'DICOM.BACK' | translate }}</span>
+    </button>
+
+    <div class="hidden h-5 w-px bg-hc-border sm:block"></div>
+
+    <span class="truncate text-sm font-medium text-hc-text">{{ 'DICOM.LOCAL_TITLE' | translate }}</span>
+    <span class="hidden text-xs text-hc-text-3 md:inline">{{ 'DICOM.LOCAL_SUBTITLE' | translate }}</span>
+
+    <div class="flex-1"></div>
+
+    @if (files().length > 0) {
+      <!-- Añadir más archivos -->
+      <label class="flex cursor-pointer items-center gap-1.5 rounded-md border border-hc-border px-2 py-1 text-xs text-hc-text-2 hover:bg-hc-muted transition-colors sm:px-2.5">
+        <lucide-angular [img]="FilePlus" [size]="13"></lucide-angular>
+        <span class="hidden sm:inline">{{ 'DICOM.ADD' | translate }}</span>
+        <input type="file" accept=".dcm,application/dicom" multiple class="hidden"
+               (change)="onFilesSelected($any($event.target))">
+      </label>
+
+      <!-- Limpiar -->
+      <button (click)="removeAll()"
+              class="flex items-center gap-1.5 rounded-md px-2 py-1 text-xs text-hc-text-3 hover:bg-hc-error-bg hover:text-hc-error transition-colors">
+        <lucide-angular [img]="X" [size]="13"></lucide-angular>
+        <span class="hidden sm:inline">{{ 'DICOM.CLEAR' | translate }}</span>
+      </button>
+    }
+  </header>
+
+  <!-- ── Pantalla de drop inicial ────────────────────────────────────────── -->
+  @if (files().length === 0) {
+    <div class="flex flex-1 items-center justify-center p-4 sm:p-8">
+      <div (dragover)="onDragOver($event)"
+           (dragleave)="onDragLeave()"
+           (drop)="onDrop($event)"
+           [class]="'relative flex w-full max-w-2xl flex-col items-center justify-center gap-4 rounded-2xl border-2 border-dashed px-4 py-12 text-center transition-colors sm:px-8 sm:py-16 ' +
+                    (dragOver() ? 'border-hc-primary bg-hc-primary/10' : 'border-hc-border hover:border-hc-border-i bg-hc-card/40')">
+
+        <div class="rounded-full bg-hc-muted p-4">
+          <lucide-angular [img]="Upload" [size]="32" class="text-hc-primary"></lucide-angular>
+        </div>
+
+        <div>
+          <p class="text-lg font-medium text-hc-text">{{ 'DICOM.DROP_HERE' | translate }}</p>
+          <p class="mt-1 text-xs text-hc-text-3">{{ 'DICOM.DROP_SUBTEXT' | translate }}</p>
+        </div>
+
+        <input type="file" accept=".dcm,application/dicom" multiple
+               (change)="onFilesSelected($any($event.target))"
+               class="absolute inset-0 cursor-pointer opacity-0">
+
+        @if (error()) {
+          <p class="mt-2 text-xs text-hc-error">{{ error() }}</p>
+        }
+      </div>
+    </div>
+  }
+
+  <!-- ── Visor con stack ─────────────────────────────────────────────────── -->
+  @else {
+    <div class="relative flex flex-1 overflow-hidden">
+
+      <!-- Backdrop móvil cuando el sidebar está abierto -->
+      @if (sidebarOpen()) {
+        <div (click)="closeSidebar()"
+             class="absolute inset-0 z-20 bg-black/40 md:hidden"></div>
+      }
+
+      <!-- Tira lateral de miniaturas (lista de archivos) -->
+      <aside [class]="'absolute inset-y-0 left-0 z-30 flex w-72 shrink-0 flex-col gap-1
+                       overflow-y-auto border-r border-hc-border bg-hc-surface p-2 shadow-xl
+                       transition-all duration-200
+                       md:static md:z-0 md:shadow-none ' +
+                      (sidebarOpen()
+                        ? 'translate-x-0 md:w-52'
+                        : '-translate-x-full md:translate-x-0 md:w-0 md:overflow-hidden md:border-r-0 md:p-0')">
+
+        <div class="flex items-center justify-between px-2 py-1">
+          <p class="text-xs font-semibold uppercase tracking-wider text-hc-text-3">
+            {{ files().length }} {{ files().length === 1 ? ('DICOM.IMAGE' | translate) : ('DICOM.IMAGES' | translate) }}
+          </p>
+          <button (click)="closeSidebar()"
+                  [title]="'DICOM.TOGGLE_SIDEBAR' | translate"
+                  class="rounded p-1 text-hc-text-3 hover:bg-hc-muted hover:text-hc-text md:hidden">
+            <lucide-angular [img]="PanelLeftClose" [size]="14"></lucide-angular>
+          </button>
+        </div>
+
+        @for (f of files(); track f.imageId; let i = $index) {
+          <button
+            (click)="jumpTo(i)"
+            [class]="'group flex w-full items-center gap-2 rounded-md border px-2.5 py-2 text-left transition-colors ' +
+                     (currentIndex() === i
+                       ? 'border-hc-primary/50 bg-hc-primary/10 text-hc-primary'
+                       : 'border-transparent hover:border-hc-border hover:bg-hc-muted text-hc-text-2')">
+            <span class="font-mono text-[10px] text-hc-text-3 shrink-0 w-6">{{ i + 1 }}</span>
+            <span class="text-xs truncate">{{ f.name }}</span>
+          </button>
+        }
+      </aside>
+
+      <!-- Área del visor -->
+      <div class="flex flex-1 flex-col overflow-hidden">
+
+        <!-- ── Barra de herramientas ─────────────────────────────────────── -->
+        <div class="flex h-auto min-h-11 shrink-0 flex-wrap items-center gap-1 border-b border-hc-border bg-hc-surface px-2 py-1 sm:px-3">
+
+          @for (tool of tools; track tool.name) {
+            <button (click)="selectTool(tool.name)"
+                    [title]="tool.tooltip | translate"
+                    [class]="'flex items-center gap-1.5 rounded-md px-2 py-1.5 text-xs font-medium transition-colors sm:px-2.5 ' +
+                             (activeTool() === tool.name
+                               ? 'bg-hc-primary text-white shadow'
+                               : 'text-hc-text-3 hover:bg-hc-muted hover:text-hc-text')">
+              <lucide-angular [img]="tool.icon" [size]="13" [strokeWidth]="activeTool() === tool.name ? 2.5 : 2"></lucide-angular>
+              <span class="hidden sm:inline">{{ tool.label | translate }}</span>
+            </button>
+          }
+
+          <div class="mx-1 hidden h-5 w-px bg-hc-border sm:block"></div>
+
+          <button (click)="resetView()" [title]="'DICOM.RESET_TITLE' | translate"
+                  class="flex items-center gap-1.5 rounded-md px-2 py-1.5 text-xs text-hc-text-3 hover:bg-hc-muted hover:text-hc-text transition-colors sm:px-2.5">
+            <lucide-angular [img]="RotateCcw" [size]="13"></lucide-angular>
+            <span class="hidden sm:inline">{{ 'DICOM.RESET' | translate }}</span>
+          </button>
+
+          <!-- Selector de LUT / Colormap -->
+          <div [class]="'flex items-center gap-1 rounded-md px-1 py-0.5 transition-colors ' +
+                        (colormap() !== 'Grayscale'
+                          ? 'bg-gradient-to-r from-red-500/20 via-yellow-400/20 to-blue-500/20'
+                          : 'bg-hc-muted/40')">
+            <lucide-angular [img]="Palette" [size]="13"
+                            [class]="colormap() !== 'Grayscale' ? 'text-hc-primary' : 'text-hc-text-3'">
+            </lucide-angular>
+            <select [value]="colormap()"
+                    (change)="setColormap($any($event.target).value)"
+                    [title]="'DICOM.LUT_SELECT' | translate"
+                    class="cursor-pointer rounded bg-transparent py-0.5 text-[11px] text-hc-text-2 focus:outline-none">
+              @for (p of lutPresets; track p.id) {
+                <option [value]="p.id">{{ p.label }}</option>
+              }
+            </select>
+          </div>
+
+          <!-- Selector de zoom de la lupa -->
+          @if (activeTool() === 'Magnify') {
+            <div class="flex items-center gap-1 rounded-md bg-hc-primary/10 px-1.5 py-0.5 border border-hc-primary/30">
+              <lucide-angular [img]="Search" [size]="12" class="text-hc-primary"></lucide-angular>
+              <select [value]="magnifyZoom()"
+                      (change)="setMagnifyZoom(+($any($event.target).value))"
+                      [title]="'DICOM.MAGNIFY_ZOOM' | translate"
+                      class="cursor-pointer rounded bg-transparent py-0.5 text-[11px] font-medium text-hc-primary focus:outline-none">
+                @for (z of magnifyZoomOptions; track z) {
+                  <option [value]="z">{{ z }}×</option>
+                }
+              </select>
+            </div>
+          }
+
+          <div class="flex-1"></div>
+
+          <!-- Botón pantalla completa -->
+          <button (click)="toggleFullscreen()"
+                  [title]="(isFullscreen() ? 'DICOM.EXIT_FULLSCREEN' : 'DICOM.FULLSCREEN') | translate"
+                  class="flex items-center gap-1.5 rounded-md px-2 py-1.5 text-xs text-hc-text-3 hover:bg-hc-muted hover:text-hc-text transition-colors sm:px-2.5">
+            <lucide-angular [img]="isFullscreen() ? Minimize : Maximize" [size]="13"></lucide-angular>
+            <span class="hidden sm:inline">{{ (isFullscreen() ? 'DICOM.EXIT_FULLSCREEN' : 'DICOM.FULLSCREEN') | translate }}</span>
+          </button>
+
+          <!-- ─── Reproducción automática (cine-mode) ─── -->
+          @if (files().length > 1) {
+            <div class="flex items-center gap-1 rounded-md bg-hc-muted/40 px-1 py-0.5">
+
+              <button (click)="togglePlay()"
+                      [title]="(playing() ? 'DICOM.PAUSE' : 'DICOM.PLAY') | translate"
+                      class="flex items-center justify-center rounded-md p-1.5 text-hc-text-2 hover:bg-hc-primary/20 hover:text-hc-primary transition-colors">
+                <lucide-angular [img]="playing() ? Pause : Play" [size]="14"></lucide-angular>
+              </button>
+
+              <!-- Selector de FPS -->
+              <div class="flex items-center gap-1 px-1">
+                <lucide-angular [img]="Gauge" [size]="12" class="text-hc-text-3"></lucide-angular>
+                <select [value]="fps()"
+                        (change)="setFps(+($any($event.target).value))"
+                        [title]="'DICOM.SPEED' | translate"
+                        class="cursor-pointer rounded bg-transparent text-[11px] text-hc-text-2 focus:outline-none">
+                  @for (s of speedOptions; track s) {
+                    <option [value]="s">{{ s }} fps</option>
+                  }
+                </select>
+              </div>
+
+              <button (click)="toggleLoop()"
+                      [title]="'DICOM.LOOP' | translate"
+                      [class]="'flex items-center justify-center rounded-md p-1.5 transition-colors ' +
+                               (loop() ? 'text-hc-primary bg-hc-primary/15' : 'text-hc-text-3 hover:bg-hc-muted hover:text-hc-text-2')">
+                <lucide-angular [img]="Repeat" [size]="13"></lucide-angular>
+              </button>
+            </div>
+
+            <div class="mx-1 hidden h-5 w-px bg-hc-border sm:block"></div>
+          }
+
+          <!-- Navegación manual -->
+          <div class="flex items-center gap-1">
+            <button (click)="navigate(-1)"
+                    [disabled]="currentIndex() === 0"
+                    [title]="'DICOM.PREV_FRAME' | translate"
+                    class="rounded-md p-1.5 text-hc-text-3 hover:bg-hc-muted hover:text-hc-text disabled:cursor-not-allowed disabled:opacity-30 transition-colors">
+              <lucide-angular [img]="ChevronLeft" [size]="15"></lucide-angular>
+            </button>
+
+            <span class="min-w-[70px] text-center text-xs text-hc-text-3 sm:min-w-[80px]">
+              <span class="font-mono text-hc-text">{{ currentIndex() + 1 }}</span>
+              <span> / {{ files().length }}</span>
+            </span>
+
+            <button (click)="navigate(1)"
+                    [disabled]="currentIndex() >= files().length - 1"
+                    [title]="'DICOM.NEXT_FRAME' | translate"
+                    class="rounded-md p-1.5 text-hc-text-3 hover:bg-hc-muted hover:text-hc-text disabled:cursor-not-allowed disabled:opacity-30 transition-colors">
+              <lucide-angular [img]="ChevronRight" [size]="15"></lucide-angular>
+            </button>
+          </div>
+        </div>
+
+        <!-- ── Viewport Cornerstone3D ─────────────────────────────────────── -->
+        <div class="relative flex-1 overflow-hidden bg-black">
+
+          @if (viewerLoading()) {
+            <div class="absolute inset-0 z-10 flex items-center justify-center bg-black/70">
+              <div class="h-8 w-8 animate-spin rounded-full border-4 border-slate-700 border-t-teal-400"></div>
+            </div>
+          }
+
+          <div #viewport class="h-full w-full" style="min-height: 300px;"></div>
+
+          <!-- Hint de scroll, sólo cuando hay más de una imagen y no se está reproduciendo -->
+          @if (files().length > 1 && !playing()) {
+            <div class="pointer-events-none absolute bottom-3 left-1/2 -translate-x-1/2 rounded-full bg-black/70 px-3 py-1 text-[11px] text-slate-400 backdrop-blur">
+              {{ 'DICOM.SCROLL_HINT' | translate }}
+            </div>
+          }
+
+          <!-- Barra de progreso (cine-mode) -->
+          @if (files().length > 1) {
+            <div class="pointer-events-none absolute inset-x-0 bottom-0 h-1 bg-black/40">
+              <div class="h-full bg-hc-primary transition-all"
+                   [style.width.%]="files().length > 0 ? ((currentIndex() + 1) / files().length) * 100 : 0"></div>
+            </div>
+          }
+        </div>
+
+        <!-- ── Barra de estado ─────────────────────────────────────────────── -->
+        <div class="flex h-8 shrink-0 items-center gap-3 border-t border-hc-border bg-hc-surface px-2 sm:gap-4 sm:px-4">
+          <span class="text-[11px] text-hc-text-3">
+            WW: <span class="font-mono text-hc-text-2">{{ windowWidth() }}</span>
+          </span>
+          <span class="text-[11px] text-hc-text-3">
+            WC: <span class="font-mono text-hc-text-2">{{ windowCenter() }}</span>
+          </span>
+
+          <div class="flex-1"></div>
+
+          @if (playing()) {
+            <span class="flex items-center gap-1 text-[11px] text-hc-primary">
+              <span class="h-1.5 w-1.5 animate-pulse rounded-full bg-hc-primary"></span>
+              {{ fps() }} fps
+            </span>
+          }
+
+          <span class="hidden text-[11px] text-hc-text-3 opacity-60 sm:inline">Cornerstone3D v2 · stack local</span>
+        </div>
+      </div>
+    </div>
+  }
+</div>

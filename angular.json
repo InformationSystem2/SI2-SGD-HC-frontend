@@ -40,13 +40,18 @@
               "budgets": [
                 {
                   "type": "initial",
-                  "maximumWarning": "500kB",
-                  "maximumError": "1MB"
+                  "maximumWarning": "1MB",
+                  "maximumError": "2MB"
                 },
                 {
                   "type": "anyComponentStyle",
                   "maximumWarning": "4kB",
                   "maximumError": "8kB"
+                },
+                {
+                  "type": "anyScript",
+                  "maximumWarning": "4MB",
+                  "maximumError": "8MB"
                 }
               ],
               "outputHashing": "all"
@@ -77,7 +82,10 @@
               "buildTarget": "sgd-hc-front:build:production"
             },
             "development": {
-              "buildTarget": "sgd-hc-front:build:development"
+              "buildTarget": "sgd-hc-front:build:development",
+              "prebundle": {
+                "exclude": ["@cornerstonejs/dicom-image-loader"]
+              }
             },
             "docker": {
               "buildTarget": "sgd-hc-front:build:docker"

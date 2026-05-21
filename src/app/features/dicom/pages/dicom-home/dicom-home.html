@@ -1,0 +1,296 @@
+<div class="flex h-screen flex-col overflow-hidden bg-hc-app text-hc-text">
+
+  <!-- Header -->
+  <header class="flex h-auto min-h-12 shrink-0 flex-wrap items-center justify-between gap-2
+                 border-b border-hc-border bg-hc-surface px-3 py-2 sm:h-12 sm:flex-nowrap sm:px-6 sm:py-0">
+    <div class="flex items-center gap-2 sm:gap-3">
+      <button (click)="back()"
+              class="flex items-center gap-1.5 rounded-md px-2 py-1 text-xs text-hc-text-3
+                     hover:bg-hc-muted hover:text-hc-text transition-colors">
+        <lucide-angular [img]="ArrowLeft" [size]="14"></lucide-angular>
+        <span class="hidden xs:inline sm:inline">{{ 'DICOM.BACK' | translate }}</span>
+      </button>
+      <div class="hidden h-5 w-px bg-hc-border sm:block"></div>
+      <lucide-angular [img]="Layers" [size]="16" class="text-hc-primary"></lucide-angular>
+      <span class="text-sm font-semibold text-hc-text truncate">{{ 'DICOM.TITLE' | translate }}</span>
+    </div>
+
+    <div class="flex flex-wrap items-center gap-2">
+      <button (click)="openLocalViewer()"
+              class="flex items-center gap-1.5 rounded-lg border border-hc-border px-2 py-1.5
+                     text-xs font-medium text-hc-text-2 hover:bg-hc-muted transition-colors sm:px-3">
+        <lucide-angular [img]="FolderOpen" [size]="13"></lucide-angular>
+        <span class="hidden sm:inline">{{ 'DICOM.QUICK_VIEWER' | translate }}</span>
+      </button>
+      <button (click)="toggleUpload()"
+              class="flex items-center gap-1.5 rounded-lg bg-hc-primary px-2 py-1.5
+                     text-xs font-medium text-white hover:bg-hc-primary-dark transition-colors sm:px-3">
+        <lucide-angular [img]="Upload" [size]="13"></lucide-angular>
+        <span class="hidden sm:inline">{{ 'DICOM.UPLOAD_BTN' | translate }}</span>
+      </button>
+    </div>
+  </header>
+
+  <div class="flex flex-1 flex-col gap-0 overflow-hidden">
+
+    <!-- Panel de carga -->
+    @if (showUpload()) {
+      <div class="shrink-0 border-b border-hc-border bg-hc-surface p-3 sm:p-6">
+        <h2 class="mb-4 text-sm font-semibold text-hc-text">
+          {{ 'DICOM.UPLOAD_TITLE' | translate }}
+          <span class="ml-2 block text-xs font-normal text-hc-text-3 sm:inline">{{ 'DICOM.UPLOAD_HINT' | translate }}</span>
+        </h2>
+
+        <div class="grid grid-cols-1 gap-4 lg:grid-cols-[280px_1fr]">
+
+          <!-- Selector de paciente -->
+          <div class="flex flex-col gap-1">
+            <label class="hc-label">{{ 'DICOM.FIELD_PATIENT' | translate }}</label>
+            <select [(ngModel)]="selectedPatientId" class="hc-select">
+              <option value="">{{ 'DICOM.SELECT_PATIENT' | translate }}</option>
+              @for (p of allPatients(); track p.id) {
+                <option [value]="p.id">{{ patientName(p) }}</option>
+              }
+            </select>
+          </div>
+
+          <!-- Drop zone múltiple -->
+          <div class="flex flex-col gap-1">
+            <label class="hc-label">
+              {{ 'DICOM.FILES_LABEL' | translate }}
+              @if (selectedFiles().length > 0) {
+                <span class="ml-1 text-hc-text-3">· {{ selectedFiles().length }} · {{ formatBytes(totalBytes()) }}</span>
+              }
+            </label>
+
+            <div (dragover)="onDragOver($event)"
+                 (dragleave)="onDragLeave()"
+                 (drop)="onDrop($event)"
+                 [class]="'relative flex min-h-[80px] cursor-pointer flex-col items-center justify-center rounded-md border-2 border-dashed px-4 py-4 transition-colors text-center ' +
+                          (dragOver ? 'border-hc-primary bg-hc-primary/10' : 'border-hc-border hover:border-hc-border-i')">
+              <lucide-angular [img]="Upload" [size]="18" class="mb-1 text-hc-text-3"></lucide-angular>
+              <span class="text-xs text-hc-text-3">{{ 'DICOM.DROP_FILES' | translate }}</span>
+              <input type="file" accept=".dcm,application/dicom" multiple
+                     (change)="onFilesSelected($any($event.target))"
+                     class="absolute inset-0 cursor-pointer opacity-0">
+            </div>
+
+            @if (selectedFiles().length > 0) {
+              <div class="mt-2 max-h-40 overflow-y-auto rounded-md border border-hc-border bg-hc-app/60 p-2">
+                @for (f of selectedFiles(); track f.name + f.size) {
+                  <div class="flex items-center gap-2 rounded px-2 py-1 hover:bg-hc-muted">
+                    <lucide-angular [img]="FileIcon" [size]="11" class="shrink-0 text-hc-text-3"></lucide-angular>
+                    <span class="flex-1 truncate text-xs text-hc-text-2">{{ f.name }}</span>
+                    <span class="shrink-0 font-mono text-[10px] text-hc-text-3">{{ formatBytes(f.size) }}</span>
+                    <button (click)="removeFile(f)" [title]="'DICOM.REMOVE' | translate"
+                            class="shrink-0 rounded p-0.5 text-hc-text-3 hover:bg-hc-error-bg hover:text-hc-error transition-colors">
+                      <lucide-angular [img]="X" [size]="11"></lucide-angular>
+                    </button>
+                  </div>
+                }
+              </div>
+            }
+          </div>
+        </div>
+
+        @if (uploadError()) {
+          <p class="mt-3 text-xs text-hc-error">{{ uploadError() }}</p>
+        }
+
+        @if (uploadResult(); as r) {
+          <div class="mt-3 flex flex-wrap items-center gap-3 rounded-md border border-hc-border bg-hc-app/60 px-3 py-2 text-xs">
+            @if (r.uploaded.length > 0) {
+              <span class="flex items-center gap-1.5 text-hc-success">
+                <lucide-angular [img]="Check" [size]="12"></lucide-angular>
+                {{ r.uploaded.length }} {{ 'DICOM.UPLOADED' | translate }}
+              </span>
+            }
+            @if (r.skipped.length > 0) {
+              <span class="flex items-center gap-1.5 text-hc-warning">
+                <lucide-angular [img]="AlertTriangle" [size]="12"></lucide-angular>
+                {{ r.skipped.length }} {{ 'DICOM.SKIPPED' | translate }}
+              </span>
+            }
+            @if (r.errors.length > 0) {
+              <span class="flex items-center gap-1.5 text-hc-error">
+                <lucide-angular [img]="CircleAlert" [size]="12"></lucide-angular>
+                {{ r.errors.length }} {{ 'DICOM.WITH_ERROR' | translate }}
+              </span>
+            }
+            @if (r.skipped.length + r.errors.length > 0) {
+              <details class="ml-auto cursor-pointer text-hc-text-3">
+                <summary class="hover:text-hc-text">{{ 'DICOM.DETAILS' | translate }}</summary>
+                <ul class="mt-2 space-y-0.5 text-[11px] text-hc-text-3">
+                  @for (item of r.skipped; track item.filename) {
+                    <li>· <span class="text-hc-warning">[omitida]</span> {{ item.filename }}</li>
+                  }
+                  @for (item of r.errors; track item.filename) {
+                    <li>· <span class="text-hc-error">[error]</span> {{ item.filename }}</li>
+                  }
+                </ul>
+              </details>
+            }
+          </div>
+        }
+
+        <div class="mt-4 flex flex-wrap gap-2">
+          <button (click)="upload()"
+                  [disabled]="!selectedPatientId || selectedFiles().length === 0 || uploading()"
+                  class="hc-btn-primary text-xs py-2">
+            @if (uploading()) {
+              <lucide-angular [img]="Loader" [size]="13" class="animate-spin"></lucide-angular>
+              {{ 'DICOM.UPLOADING' | translate }}
+            } @else {
+              <lucide-angular [img]="Upload" [size]="13"></lucide-angular>
+              {{ 'DICOM.UPLOAD_BTN' | translate }}
+            }
+          </button>
+          @if (selectedFiles().length > 0) {
+            <button (click)="clearFiles()" [disabled]="uploading()" class="hc-btn-secondary text-xs py-2">
+              {{ 'DICOM.CLEAR_LIST' | translate }}
+            </button>
+          }
+          <button (click)="toggleUpload()" [disabled]="uploading()" class="hc-btn-secondary text-xs py-2">
+            {{ 'DICOM.CANCEL' | translate }}
+          </button>
+        </div>
+      </div>
+    }
+
+    <!-- Lista agrupada por paciente -->
+    <div class="flex-1 overflow-y-auto p-3 sm:p-6">
+
+      @if (listLoading()) {
+        <div class="flex h-40 items-center justify-center">
+          <div class="h-8 w-8 animate-spin rounded-full border-4 border-hc-border border-t-hc-primary"></div>
+        </div>
+      } @else if (listError()) {
+        <div class="hc-alert-error text-center">{{ listError() }}</div>
+      } @else if (groupedStudies().length === 0) {
+        <div class="flex h-40 flex-col items-center justify-center gap-3 text-hc-text-3">
+          <lucide-angular [img]="FileX" [size]="36"></lucide-angular>
+          <p class="text-sm">{{ 'DICOM.EMPTY' | translate }}</p>
+          <button (click)="toggleUpload()"
+                  class="flex items-center gap-2 rounded-md bg-hc-primary/10 border border-hc-primary/30 px-3 py-1.5 text-xs text-hc-primary hover:bg-hc-primary/20 transition-colors">
+            <lucide-angular [img]="Upload" [size]="12"></lucide-angular>
+            {{ 'DICOM.UPLOAD_FIRST' | translate }}
+          </button>
+        </div>
+      } @else {
+
+        <!-- Barra de controles globales -->
+        <div class="mb-4 flex flex-wrap items-center justify-between gap-2">
+          <p class="text-xs text-hc-text-3">
+            {{ groupedStudies().length }} {{ 'DICOM.PATIENTS_WITH_STUDIES' | translate }}
+          </p>
+          <button (click)="allCollapsed() ? expandAll() : collapseAll()"
+                  class="inline-flex items-center gap-1.5 rounded-md border border-hc-border
+                         px-2 py-1 text-xs text-hc-text-2 hover:bg-hc-muted transition-colors">
+            <lucide-angular [img]="allCollapsed() ? Maximize2 : Minimize2" [size]="12"></lucide-angular>
+            {{ (allCollapsed() ? 'DICOM.EXPAND_ALL' : 'DICOM.COLLAPSE_ALL') | translate }}
+          </button>
+        </div>
+
+        <div class="flex flex-col gap-4 sm:gap-6">
+
+          @for (group of groupedStudies(); track group.patientId) {
+
+            <div class="rounded-lg border border-hc-border bg-hc-surface/30">
+
+              <!-- Encabezado del paciente (clickable) -->
+              <button type="button"
+                      (click)="toggleGroup(group.patientId)"
+                      class="flex w-full items-center gap-2 rounded-t-lg px-3 py-2 text-left
+                             transition-colors hover:bg-hc-muted/60 sm:gap-3 sm:px-4">
+                <lucide-angular
+                  [img]="isGroupCollapsed(group.patientId) ? ChevronRight : ChevronDown"
+                  [size]="16"
+                  class="shrink-0 text-hc-text-3"></lucide-angular>
+
+                <div class="flex h-8 w-8 shrink-0 items-center justify-center rounded-full
+                            bg-hc-primary/10 text-hc-primary sm:h-9 sm:w-9">
+                  <lucide-angular [img]="User" [size]="15"></lucide-angular>
+                </div>
+
+                <div class="min-w-0 flex-1">
+                  @if (group.patient) {
+                    <p class="truncate text-sm font-semibold text-hc-text leading-tight">
+                      {{ group.patient.firstName }} {{ group.patient.lastName }}
+                    </p>
+                    <p class="truncate text-xs text-hc-text-3 leading-tight">
+                      @if (group.patient.documentNumber) {
+                        {{ group.patient.documentNumber }}
+                        @if (group.patient.birthDate) { · }
+                      }
+                      @if (group.patient.birthDate) {
+                        {{ group.patient.birthDate }}
+                      }
+                    </p>
+                  } @else {
+                    <p class="text-sm font-semibold text-hc-text-3 italic">
+                      {{ 'DICOM.NO_DESCRIPTION' | translate }}
+                    </p>
+                  }
+                </div>
+
+                <span class="shrink-0 rounded-full bg-hc-muted px-2 py-0.5 text-[11px] text-hc-text-3">
+                  {{ group.studies.length }}
+                  <span class="hidden sm:inline">
+                    {{ group.studies.length === 1 ? ('DICOM.STUDY_SINGULAR' | translate) : ('DICOM.STUDY_PLURAL' | translate) }}
+                  </span>
+                </span>
+              </button>
+
+              <!-- Estudios del paciente -->
+              @if (!isGroupCollapsed(group.patientId)) {
+                <div class="grid grid-cols-1 gap-3 border-t border-hc-border p-3
+                            sm:grid-cols-2 sm:p-4 lg:grid-cols-3 xl:grid-cols-4">
+                  @for (study of group.studies; track study.id) {
+                    <div class="group flex flex-col gap-3 hc-card p-3 hover:border-hc-border-i transition-colors sm:p-4">
+
+                      <!-- Modalidades -->
+                      <div class="flex flex-wrap gap-1">
+                        @for (m of modalities(study); track m) {
+                          <span [class]="'rounded px-1.5 py-0.5 text-[10px] font-bold ' + modalityBadgeClass(m)">{{ m }}</span>
+                        }
+                      </div>
+
+                      <!-- Descripción del estudio -->
+                      <p class="text-sm font-medium text-hc-text leading-snug line-clamp-2">
+                        {{ study.studyDescription ?? ('DICOM.NO_DESCRIPTION' | translate) }}
+                      </p>
+
+                      <!-- Meta -->
+                      <div class="flex items-center gap-2 text-[11px] text-hc-text-3">
+                        <lucide-angular [img]="Calendar" [size]="11"></lucide-angular>
+                        <span>{{ study.studyDate ?? ('DICOM.NO_DATE' | translate) }}</span>
+                        <span class="ml-auto">{{ totalImages(study) }} {{ 'DICOM.IMAGES_SHORT' | translate }}</span>
+                      </div>
+
+                      <!-- Accession -->
+                      @if (study.accessionNumber) {
+                        <span class="rounded bg-hc-muted px-2 py-0.5 text-[10px] text-hc-text-3 self-start truncate max-w-full">
+                          ACC: {{ study.accessionNumber }}
+                        </span>
+                      }
+
+                      <!-- Acción -->
+                      <button (click)="openViewer(study)"
+                              class="mt-auto flex items-center justify-center gap-2 rounded-md
+                                     border border-hc-primary/30 bg-hc-primary/10 py-2 text-xs
+                                     font-medium text-hc-primary hover:bg-hc-primary/20 transition-colors">
+                        <lucide-angular [img]="Eye" [size]="13"></lucide-angular>
+                        {{ 'DICOM.OPEN_VIEWER' | translate }}
+                      </button>
+                    </div>
+                  }
+                </div>
+              }
+            </div>
+
+          }
+        </div>
+      }
+    </div>
+  </div>
+</div>

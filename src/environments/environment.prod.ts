@@ -1,4 +1,5 @@
 export const environment = {
   production: true,
-  apiUrl: 'https://medical-records-cafpc3d3byerfwfr.brazilsouth-01.azurewebsites.net/api'
+  apiUrl: 'https://si2-sgdp-back-production.up.railway.app/api',
+  onlyofficeDocServerUrl: 'http://localhost:8088/'
 };

@@ -3,6 +3,11 @@
   "version": "0.0.0",
   "scripts": {
     "ng": "ng",
+    "build:dicom-worker": "node scripts/build-dicom-worker.mjs",
+    "prestart": "npm run build:dicom-worker",
+    "prestart:docker": "npm run build:dicom-worker",
+    "prebuild": "npm run build:dicom-worker",
+    "prewatch": "npm run build:dicom-worker",
     "start": "ng serve",
     "start:docker": "ng serve --configuration docker",
     "build": "ng build",
@@ -18,12 +23,18 @@
     "@angular/forms": "^21.2.0",
     "@angular/platform-browser": "^21.2.0",
     "@angular/router": "^21.2.0",
+    "@cornerstonejs/core": "^2.0.0",
+    "@cornerstonejs/dicom-image-loader": "^2.0.0",
+    "@cornerstonejs/tools": "^2.0.0",
     "@fortawesome/angular-fontawesome": "^4.0.0",
     "@fortawesome/free-solid-svg-icons": "^7.2.0",
     "@ngx-translate/core": "^17.0.0",
     "@ngx-translate/http-loader": "^17.0.0",
     "@onlyoffice/document-editor-angular": "^8.5.1",
     "@tailwindcss/postcss": "^4.2.2",
+    "comlink": "^4.4.1",
+    "dicom-parser": "^1.8.21",
+    "lucide-angular": "^1.0.0",
     "postcss": "^8.5.10",
     "rxjs": "~7.8.0",
     "tailwindcss": "^4.2.2",
@@ -37,5 +48,9 @@
     "prettier": "^3.8.1",
     "typescript": "~5.9.2",
     "vitest": "^4.0.8"
+  },
+    "browser": {
+    "fs": "./src/stubs/fs.ts",
+    "path": "./src/stubs/path.ts"
   }
 }

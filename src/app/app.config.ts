@@ -11,7 +11,7 @@ export const appConfig: ApplicationConfig = {
     provideBrowserGlobalErrorListeners(),
     provideRouter(routes),
     provideHttpClient(withInterceptors([authInterceptor])),
-    provideTranslateService({ defaultLanguage: 'es' }),
+    provideTranslateService({ fallbackLang: 'es' }),
     provideTranslateHttpLoader({ prefix: './i18n/', suffix: '.json' }),
   ]
 };

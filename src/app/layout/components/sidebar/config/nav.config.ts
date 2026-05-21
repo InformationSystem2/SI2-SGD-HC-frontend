@@ -44,4 +44,13 @@ export const NAV_ITEMS: NavItem[] = [
       { label: 'NAV.PATIENT_REGISTER', path: '/pacientes/register' },
     ],
   },
+  {
+    label: 'NAV.DICOM',
+    path: '/dicom/viewer',
+    icon: 'scan',
+    permissions: ['DOCUMENT_READ'],
+    subItems: [
+      { label: 'NAV.DICOM_VIEWER', path: '/dicom/viewer' },
+    ],
+  },
 ];

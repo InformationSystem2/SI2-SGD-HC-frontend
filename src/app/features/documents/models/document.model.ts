@@ -1,5 +1,6 @@
 export type DocumentStatus = 'DRAFT' | 'PENDING_SIGNATURE' | 'COMPLETED';
 
+
 // { fieldName: fieldType }  — ej. { "medicamento": "text", "dosis": "number" }
 export enum FieldType {
   TEXT = 'TEXT',
@@ -12,7 +13,9 @@ export enum FieldType {
   RADIO = 'RADIO',
   CHECKBOX = 'CHECKBOX',
   FILE = 'FILE',
-  DISPLAY_TEXT = 'DISPLAY_TEXT'
+  DISPLAY_TEXT = 'DISPLAY_TEXT',
+  /** Tipo para listas de sub-objetos (ej. receta médica con múltiples ítems) */
+  ARRAY = 'ARRAY'
 }
 
 export interface FieldConfig {
@@ -20,8 +23,14 @@ export interface FieldConfig {
   required: boolean;
   label: string;
   order: number;
-  // Mapeo de las opciones del select
+  /** Opciones para SELECT / RADIO */
   options?: Record<string, string>;
+  /**
+   * Sub-esquema para campos ARRAY.
+   * Cada entrada define una columna de la tabla repetible.
+   * Ej: { "medicamento": { type: TEXT, ... }, "dosis": { type: TEXT, ... } }
+   */
+  subSchema?: Record<string, FieldConfig>;
 }
 
 export type UiSchema = Record<string, FieldConfig>;

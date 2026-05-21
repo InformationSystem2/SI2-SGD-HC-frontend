@@ -45,6 +45,12 @@ export const routes: Routes = [
     loadChildren: () => import('./features/documents/documents.routes').then(m => m.documentsRoutes),
   },
   {
+    // El visor DICOM ocupa toda la pantalla (sin MainLayout)
+    path: 'dicom',
+    canActivate: [permissionGuard('DICOM_READ')],
+    loadChildren: () => import('./features/dicom/dicom.routes').then(m => m.dicomRoutes),
+  },
+  {
     path: '',
     redirectTo: 'auth/login',
     pathMatch: 'full',
