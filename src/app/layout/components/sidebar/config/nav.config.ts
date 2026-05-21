@@ -1,3 +1,5 @@
+// src/app/layout/components/sidebar/config/nav.config.ts
+
 import type { NavItem } from '../models/nav-item.model';
 
 export const NAV_ITEMS: NavItem[] = [
@@ -12,9 +14,9 @@ export const NAV_ITEMS: NavItem[] = [
     icon: 'file-text',
     permissions: ['DOCUMENT_READ'],
     subItems: [
-      { label: 'NAV.DOCUMENT_LIST',        path: '/documentos/list' },
-      { label: 'NAV.DOCUMENT_UPLOAD',      path: '/documentos/upload' },
-      { label: 'NAV.DOCUMENT_TEMPLATES',   path: '/documentos/templates' },
+      { label: 'NAV.DOCUMENT_LIST', path: '/documentos/list' },
+      { label: 'NAV.DOCUMENT_UPLOAD', path: '/documentos/upload' },
+      { label: 'NAV.DOCUMENT_TEMPLATES', path: '/documentos/templates' },
       { label: 'NAV.DOCUMENT_TEMPLATE_NEW', path: '/documentos/templates/new' },
     ],
   },
@@ -30,7 +32,7 @@ export const NAV_ITEMS: NavItem[] = [
     icon: 'users',
     permissions: ['USER_READ'],
     subItems: [
-      { label: 'NAV.USER_LIST',     path: '/usuarios/list' },
+      { label: 'NAV.USER_LIST', path: '/usuarios/list' },
       { label: 'NAV.USER_REGISTER', path: '/usuarios/register' },
     ],
   },
@@ -40,8 +42,14 @@ export const NAV_ITEMS: NavItem[] = [
     icon: 'heart-pulse',
     permissions: ['PATIENT_READ'],
     subItems: [
-      { label: 'NAV.PATIENT_LIST',     path: '/pacientes/list' },
+      { label: 'NAV.PATIENT_LIST', path: '/pacientes/list' },
       { label: 'NAV.PATIENT_REGISTER', path: '/pacientes/register' },
     ],
+  },
+  {
+    label: 'Historiales Clínicos',
+    path: '/historiales',
+    icon: 'search',
+    permissions: ['DOCUMENT_READ'],
   },
 ];

@@ -1,3 +1,5 @@
+//src/app/app.routes.ts
+
 import { Routes } from '@angular/router';
 import { authGuard } from './core/auth/guards/auth.guard';
 import { permissionGuard } from './core/auth/guards/role.guard';
@@ -49,5 +51,11 @@ export const routes: Routes = [
     redirectTo: 'auth/login',
     pathMatch: 'full',
   },
-
+  // Dentro del array routes, agrega:
+  {
+    path: 'historiales',
+    component: MainLayout,
+    canActivate: [permissionGuard('DOCUMENT_READ')],
+    loadChildren: () => import('./features/historial/historial.routes').then(m => m.historialRoutes),
+  }
 ];

@@ -1,0 +1,152 @@
+<!-- src/app/features/historial/pages/historial-list/historial-list.html -->
+
+<!-- 
+  Plantilla del componente HistorialList.
+  Utiliza Tailwind CSS para estilos (consistente con el resto del proyecto).
+  Los textos fijos están en español; si se requiere i18n se puede usar el pipe translate.
+-->
+
+<div class="p-6">
+  <div class="mb-6 flex flex-wrap items-center justify-between gap-4">
+    <h1 class="text-2xl font-bold text-hc-text">Búsqueda de Historiales Clínicos</h1>
+  </div>
+
+  <!-- Formulario de filtros (reactive form) -->
+  <form [formGroup]="searchForm" (ngSubmit)="buscar()"
+    class="mb-6 grid grid-cols-1 gap-4 rounded-lg bg-white p-4 shadow-md dark:bg-gray-800 md:grid-cols-4">
+    <div>
+      <label class="mb-1 block text-sm font-medium text-gray-700 dark:text-gray-300">Nombre del paciente</label>
+      <input type="text" formControlName="nombre"
+        class="w-full rounded-md border p-2 dark:bg-gray-700 dark:border-gray-600" placeholder="Ej: Juan">
+    </div>
+    <div>
+      <label class="mb-1 block text-sm font-medium text-gray-700 dark:text-gray-300">N° Documento</label>
+      <input type="text" formControlName="nroDoc"
+        class="w-full rounded-md border p-2 dark:bg-gray-700 dark:border-gray-600" placeholder="CI / Pasaporte">
+    </div>
+    <div>
+      <label class="mb-1 block text-sm font-medium text-gray-700 dark:text-gray-300">Estado</label>
+      <select formControlName="estado" class="w-full rounded-md border p-2 dark:bg-gray-700 dark:border-gray-600">
+        <option value="">Todos</option>
+        <option value="DRAFT">Borrador</option>
+        <option value="PENDING_SIGNATURE">Pendiente firma</option>
+        <option value="COMPLETED">Completado</option>
+      </select>
+    </div>
+    <div>
+      <label class="mb-1 block text-sm font-medium text-gray-700 dark:text-gray-300">Fecha desde</label>
+      <input type="date" formControlName="fechaDesde"
+        class="w-full rounded-md border p-2 dark:bg-gray-700 dark:border-gray-600">
+    </div>
+    <div>
+      <label class="mb-1 block text-sm font-medium text-gray-700 dark:text-gray-300">Fecha hasta</label>
+      <input type="date" formControlName="fechaHasta"
+        class="w-full rounded-md border p-2 dark:bg-gray-700 dark:border-gray-600">
+    </div>
+    <div class="flex items-end gap-2 md:col-span-2">
+      <button type="submit"
+        class="flex items-center gap-2 rounded-md bg-blue-600 px-4 py-2 text-white hover:bg-blue-700">
+        <fa-icon [icon]="faSearch"></fa-icon> Buscar
+      </button>
+      <button type="button" (click)="clearFilters()"
+        class="rounded-md bg-gray-300 px-4 py-2 text-gray-800 hover:bg-gray-400 dark:bg-gray-700 dark:text-gray-200">
+        Limpiar
+      </button>
+    </div>
+  </form>
+
+  <!-- Indicador de carga -->
+  @if (historialService.loading()) {
+  <div class="flex justify-center py-8">
+    <fa-icon [icon]="faSpinner" class="animate-spin text-2xl text-blue-500"></fa-icon>
+  </div>
+  }
+
+  <!-- Tabla de resultados (solo si hay datos y no está cargando) -->
+  @if (!historialService.loading() && historialService.result()?.content?.length) {
+  <div class="overflow-x-auto rounded-lg shadow">
+    <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
+      <thead class="bg-gray-50 dark:bg-gray-800">
+        <tr>
+          <th class="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500 dark:text-gray-400">
+            Paciente</th>
+          <!-- Nota: El número de documento no viene en DocumentResponse, se puede obtener mediante otro servicio, lo dejamos pendiente -->
+          <th class="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500 dark:text-gray-400">
+            N° Documento</th>
+          <th class="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500 dark:text-gray-400">
+            Tipo documento</th>
+          <th class="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500 dark:text-gray-400">
+            Estado</th>
+          <th class="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500 dark:text-gray-400">
+            Fecha emisión</th>
+          <th class="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500 dark:text-gray-400">
+            Acciones</th>
+        </tr>
+      </thead>
+      <tbody class="divide-y divide-gray-200 bg-white dark:divide-gray-700 dark:bg-gray-900">
+        @for (doc of historialService.result()?.content; track doc.id) {
+        <tr class="hover:bg-gray-50 dark:hover:bg-gray-800">
+          <td class="whitespace-nowrap px-6 py-4 text-sm font-medium text-gray-900 dark:text-gray-200">{{
+            doc.patientName }}</td>
+          <!-- TODO: Mostrar número de documento real. Se puede hacer una llamada adicional a PatientService.getPatient(doc.patientId) -->
+          <!-- td class="whitespace-nowrap px-6 py-4 text-sm text-gray-500 dark:text-gray-400">--</td -->
+          <td class="whitespace-nowrap px-6 py-4 text-sm text-gray-500 dark:text-gray-400">
+            {{ doc.patientDocumentNumber || '--' }}
+          </td>
+          <td class="whitespace-nowrap px-6 py-4 text-sm text-gray-500 dark:text-gray-400">{{ doc.templateName }}</td>
+          <td class="whitespace-nowrap px-6 py-4">
+            <span [class]="'inline-flex rounded-full px-2 py-1 text-xs font-semibold ' + statusClass(doc.status)">
+              {{ statusLabel(doc.status) }}
+            </span>
+          </td>
+          <td class="whitespace-nowrap px-6 py-4 text-sm text-gray-500 dark:text-gray-400">{{ doc.issueDate |
+            date:'dd/MM/yyyy' }}</td>
+          <td class="whitespace-nowrap px-6 py-4 text-sm font-medium">
+            <button (click)="viewDocument(doc.id)" class="mr-2 text-blue-600 hover:text-blue-900" title="Ver">
+              <fa-icon [icon]="faEye"></fa-icon>
+            </button>
+            <button (click)="editDocument(doc.id)" class="text-green-600 hover:text-green-900" title="Editar">
+              <fa-icon [icon]="faEdit"></fa-icon>
+            </button>
+          </td>
+        </tr>
+        }
+      </tbody>
+    </table>
+  </div>
+
+  <!-- Controles de paginación (server-side) -->
+  @if (totalPages() > 1) {
+  <div class="mt-6 flex items-center justify-between">
+    <div class="text-sm text-gray-500">
+      Mostrando {{ (page() * size()) + 1 }} - {{ (page() + 1) * size() > totalElements() ? totalElements() : (page() +
+      1) * size() }} de {{ totalElements() }} resultados
+    </div>
+    <div class="flex gap-2">
+      <button (click)="prevPage()" [disabled]="page() === 0" class="rounded-md border px-3 py-1 disabled:opacity-50">
+        Anterior
+      </button>
+      <span class="px-3 py-1">Página {{ page() + 1 }} de {{ totalPages() }}</span>
+      <button (click)="nextPage()" [disabled]="page() + 1 >= totalPages()"
+        class="rounded-md border px-3 py-1 disabled:opacity-50">
+        Siguiente
+      </button>
+    </div>
+  </div>
+  }
+  }
+
+  <!-- Mensaje cuando no hay resultados -->
+  @if (!historialService.loading() && (!historialService.result()?.content?.length)) {
+  <div class="rounded-lg bg-yellow-50 p-4 text-center text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-200">
+    No se encontraron documentos con los filtros aplicados.
+  </div>
+  }
+
+  <!-- Mensaje de error -->
+  @if (historialService.error()) {
+  <div class="rounded-lg bg-red-50 p-4 text-red-800 dark:bg-red-900/30 dark:text-red-200">
+    {{ historialService.error() }}
+  </div>
+  }
+</div>

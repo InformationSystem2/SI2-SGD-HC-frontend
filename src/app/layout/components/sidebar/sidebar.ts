@@ -1,3 +1,5 @@
+//src/app/layout/components/sidebar/sidebar.ts
+
 import { ChangeDetectionStrategy, Component, computed, inject } from '@angular/core';
 import { SidebarService } from './services/sidebar.service';
 import { SidebarGroup } from './components/sidebar-group/sidebar-group';
