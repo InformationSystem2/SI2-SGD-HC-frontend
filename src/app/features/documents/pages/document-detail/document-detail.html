@@ -1,4 +1,4 @@
-<div class="space-y-6 max-w-3xl mx-auto">
+<div class="space-y-6 max-w-5xl mx-auto">
 
   <!-- Header -->
   <div class="flex items-center gap-3">
@@ -10,14 +10,12 @@
     <h2 class="text-xl font-semibold text-hc-text">Detalle del documento</h2>
   </div>
 
-  <!-- Loading -->
   @if (loading()) {
     <div class="flex justify-center py-16">
       <fa-icon [icon]="faSpinner" class="animate-spin text-2xl text-hc-primary" />
     </div>
   }
 
-  <!-- Error -->
   @if (error()) {
     <div class="p-4 rounded-lg bg-hc-error-bg border border-hc-error/30 text-hc-error text-sm">
       {{ error() }}
@@ -25,10 +23,9 @@
   }
 
   @if (doc(); as d) {
-    <!-- Ficha principal -->
-    <div class="bg-hc-card rounded-xl border border-hc-border shadow-sm overflow-hidden">
 
-      <!-- Título -->
+    <!-- Ficha principal (sin cambios) -->
+    <div class="bg-hc-card rounded-xl border border-hc-border shadow-sm overflow-hidden">
       <div class="px-6 py-4 border-b border-hc-border bg-hc-muted/40">
         <p class="text-lg font-semibold text-hc-text">{{ docTitle() }}</p>
         <span class="mt-1 inline-block px-2.5 py-0.5 rounded-full text-xs font-medium"
@@ -36,10 +33,7 @@
           {{ statusLabel(d.status) }}
         </span>
       </div>
-
-      <!-- Campos principales -->
       <div class="grid grid-cols-1 sm:grid-cols-2 gap-0 divide-y sm:divide-y-0 sm:divide-x divide-hc-border">
-
         <div class="px-6 py-4 space-y-4">
           <div>
             <p class="text-xs text-hc-text-3 uppercase tracking-wide font-medium">Paciente</p>
@@ -64,7 +58,6 @@
             <p class="text-hc-text mt-0.5">{{ d.isExternalSource ? 'Externo' : 'Plantilla' }}</p>
           </div>
         </div>
-
         <div class="px-6 py-4 space-y-4">
           <div>
             <p class="text-xs text-hc-text-3 uppercase tracking-wide font-medium">Plantilla</p>
@@ -89,7 +82,6 @@
             </div>
           }
         </div>
-
       </div>
     </div>
 
@@ -111,6 +103,146 @@
         </div>
       </div>
     }
-  }
 
+    <!-- ── Panel OCR: dos columnas lado a lado ── -->
+    @if (d.fileUrl) {
+      <div class="bg-hc-card rounded-xl border border-hc-border shadow-sm overflow-hidden">
+
+        <!-- Header con botón -->
+        <div class="px-6 py-3 border-b border-hc-border bg-hc-muted/40 flex items-center justify-between">
+          <div class="flex items-center gap-2">
+            <fa-icon [icon]="faExpand" class="text-hc-primary" />
+            <p class="text-sm font-semibold text-hc-text">Visor OCR</p>
+          </div>
+          <button (click)="processOcr()"
+                  [disabled]="ocrLoading()"
+                  class="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium
+                         bg-hc-primary text-white hover:bg-hc-primary/90
+                         disabled:opacity-50 disabled:cursor-not-allowed transition-colors">
+            @if (ocrLoading()) {
+              <fa-icon [icon]="faSpinner" class="animate-spin" />
+              Procesando...
+            } @else {
+              <fa-icon [icon]="faRotateRight" />
+              {{ ocrResult() ? 'Re-procesar' : 'Extraer texto' }}
+            }
+          </button>
+        </div>
+
+        @if (ocrError()) {
+          <div class="px-6 py-3 text-sm text-hc-error bg-hc-error-bg border-b border-hc-error/20">
+            {{ ocrError() }}
+          </div>
+        }
+
+        <!-- DOS COLUMNAS -->
+        <div class="grid grid-cols-1 lg:grid-cols-2 divide-y lg:divide-y-0 lg:divide-x divide-hc-border min-h-[420px]">
+
+          <!-- Columna izquierda: vista previa del archivo -->
+          <div class="flex flex-col">
+            <div class="px-4 py-2 border-b border-hc-border/50 bg-hc-muted/20">
+              <p class="text-xs text-hc-text-3 uppercase tracking-wide font-medium">Vista previa</p>
+            </div>
+            <div class="flex-1 flex items-center justify-center p-4 bg-hc-muted/10">
+              @if (isImage(d.fileUrl)) {
+                <!-- Imagen: se muestra directamente -->
+                <img [src]="fileFullUrl(d.fileUrl)"
+                     alt="Documento"
+                     class="max-w-full max-h-[500px] object-contain rounded-lg shadow border border-hc-border"
+                     (error)="imgError = true" />
+              } @else {
+                <!-- PDF u otro: no se puede previsualizar inline, mostramos link -->
+                <div class="flex flex-col items-center gap-3 text-hc-text-3 py-8">
+                  <fa-icon [icon]="faFileLines" class="text-4xl" />
+                  <p class="text-sm text-center">Vista previa no disponible para este tipo de archivo</p>
+                  <button (click)="openInViewer()"
+                    class="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium
+                           border border-hc-border hover:bg-hc-hover text-hc-text transition-colors">
+                    <fa-icon [icon]="faBookOpen" />
+                    Abrir en visor
+                  </button>
+                </div>
+              }
+            </div>
+          </div>
+
+          <!-- Columna derecha: resultado OCR -->
+          <div class="flex flex-col">
+            <div class="px-4 py-2 border-b border-hc-border/50 bg-hc-muted/20">
+              <p class="text-xs text-hc-text-3 uppercase tracking-wide font-medium">Texto extraído</p>
+            </div>
+
+            <!-- Sin OCR -->
+            @if (!ocrResult() && !ocrLoading()) {
+              <div class="flex-1 flex flex-col items-center justify-center gap-2 text-hc-text-3 py-12 px-6">
+                <fa-icon [icon]="faExpand" class="text-3xl" />
+                <p class="text-sm text-center">Sin texto extraído aún.</p>
+                <p class="text-xs text-center">Presioná "Extraer texto" para procesarlo con OCR.</p>
+              </div>
+            }
+
+            <!-- Procesando -->
+            @if (ocrLoading()) {
+              <div class="flex-1 flex flex-col items-center justify-center gap-3 py-12">
+                <fa-icon [icon]="faSpinner" class="animate-spin text-3xl text-hc-primary" />
+                <p class="text-sm text-hc-text-3">Procesando con OCR...</p>
+              </div>
+            }
+
+            <!-- Resultado -->
+          @if (ocrResult(); as ocr) {
+
+            <!-- Tarjetas de datos estructurados (Gemini) -->
+            @if (ocr.structured_data && objectKeys(ocr.structured_data).length > 0) {
+              <div class="px-4 py-4 space-y-3">
+
+                @if (ocr.structured_data['tipo_documento']) {
+                  <div class="flex items-center gap-2">
+                    <span class="px-2.5 py-0.5 rounded-full text-xs font-medium bg-hc-primary/10 text-hc-primary">
+                      {{ ocr.structured_data['tipo_documento'] }}
+                    </span>
+                  </div>
+                }
+
+                <div class="grid grid-cols-1 gap-2">
+                  @for (key of datosKeys(ocr.structured_data); track key) {
+                    <div class="flex gap-3 py-2 border-b border-hc-border/40 last:border-0">
+                      <span class="text-xs text-hc-text-3 uppercase tracking-wide font-medium w-32 shrink-0 pt-0.5 capitalize">
+                        {{ key.replace('_', ' ') }}
+                      </span>
+                      @if (isObject(ocr.structured_data[key])) {
+                        <div class="flex flex-col gap-1">
+                          @for (subKey of objectKeys(ocr.structured_data[key]); track subKey) {
+                            <span class="text-sm text-hc-text">
+                              <span class="text-hc-text-3">{{ subKey }}:</span>
+                              {{ ocr.structured_data[key][subKey] }}
+                            </span>
+                          }
+                        </div>
+                      } @else {
+                        <span class="text-sm text-hc-text">{{ ocr.structured_data[key] }}</span>
+                      }
+                    </div>
+                  }
+                </div>
+              </div>
+            }
+
+            <!-- Texto crudo colapsable -->
+            <details class="px-4 pb-4">
+              <summary class="text-xs text-hc-text-3 cursor-pointer hover:text-hc-text transition-colors">
+                Ver texto completo del OCR
+              </summary>
+              <pre class="mt-2 text-xs text-hc-text-2 font-mono whitespace-pre-wrap break-words
+                          bg-hc-muted/50 rounded-lg p-3 max-h-48 overflow-y-auto">{{ ocr.raw_text }}</pre>
+            </details>
+}
+
+          </div>
+        </div>
+      </div>
+    }
+    <!-- ── Fin panel OCR ── -->
+
+  }
 </div>
