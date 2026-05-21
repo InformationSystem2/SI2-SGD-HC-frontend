@@ -52,7 +52,8 @@
     "USER_REGISTER": "Register",
     "PATIENTS": "Patients",
     "PATIENT_LIST": "List",
-    "PATIENT_REGISTER": "Register"
+    "PATIENT_REGISTER": "Register",
+    "HISTORIAL": "Medical Records"
   },
   "DASHBOARD": {
     "WELCOME": "Welcome",
@@ -332,5 +333,35 @@
     "LOGIN_FAILED": "Incorrect credentials",
     "REGISTRATION_FAILED": "Error registering the clinic",
     "PAYMENT_FAILED": "Error processing the payment"
+  },
+  "HISTORIAL": {
+    "TITLE": "Medical Records Search",
+    "PATIENT_NAME": "Patient name",
+    "PATIENT_NAME_PLACEHOLDER": "e.g. John",
+    "DOC_NUMBER": "ID Number",
+    "DOC_NUMBER_PLACEHOLDER": "ID / Passport",
+    "STATUS": "Status",
+    "STATUS_ALL": "All",
+    "STATUS_DRAFT": "Draft",
+    "STATUS_PENDING": "Pending signature",
+    "STATUS_COMPLETED": "Completed",
+    "DATE_FROM": "From date",
+    "DATE_TO": "To date",
+    "SEARCH": "Search",
+    "CLEAR": "Clear",
+    "TABLE_PATIENT": "Patient",
+    "TABLE_DOC_NUMBER": "ID Number",
+    "TABLE_DOC_TYPE": "Document type",
+    "TABLE_STATUS": "Status",
+    "TABLE_ISSUE_DATE": "Issue date",
+    "TABLE_ACTIONS": "Actions",
+    "NO_RESULTS": "No documents found with the applied filters.",
+    "ERROR_GENERIC": "Error searching medical records",
+    "PAGINATION_INFO": "Showing {{start}} - {{end}} of {{total}} results",
+    "PAGINATION_PREV": "Previous",
+    "PAGINATION_NEXT": "Next",
+    "PAGINATION_PAGE": "Page {{current}} of {{total}}",
+    "TABLE_ACTIONS_VIEW": "View",
+    "TABLE_ACTIONS_EDIT": "Edit"
   }
 }

@@ -21,16 +21,16 @@ import { DocumentResponse, HistorialSearchParams } from '../../models/historial.
 import { DatePipe } from '@angular/common';
 
 @Component({
-  selector: 'app-historial-list',
-  standalone: true,
-  imports: [
-    ReactiveFormsModule,
-    FontAwesomeModule,
-    DatePipe,
-    TranslatePipe,   // ← Agrega esta línea (no olvides la coma después de DatePipe)
-  ],
-  templateUrl: './historial-list.html',
-  changeDetection: ChangeDetectionStrategy.OnPush,
+    selector: 'app-historial-list',
+    standalone: true,
+    imports: [
+        ReactiveFormsModule,
+        FontAwesomeModule,
+        DatePipe,
+        TranslatePipe,   // ← Agrega esta línea (no olvides la coma después de DatePipe)
+    ],
+    templateUrl: './historial-list.html',
+    changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class HistorialList implements OnInit {
     readonly historialService = inject(HistorialService);
@@ -136,9 +136,9 @@ export class HistorialList implements OnInit {
     /** Devuelve la etiqueta traducible (o en español) para el estado */
     statusLabel(status: string): string {
         const labels: Record<string, string> = {
-            DRAFT: 'Borrador',
-            PENDING_SIGNATURE: 'Pend. firma',
-            COMPLETED: 'Completado',
+            DRAFT: 'HISTORIAL.STATUS_DRAFT',
+            PENDING_SIGNATURE: 'HISTORIAL.STATUS_PENDING',
+            COMPLETED: 'HISTORIAL.STATUS_COMPLETED',
         };
         return labels[status] ?? status;
     }

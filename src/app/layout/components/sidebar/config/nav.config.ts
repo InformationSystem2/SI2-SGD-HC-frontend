@@ -47,7 +47,7 @@ export const NAV_ITEMS: NavItem[] = [
     ],
   },
   {
-    label: 'Historiales Clínicos',
+    label: 'NAV.HISTORIAL',    // ← usar clave de traducción
     path: '/historiales',
     icon: 'search',
     permissions: ['DOCUMENT_READ'],
