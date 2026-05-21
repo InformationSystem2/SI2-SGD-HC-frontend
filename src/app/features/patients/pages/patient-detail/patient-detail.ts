@@ -1,7 +1,7 @@
 import { ChangeDetectionStrategy, Component, inject, OnInit, signal } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
-import { faArrowLeft, faSpinner, faUser } from '@fortawesome/free-solid-svg-icons';
+import { faArrowLeft, faSpinner, faUser, faXRay } from '@fortawesome/free-solid-svg-icons';
 import { TranslatePipe } from '@ngx-translate/core';
 import { Patient } from '../../models/patient.model';
 import { PatientService } from '../../services/patient.service';
@@ -21,6 +21,7 @@ export class PatientDetail implements OnInit {
   readonly faUser      = faUser;
   readonly faSpinner   = faSpinner;
   readonly faArrowLeft = faArrowLeft;
+  readonly faXRay      = faXRay;
 
   readonly loading  = signal(false);
   readonly notFound = signal(false);
@@ -35,6 +36,11 @@ export class PatientDetail implements OnInit {
       error: () => { this.notFound.set(true); this.loading.set(false); },
     });
   }
+
+  viewDicomStudies(patientId: string): void {
+    this.router.navigate(['/dicom/patient', patientId]);
+  }
+
 
   back(): void {
     this.router.navigate(['/pacientes/list']);

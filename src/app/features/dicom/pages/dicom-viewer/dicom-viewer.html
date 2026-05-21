@@ -1,0 +1,78 @@
+<!-- Contenedor a pantalla completa sin scroll -->
+<div class="flex flex-col bg-black" style="height: 100vh; overflow: hidden;">
+
+  <!-- Barra superior -->
+  <div class="flex items-center gap-3 px-4 py-2 bg-hc-card border-b border-hc-border flex-shrink-0">
+
+    <!-- Volver -->
+    <button (click)="back()"
+            class="flex items-center gap-2 text-sm text-hc-text-3 hover:text-hc-primary transition-colors">
+      <fa-icon [icon]="faArrowLeft" />
+      Volver
+    </button>
+
+    <!-- Metadata del estudio -->
+    @if (study(); as s) {
+      <span class="text-sm text-hc-text-3 hidden sm:block">
+        {{ s.patientName }} &mdash; {{ s.issueDate }}
+      </span>
+      <span class="text-xs text-hc-text-3 hidden sm:block">
+        Subido por {{ s.uploaderName }}
+      </span>
+    }
+
+    <!-- Controles (derecha) -->
+    <div class="ml-auto flex items-center gap-1">
+      <button (click)="zoomIn()"
+              title="Acercar"
+              [disabled]="loading() || !!error()"
+              class="p-2 rounded-lg text-hc-text hover:bg-hc-bg disabled:opacity-40 transition-colors">
+        <fa-icon [icon]="faMagnifyingGlassPlus" />
+      </button>
+      <button (click)="zoomOut()"
+              title="Alejar"
+              [disabled]="loading() || !!error()"
+              class="p-2 rounded-lg text-hc-text hover:bg-hc-bg disabled:opacity-40 transition-colors">
+        <fa-icon [icon]="faMagnifyingGlassMinus" />
+      </button>
+      <button (click)="resetView()"
+              title="Restablecer vista"
+              [disabled]="loading() || !!error()"
+              class="p-2 rounded-lg text-hc-text hover:bg-hc-bg disabled:opacity-40 transition-colors">
+        <fa-icon [icon]="faRotateLeft" />
+      </button>
+    </div>
+  </div>
+
+  <!-- Área del visor -->
+  <div class="flex-1 relative" style="min-height: 0;">
+
+    <!-- Spinner de carga (overlay) -->
+    @if (loading()) {
+      <div class="absolute inset-0 flex flex-col items-center justify-center z-10 bg-black/70">
+        <fa-icon [icon]="faSpinner" class="animate-spin text-white text-3xl mb-3" />
+        <p class="text-sm text-gray-300">Cargando imagen DICOM...</p>
+      </div>
+    }
+
+    <!-- Error (overlay) -->
+    @if (error()) {
+      <div class="absolute inset-0 flex flex-col items-center justify-center z-10">
+        <p class="text-red-400 text-sm px-4 text-center">{{ error() }}</p>
+        <button (click)="back()"
+                class="mt-4 px-4 py-2 rounded-lg border border-red-400 text-red-400 text-sm
+                       hover:bg-red-400 hover:text-white transition-colors">
+          Volver
+        </button>
+      </div>
+    }
+
+    <!-- Canvas de Cornerstone — SIEMPRE en el DOM para que ViewChild funcione -->
+    <div #viewerCanvas
+         class="w-full h-full"
+         style="min-height: 400px; cursor: crosshair;">
+    </div>
+
+  </div>
+
+</div>

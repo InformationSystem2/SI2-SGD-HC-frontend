@@ -1,0 +1,119 @@
+<div class="max-w-xl mx-auto space-y-4">
+
+  <!-- Volver -->
+  <button (click)="back()"
+          class="flex items-center gap-2 text-sm text-hc-text-3 hover:text-hc-primary transition-colors">
+    <fa-icon [icon]="faArrowLeft" />
+    Volver
+  </button>
+
+  <!-- Título -->
+  <div class="bg-hc-card rounded-xl border border-hc-border shadow-sm p-6 space-y-5">
+    <div class="flex items-center gap-3">
+      <fa-icon [icon]="faCloudArrowUp" class="text-xl text-hc-primary" />
+      <h2 class="text-lg font-semibold text-hc-text">Subir estudio DICOM</h2>
+    </div>
+
+    <form [formGroup]="form" (ngSubmit)="onSubmit()" class="space-y-4">
+
+      <!-- Selector de paciente -->
+      <div>
+        <label class="block text-xs font-medium text-hc-text-3 mb-1">
+          Paciente <span class="text-hc-error">*</span>
+        </label>
+        <select formControlName="patientId"
+                class="w-full rounded-lg border border-hc-border bg-hc-bg text-hc-text text-sm px-3 py-2
+                       focus:outline-none focus:ring-2 focus:ring-hc-primary/40">
+          <option value="" disabled>Selecciona un paciente</option>
+          @for (p of patients(); track p.id) {
+            <option [value]="p.id">{{ patientLabel(p) }}</option>
+          }
+        </select>
+        @if (form.get('patientId')?.invalid && form.get('patientId')?.touched) {
+          <p class="mt-1 text-xs text-hc-error">El paciente es obligatorio</p>
+        }
+      </div>
+
+      <!-- Fecha del estudio -->
+      <div>
+        <label class="block text-xs font-medium text-hc-text-3 mb-1">
+          Fecha del estudio <span class="text-hc-error">*</span>
+        </label>
+        <input type="date" formControlName="issueDate"
+               class="w-full rounded-lg border border-hc-border bg-hc-bg text-hc-text text-sm px-3 py-2
+                      focus:outline-none focus:ring-2 focus:ring-hc-primary/40" />
+        @if (form.get('issueDate')?.invalid && form.get('issueDate')?.touched) {
+          <p class="mt-1 text-xs text-hc-error">La fecha es obligatoria</p>
+        }
+      </div>
+
+      <!-- Selector de archivo .dcm -->
+      <div>
+        <label class="block text-xs font-medium text-hc-text-3 mb-1">
+          Archivo DICOM (.dcm) <span class="text-hc-error">*</span>
+        </label>
+
+        @if (!selectedFile()) {
+          <label class="flex flex-col items-center justify-center w-full h-32 border-2 border-dashed
+                        border-hc-border rounded-lg cursor-pointer hover:border-hc-primary/60
+                        hover:bg-hc-primary/5 transition-colors">
+            <fa-icon [icon]="faCloudArrowUp" class="text-2xl text-hc-text-3 mb-2" />
+            <span class="text-sm text-hc-text-3">Arrastra o haz clic para seleccionar</span>
+            <span class="text-xs text-hc-text-3 mt-1">Solo archivos .dcm — máx. 50 MB</span>
+            <input type="file" accept=".dcm" class="hidden" (change)="onFileChange($event)" />
+          </label>
+        }
+
+        @if (selectedFile(); as file) {
+          <div class="flex items-center justify-between p-3 rounded-lg border border-hc-border bg-hc-bg">
+            <div class="flex items-center gap-3">
+              <fa-icon [icon]="faFile" class="text-hc-primary text-lg" />
+              <div>
+                <p class="text-sm text-hc-text font-medium">{{ file.name }}</p>
+                <p class="text-xs text-hc-text-3">{{ formatSize(file.size) }}</p>
+              </div>
+            </div>
+            <button type="button" (click)="clearFile()"
+                    class="text-hc-text-3 hover:text-hc-error transition-colors">
+              <fa-icon [icon]="faTimesCircle" />
+            </button>
+          </div>
+        }
+
+        @if (fileError()) {
+          <p class="mt-1 text-xs text-hc-error">{{ fileError() }}</p>
+        }
+      </div>
+
+      <!-- Error general del servicio -->
+      @if (dicomService.error()) {
+        <div class="p-3 rounded-lg bg-hc-error-bg border border-hc-error/30 text-hc-error text-sm">
+          {{ dicomService.error() }}
+        </div>
+      }
+
+      <!-- Acciones -->
+      <div class="flex gap-3 pt-2">
+        <button type="button" (click)="back()"
+                class="flex-1 px-4 py-2 rounded-lg border border-hc-border text-hc-text text-sm
+                       hover:bg-hc-bg transition-colors">
+          Cancelar
+        </button>
+        <button type="submit" [disabled]="dicomService.loading()"
+                class="flex-1 flex items-center justify-center gap-2 px-4 py-2 rounded-lg
+                       bg-hc-primary text-white text-sm font-medium
+                       hover:bg-hc-primary/90 disabled:opacity-60 disabled:cursor-not-allowed transition-colors">
+          @if (dicomService.loading()) {
+            <fa-icon [icon]="faSpinner" class="animate-spin" />
+            Subiendo...
+          } @else {
+            <fa-icon [icon]="faCloudArrowUp" />
+            Subir estudio
+          }
+        </button>
+      </div>
+
+    </form>
+  </div>
+
+</div>

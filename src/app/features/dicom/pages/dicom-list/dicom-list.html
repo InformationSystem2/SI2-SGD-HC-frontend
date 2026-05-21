@@ -1,0 +1,92 @@
+<div class="max-w-4xl mx-auto space-y-4">
+
+  <!-- Cabecera -->
+  <div class="flex items-center justify-between">
+    <button (click)="back()"
+            class="flex items-center gap-2 text-sm text-hc-text-3 hover:text-hc-primary transition-colors">
+      <fa-icon [icon]="faArrowLeft" />
+      Volver al paciente
+    </button>
+
+    <button (click)="uploadStudy()"
+            class="flex items-center gap-2 px-4 py-2 rounded-lg bg-hc-primary text-white text-sm font-medium hover:bg-hc-primary/90 transition-colors">
+      <fa-icon [icon]="faCloudArrowUp" />
+      Subir estudio
+    </button>
+  </div>
+
+  <!-- Título -->
+  <div class="flex items-center gap-3">
+    <fa-icon [icon]="faXRay" class="text-xl text-hc-primary" />
+    <h2 class="text-lg font-semibold text-hc-text">Estudios DICOM</h2>
+  </div>
+
+  <!-- Cargando -->
+  @if (dicomService.loading()) {
+    <div class="flex justify-center py-12">
+      <fa-icon [icon]="faSpinner" class="animate-spin text-2xl text-hc-primary" />
+    </div>
+  }
+
+  <!-- Error -->
+  @if (dicomService.error()) {
+    <div class="p-4 rounded-lg bg-hc-error-bg border border-hc-error/30 text-hc-error text-sm">
+      {{ dicomService.error() }}
+    </div>
+  }
+
+  <!-- Lista vacía -->
+  @if (!dicomService.loading() && dicomService.studies().length === 0 && !dicomService.error()) {
+    <div class="bg-hc-card rounded-xl border border-hc-border p-10 text-center">
+      <fa-icon [icon]="faXRay" class="text-4xl text-hc-text-3 mb-3" />
+      <p class="text-sm text-hc-text-3">Este paciente no tiene estudios DICOM.</p>
+      <button (click)="uploadStudy()"
+              class="mt-4 px-4 py-2 rounded-lg bg-hc-primary text-white text-sm font-medium hover:bg-hc-primary/90 transition-colors">
+        Subir el primero
+      </button>
+    </div>
+  }
+
+  <!-- Tabla de estudios -->
+  @if (dicomService.studies().length > 0) {
+    <div class="bg-hc-card rounded-xl border border-hc-border shadow-sm overflow-hidden">
+      <table class="w-full text-sm">
+        <thead>
+          <tr class="border-b border-hc-border bg-hc-bg">
+            <th class="px-4 py-3 text-left text-xs font-semibold text-hc-text-3 uppercase tracking-wide">
+              Fecha
+            </th>
+            <th class="px-4 py-3 text-left text-xs font-semibold text-hc-text-3 uppercase tracking-wide">
+              Subido por
+            </th>
+            <th class="px-4 py-3 text-left text-xs font-semibold text-hc-text-3 uppercase tracking-wide">
+              Estado
+            </th>
+            <th class="px-4 py-3"></th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (study of dicomService.studies(); track study.id) {
+            <tr class="border-b border-hc-border last:border-0 hover:bg-hc-bg/50 transition-colors">
+              <td class="px-4 py-3 text-hc-text font-medium">{{ study.issueDate }}</td>
+              <td class="px-4 py-3 text-hc-text-3">{{ study.uploaderName }}</td>
+              <td class="px-4 py-3">
+                <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-700">
+                  Completado
+                </span>
+              </td>
+              <td class="px-4 py-3 text-right">
+                <button (click)="viewStudy(study.id)"
+                        class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-hc-border text-xs text-hc-text hover:bg-hc-primary hover:text-white hover:border-hc-primary transition-colors">
+                  <fa-icon [icon]="faEye" />
+                  Ver imagen
+                </button>
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+  }
+
+</div>

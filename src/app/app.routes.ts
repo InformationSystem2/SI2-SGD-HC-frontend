@@ -45,6 +45,13 @@ export const routes: Routes = [
     loadChildren: () => import('./features/documents/documents.routes').then(m => m.documentsRoutes),
   },
   {
+    path: 'dicom',
+    component: MainLayout,
+    canActivate: [permissionGuard('DICOM_READ')],
+    loadChildren: () =>
+      import('./features/dicom/dicom.routes').then(m => m.dicomRoutes),
+  },
+  {
     path: '',
     redirectTo: 'auth/login',
     pathMatch: 'full',

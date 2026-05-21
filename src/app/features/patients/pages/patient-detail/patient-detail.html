@@ -73,6 +73,24 @@
       </dl>
 
     </div>
+
+    <!-- Acceso a estudios DICOM -->
+    <div class="bg-hc-card rounded-xl border border-hc-border shadow-sm p-5
+                flex items-center justify-between">
+      <div class="flex items-center gap-3">
+        <fa-icon [icon]="faXRay" class="text-xl text-hc-primary" />
+        <div>
+          <p class="text-sm font-medium text-hc-text">Estudios DICOM</p>
+          <p class="text-xs text-hc-text-3">Imágenes radiológicas del paciente</p>
+        </div>
+      </div>
+      <button (click)="viewDicomStudies(p.id)"
+              class="flex items-center gap-2 px-4 py-2 rounded-lg bg-hc-primary text-white text-sm font-medium hover:bg-hc-primary/90 transition-colors">
+        <fa-icon [icon]="faXRay" />
+        Ver estudios
+      </button>
+    </div>
+
   }
 
 </div>
