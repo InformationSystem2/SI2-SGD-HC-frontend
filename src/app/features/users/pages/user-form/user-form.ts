@@ -27,23 +27,23 @@ export class UserForm implements OnInit {
   readonly faSpinner     = faSpinner;
   readonly faFloppyDisk  = faFloppyDisk;
 
-  readonly editId = signal<number | null>(null);
+  readonly editId = signal<string | null>(null);
 
-  readonly documentTypes = ['CI', 'PASSPORT', 'OTHER'];
+  readonly documentTypes = ['CI', 'PASAPORTE'];
   readonly genders = [
-    { value: 'male',   label: 'Masculino' },
-    { value: 'female', label: 'Femenino'  },
+    { value: 'MALE',   label: 'Masculino' },
+    { value: 'FEMALE', label: 'Femenino'  },
   ];
 
   form = this.fb.group({
     firstName:      ['', Validators.required],
     lastName:       ['', Validators.required],
-    documentType:   [''],
-    documentNumber: [''],
+    documentType:   ['', Validators.required],
+    documentNumber: ['', Validators.required],
     phone:          [''],
-    gender:         [''],
+    gender:         ['', Validators.required],
     isActive:       [true],
-    rolesIds:       [[] as number[], Validators.required],
+    rolesIds:       [[] as string[], Validators.required],
   });
 
   ngOnInit(): void {
@@ -51,10 +51,9 @@ export class UserForm implements OnInit {
 
     const id = this.route.snapshot.paramMap.get('id');
     if (id) {
-      const numId = Number(id);
-      this.editId.set(numId);
+      this.editId.set(id);
 
-      this.userService.getUser(numId).subscribe(user => {
+      this.userService.getUser(id).subscribe(user => {
         this.form.patchValue({
           firstName:      user.firstName,
           lastName:       user.lastName,
@@ -69,7 +68,7 @@ export class UserForm implements OnInit {
     }
   }
 
-  toggleRole(id: number): void {
+  toggleRole(id: string): void {
     const current = this.form.value.rolesIds ?? [];
     const updated = current.includes(id)
       ? current.filter(r => r !== id)
@@ -77,7 +76,7 @@ export class UserForm implements OnInit {
     this.form.patchValue({ rolesIds: updated });
   }
 
-  isRoleSelected(id: number): boolean {
+  isRoleSelected(id: string): boolean {
     return (this.form.value.rolesIds ?? []).includes(id);
   }
 

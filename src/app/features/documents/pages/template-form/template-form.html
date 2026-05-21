@@ -1,0 +1,209 @@
+<div class="space-y-6 max-w-3xl mx-auto">
+
+  <!-- Header -->
+  <div class="flex items-center gap-3">
+    <button (click)="back()" class="hc-btn-icon">
+      <fa-icon [icon]="faArrowLeft"/>
+    </button>
+    <h2 class="hc-page-title">
+      {{ (isEdit() ? 'DOCUMENTS.EDIT_TEMPLATE' : 'DOCUMENTS.NEW_TEMPLATE') | translate }}
+    </h2>
+  </div>
+
+  @if (loading()) {
+    <div class="flex justify-center py-12">
+      <fa-icon [icon]="faSpinner" class="animate-spin text-2xl text-hc-primary"/>
+    </div>
+  }
+
+  @if (!loading()) {
+
+    <!-- ── Datos básicos ───────────────────────────────────────────── -->
+    <div class="hc-card overflow-hidden">
+      <div class="px-5 py-3 bg-hc-muted border-b border-hc-border">
+        <p class="hc-section-label">{{ 'DOCUMENTS.TEMPLATE_INFO' | translate }}</p>
+      </div>
+      <form [formGroup]="form" class="px-5 py-4 space-y-4">
+        <div>
+          <label for="name" class="hc-label">{{ 'DOCUMENTS.FIELD_NAME' | translate }}</label>
+          <input id="name" formControlName="name" type="text" class="hc-input"
+                 [placeholder]="'DOCUMENTS.PH_TEMPLATE_NAME' | translate"
+                 [class.border-hc-error]="form.get('name')?.invalid && form.get('name')?.touched"/>
+          @if (form.get('name')?.invalid && form.get('name')?.touched) {
+            <span class="text-xs text-hc-error mt-1 block">{{ 'DOCUMENTS.VAL_REQUIRED' | translate }}</span>
+          }
+        </div>
+        <div>
+          <label for="description" class="hc-label">{{ 'DOCUMENTS.FIELD_DESCRIPTION' | translate }}</label>
+          <textarea id="description" formControlName="description" rows="2"
+                    class="hc-input resize-none"
+                    [placeholder]="'DOCUMENTS.PH_DESCRIPTION' | translate"></textarea>
+        </div>
+      </form>
+    </div>
+
+    <!-- ── Constructor de campos ──────────────────────────────────── -->
+    <div class="hc-card overflow-hidden">
+
+      <div class="px-5 py-3 bg-hc-muted border-b border-hc-border flex items-center justify-between">
+        <p class="hc-section-label">{{ 'DOCUMENTS.SCHEMA_FIELDS' | translate }}</p>
+        <button type="button" (click)="addField()"
+                class="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-hc-primary/10
+                 hover:bg-hc-primary hover:text-white text-hc-primary
+                 text-xs font-medium transition-colors border border-hc-primary/20">
+          <fa-icon [icon]="faPlus"/>
+          {{ 'DOCUMENTS.ADD_FIELD' | translate }}
+        </button>
+      </div>
+
+      <div class="px-5 py-4 space-y-3">
+
+        @if (fieldsError()) {
+          <p class="text-xs text-hc-error">{{ fieldsError() }}</p>
+        }
+
+        @for (field of fields(); track $index; let fi = $index) {
+
+          <!-- Tarjeta de campo -->
+          <div class="rounded-xl border border-hc-border bg-hc-surface overflow-hidden
+                      transition-shadow hover:shadow-sm">
+
+            <!-- Fila de datos: clave / etiqueta / tipo -->
+            <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 p-4">
+
+              <div>
+                <label class="hc-label">{{ 'DOCUMENTS.PH_FIELD_KEY' | translate }}</label>
+                <input type="text" [value]="field.name"
+                       (input)="updateField(fi, { name: $any($event.target).value })"
+                       [placeholder]="'DOCUMENTS.PH_FIELD_KEY' | translate"
+                       class="hc-input text-sm"/>
+              </div>
+
+              <div>
+                <label class="hc-label">{{ 'DOCUMENTS.PH_FIELD_LABEL' | translate }}</label>
+                <input type="text" [value]="field.label"
+                       (input)="updateField(fi, { label: $any($event.target).value })"
+                       [placeholder]="'DOCUMENTS.PH_FIELD_LABEL' | translate"
+                       class="hc-input text-sm"/>
+              </div>
+
+              <div>
+                <label class="hc-label">{{ 'DOCUMENTS.PH_FIELD_TYPE' | translate }}</label>
+                <select [value]="field.type"
+                        (change)="updateField(fi, { type: $any($event.target).value })"
+                        class="hc-select text-sm">
+                  @for (type of fieldTypes; track type) {
+                    <option [value]="type">{{ type }}</option>
+                  }
+                </select>
+              </div>
+
+            </div>
+
+            <!-- Footer: toggle Requerido + botón Eliminar campo -->
+            <div class="flex items-center justify-between
+                        px-4 py-2.5 border-t border-hc-border bg-hc-muted/50">
+
+              <!-- Toggle: Requerido -->
+              <button type="button"
+                      (click)="updateField(fi, { required: !field.required })"
+                      class="flex items-center gap-2.5 text-xs font-medium transition-colors"
+                      [class]="field.required ? 'text-hc-primary' : 'text-hc-text-3'">
+                <!-- Track del toggle -->
+                <span class="relative w-8 h-4 rounded-full transition-colors shrink-0"
+                      [class]="field.required ? 'bg-hc-primary' : 'bg-hc-border'">
+                  <!-- Thumb -->
+                  <span class="absolute top-0.5 w-3 h-3 bg-white rounded-full shadow-sm transition-all duration-200"
+                        [class]="field.required ? 'left-[18px]' : 'left-0.5'"></span>
+                </span>
+                {{ field.required ? ('DOCUMENTS.PH_FIELD_REQUIRED_ON' | translate) : ('DOCUMENTS.PH_FIELD_REQUIRED_OFF' | translate) }}
+              </button>
+
+              <!-- Botón eliminar campo -->
+              <button type="button" (click)="removeField(fi)"
+                      [disabled]="fields().length === 1"
+                      class="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium
+                             text-hc-error/70 hover:text-white hover:bg-hc-error
+                             border border-transparent hover:border-hc-error
+                             transition-colors disabled:opacity-30 disabled:cursor-not-allowed">
+                <fa-icon [icon]="faTrash"/>
+                {{ 'DOCUMENTS.REMOVE_FIELD' | translate }}
+              </button>
+
+            </div>
+
+            <!-- Sección de opciones (SELECT / RADIO) -->
+            @if (hasOptions(field.type)) {
+              <div class="border-t border-hc-border bg-hc-muted/40 px-4 py-3 space-y-2">
+
+                <div class="flex items-center justify-between mb-1">
+                  <span class="hc-section-label">{{ 'DOCUMENTS.FIELD_OPTIONS' | translate }}</span>
+                  <button type="button" (click)="addOption(fi)"
+                          class="flex items-center gap-1 px-2.5 py-1 rounded-md text-xs font-medium
+                           bg-hc-muted border border-hc-border text-hc-text-2
+                           hover:bg-hc-primary/10 hover:text-hc-primary transition-colors">
+                    <fa-icon [icon]="faPlus" class="text-[10px]"/>
+                    {{ 'DOCUMENTS.ADD_OPTION' | translate }}
+                  </button>
+                </div>
+
+                @if (field.options.length === 0) {
+                  <p class="text-xs text-hc-text-3 italic">{{ 'DOCUMENTS.NO_OPTIONS' | translate }}</p>
+                }
+
+                @for (opt of field.options; track $index; let oi = $index) {
+                  <div class="flex items-center gap-2">
+                    <input type="text" [value]="opt.key"
+                           (input)="updateOption(fi, oi, { key: $any($event.target).value })"
+                           [placeholder]="'DOCUMENTS.PH_OPTION_KEY' | translate"
+                           class="flex-1 rounded-lg border border-hc-border bg-hc-card px-2.5 py-1.5
+                                  text-xs text-hc-text placeholder:text-hc-text-3
+                                  focus:outline-none focus:ring-2 focus:ring-hc-primary/50"/>
+                    <input type="text" [value]="opt.value"
+                           (input)="updateOption(fi, oi, { value: $any($event.target).value })"
+                           [placeholder]="'DOCUMENTS.PH_OPTION_LABEL' | translate"
+                           class="flex-1 rounded-lg border border-hc-border bg-hc-card px-2.5 py-1.5
+                                  text-xs text-hc-text placeholder:text-hc-text-3
+                                  focus:outline-none focus:ring-2 focus:ring-hc-primary/50"/>
+                    <button type="button" (click)="removeOption(fi, oi)"
+                            class="p-1.5 rounded-md text-hc-error/60 hover:text-white hover:bg-hc-error
+                                   transition-colors shrink-0" title="Eliminar opción">
+                      <fa-icon [icon]="faTrash" class="text-[11px]"/>
+                    </button>
+                  </div>
+                }
+
+              </div>
+            }
+
+          </div>
+        }
+
+      </div>
+    </div>
+
+    <!-- Error del servicio -->
+    @if (templateService.error()) {
+      <div class="hc-alert-error">{{ templateService.error() }}</div>
+    }
+
+    <!-- Acciones -->
+    <div class="flex gap-3">
+      <button type="button" (click)="onSubmit()" [disabled]="templateService.loading()"
+              class="hc-btn-primary px-6 py-2.5">
+        @if (templateService.loading()) {
+          <fa-icon [icon]="faSpinner" class="animate-spin"/>
+          {{ 'DOCUMENTS.SAVING' | translate }}
+        } @else {
+          <fa-icon [icon]="faFloppyDisk"/>
+          {{ 'DOCUMENTS.SAVE_BTN' | translate }}
+        }
+      </button>
+      <button type="button" (click)="back()" class="hc-btn-secondary px-6">
+        {{ 'DOCUMENTS.CANCEL' | translate }}
+      </button>
+    </div>
+
+  }
+
+</div>

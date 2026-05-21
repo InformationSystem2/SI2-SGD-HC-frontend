@@ -1,69 +1,53 @@
 <div class="max-w-2xl mx-auto">
 
-  <h2 class="text-xl font-semibold text-hc-text mb-6 flex items-center gap-2">
-    <fa-icon [icon]="faShieldHalved" class="text-hc-primary" />
-    {{ (isEdit() ? 'ROLES.EDIT_TITLE' : 'ROLES.NEW_TITLE') | translate }}
-  </h2>
+  <div class="hc-page-header mb-6">
+    <h2 class="hc-page-title">
+      <fa-icon [icon]="faShieldHalved" class="text-hc-primary" />
+      {{ (isEdit() ? 'ROLES.EDIT_TITLE' : 'ROLES.NEW_TITLE') | translate }}
+    </h2>
+  </div>
 
   @if (rolesService.error()) {
-    <div class="mb-4 p-3 rounded-lg bg-hc-error-bg border border-hc-error/30 text-hc-error text-sm">
-      {{ rolesService.error() }}
-    </div>
+    <div class="hc-alert-error mb-4">{{ rolesService.error() }}</div>
   }
 
-  <form [formGroup]="form" (ngSubmit)="onSubmit()"
-        class="bg-hc-card rounded-xl p-6 border border-hc-border shadow-sm space-y-5">
+  <form [formGroup]="form" (ngSubmit)="onSubmit()" class="hc-card overflow-hidden">
 
-    <!-- Name -->
-    <div>
-      <label class="block text-sm font-medium text-hc-text-2 mb-1">
-        {{ 'ROLES.FIELD_NAME' | translate }} <span class="text-hc-error">*</span>
-      </label>
-      <input formControlName="name" type="text"
-             class="w-full bg-hc-input border border-hc-border-i rounded-lg px-3 py-2
-                    text-hc-text placeholder:text-hc-text-3
-                    focus:outline-none focus:ring-2 focus:ring-hc-primary/30 focus:border-hc-primary
-                    transition-colors"
-             [placeholder]="'ROLES.PH_NAME' | translate" />
-      @if (form.get('name')?.invalid && form.get('name')?.touched) {
-        <p class="text-hc-error text-xs mt-1">{{ 'ROLES.VAL_REQUIRED' | translate }}</p>
-      }
+    <!-- ── Sección: Información del rol ──────────────── -->
+    <div class="px-6 py-3 bg-hc-muted border-b border-hc-border">
+      <p class="hc-section-label">{{ 'ROLES.FIELD_NAME' | translate }}</p>
     </div>
-
-    <!-- Description -->
-    <div>
-      <label class="block text-sm font-medium text-hc-text-2 mb-1">
-        {{ 'ROLES.FIELD_DESCRIPTION' | translate }} <span class="text-hc-error">*</span>
-      </label>
-      <textarea formControlName="description" rows="3"
-                class="w-full bg-hc-input border border-hc-border-i rounded-lg px-3 py-2
-                       text-hc-text placeholder:text-hc-text-3
-                       focus:outline-none focus:ring-2 focus:ring-hc-primary/30 focus:border-hc-primary
-                       transition-colors resize-none"
-                [placeholder]="'ROLES.PH_DESCRIPTION' | translate">
-      </textarea>
-      @if (form.get('description')?.invalid && form.get('description')?.touched) {
-        <p class="text-hc-error text-xs mt-1">{{ 'ROLES.VAL_REQUIRED' | translate }}</p>
-      }
-    </div>
-
-    <!-- Active (edit only) -->
-    @if (isEdit()) {
-      <div class="flex items-center gap-3">
-        <input formControlName="active" type="checkbox" id="active"
-               class="w-4 h-4 accent-hc-primary cursor-pointer" />
-        <label for="active" class="text-sm text-hc-text-2 cursor-pointer">
-          {{ 'ROLES.FIELD_ACTIVE' | translate }}
-        </label>
+    <div class="px-6 py-5 space-y-4">
+      <div>
+        <label class="hc-label">{{ 'ROLES.FIELD_NAME' | translate }} <span class="text-hc-error">*</span></label>
+        <input formControlName="name" type="text" class="hc-input"
+               [placeholder]="'ROLES.PH_NAME' | translate" />
+        @if (form.get('name')?.invalid && form.get('name')?.touched) {
+          <p class="text-hc-error text-xs mt-1">{{ 'ROLES.VAL_REQUIRED' | translate }}</p>
+        }
       </div>
-    }
+      <div>
+        <label class="hc-label">{{ 'ROLES.FIELD_DESCRIPTION' | translate }} <span class="text-hc-error">*</span></label>
+        <textarea formControlName="description" rows="3" class="hc-input resize-none"
+                  [placeholder]="'ROLES.PH_DESCRIPTION' | translate"></textarea>
+        @if (form.get('description')?.invalid && form.get('description')?.touched) {
+          <p class="text-hc-error text-xs mt-1">{{ 'ROLES.VAL_REQUIRED' | translate }}</p>
+        }
+      </div>
+      @if (isEdit()) {
+        <label class="flex items-center gap-3 cursor-pointer w-fit">
+          <input formControlName="isActive" type="checkbox" id="isActive"
+                 class="w-4 h-4 accent-hc-primary cursor-pointer" />
+          <span class="text-sm text-hc-text-2">{{ 'ROLES.FIELD_ACTIVE' | translate }}</span>
+        </label>
+      }
+    </div>
 
-    <!-- Permissions -->
-    <div>
-      <label class="block text-sm font-medium text-hc-text-2 mb-2">
-        {{ 'ROLES.FIELD_PERMISSIONS' | translate }}
-      </label>
-
+    <!-- ── Sección: Permisos ──────────────────────────── -->
+    <div class="px-6 py-3 bg-hc-muted border-t border-b border-hc-border">
+      <p class="hc-section-label">{{ 'ROLES.FIELD_PERMISSIONS' | translate }}</p>
+    </div>
+    <div class="px-6 py-5">
       @if (permissionsService.loading()) {
         <div class="flex items-center gap-2 text-hc-text-3 text-sm">
           <fa-icon [icon]="faSpinner" class="animate-spin" />
@@ -74,40 +58,33 @@
       } @else {
         <div class="space-y-3 max-h-72 overflow-y-auto pr-1">
           @for (mod of moduleNames(); track mod) {
-            <div class="border border-hc-border rounded-lg p-3">
-              <p class="text-xs font-semibold text-hc-text-2 uppercase tracking-wide mb-2">
+            <div class="border border-hc-border rounded-xl overflow-hidden">
+              <p class="px-4 py-2 text-xs font-semibold text-hc-text-2 uppercase tracking-wide
+                         bg-hc-muted border-b border-hc-border">
                 {{ mod }}
               </p>
-              <div class="flex flex-wrap gap-2">
+              <div class="flex flex-wrap gap-2 px-4 py-3">
                 @for (perm of permissionsByModule()[mod]; track perm.id) {
-                  <button type="button"
-                    (click)="togglePermission(perm.id)"
-                    [title]="perm.description"
+                  <button type="button" (click)="togglePermission(perm.id)" [title]="perm.description"
                     [class]="'px-2.5 py-1 rounded text-xs font-medium border transition-colors ' +
                              (isPermissionSelected(perm.id)
                                ? 'bg-hc-primary border-hc-primary text-white shadow-sm'
                                : 'bg-hc-muted border-hc-border text-hc-text-2 hover:border-hc-primary hover:text-hc-primary')"
-                  >
-                    {{ perm.action }}
-                  </button>
+                  >{{ perm.action }}</button>
                 }
               </div>
             </div>
           }
         </div>
-        <p class="text-xs text-hc-text-3 mt-1">
+        <p class="text-xs text-hc-text-3 mt-2">
           {{ selectedPermissionIds().length }} {{ 'ROLES.PERMISSIONS_SELECTED' | translate }}
         </p>
       }
     </div>
 
-    <!-- Actions -->
-    <div class="flex gap-3 pt-2">
-      <button type="submit"
-              [disabled]="rolesService.loading()"
-              class="flex-1 flex items-center justify-center gap-2
-                     bg-hc-primary hover:bg-hc-primary-dark disabled:opacity-50 disabled:cursor-not-allowed
-                     text-white font-semibold py-2.5 rounded-lg transition-colors shadow-sm">
+    <!-- ── Acciones ───────────────────────────────────── -->
+    <div class="px-6 py-4 border-t border-hc-border bg-hc-muted/40 flex gap-3">
+      <button type="submit" [disabled]="rolesService.loading()" class="hc-btn-primary flex-1 justify-center py-2.5">
         @if (rolesService.loading()) {
           <fa-icon [icon]="faSpinner" class="animate-spin" />
           {{ 'ROLES.SAVING' | translate }}
@@ -116,9 +93,7 @@
           {{ (isEdit() ? 'ROLES.SAVE_CHANGES' : 'ROLES.CREATE_BTN') | translate }}
         }
       </button>
-      <button type="button" (click)="cancel()"
-              class="px-5 py-2.5 rounded-lg bg-hc-muted hover:bg-hc-hover
-                     text-hc-text-2 transition-colors border border-hc-border">
+      <button type="button" (click)="cancel()" class="hc-btn-secondary px-6">
         {{ 'ROLES.CANCEL' | translate }}
       </button>
     </div>

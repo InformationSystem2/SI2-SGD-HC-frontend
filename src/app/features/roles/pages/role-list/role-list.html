@@ -1,81 +1,59 @@
 <div class="space-y-4">
 
-  <!-- Header -->
-  <div class="flex items-center justify-between">
-    <h2 class="text-xl font-semibold text-hc-text flex items-center gap-2">
+  <div class="hc-page-header">
+    <h2 class="hc-page-title">
       <fa-icon [icon]="faShieldHalved" class="text-hc-primary" />
       {{ 'ROLES.TITLE' | translate }}
     </h2>
-    <button
-      (click)="goToCreate()"
-      class="flex items-center gap-2 px-4 py-2 bg-hc-primary hover:bg-hc-primary-dark
-             text-white text-sm font-medium rounded-lg transition-colors shadow-sm"
-    >
+    <button (click)="goToCreate()" class="hc-btn-primary">
       <fa-icon [icon]="faPlus" />
       {{ 'ROLES.NEW_ROLE' | translate }}
     </button>
   </div>
 
-  <!-- Error -->
   @if (rolesService.error()) {
-    <div class="p-3 rounded-lg bg-hc-error-bg border border-hc-error/30 text-hc-error text-sm">
-      {{ rolesService.error() }}
-    </div>
+    <div class="hc-alert-error">{{ rolesService.error() }}</div>
   }
 
-  <!-- Loading -->
   @if (rolesService.loading()) {
     <div class="flex justify-center py-12">
       <fa-icon [icon]="faSpinner" class="animate-spin text-2xl text-hc-primary" />
     </div>
   }
 
-  <!-- Table -->
   @if (!rolesService.loading()) {
-    <div class="bg-hc-card rounded-xl border border-hc-border overflow-hidden shadow-sm overflow-x-auto">
-      <table class="w-full text-sm min-w-[540px]">
+    <div class="hc-table-wrap">
+      <table class="hc-table min-w-[540px]">
         <thead>
-          <tr class="border-b border-hc-border bg-hc-muted text-hc-text-3 text-left">
-            <th class="px-4 py-3 font-semibold">{{ 'ROLES.COL_NAME' | translate }}</th>
-            <th class="px-4 py-3 font-semibold">{{ 'ROLES.COL_DESCRIPTION' | translate }}</th>
-            <th class="px-4 py-3 font-semibold">{{ 'ROLES.COL_STATUS' | translate }}</th>
-            <th class="px-4 py-3 font-semibold text-right">{{ 'ROLES.COL_ACTIONS' | translate }}</th>
+          <tr>
+            <th>{{ 'ROLES.COL_NAME' | translate }}</th>
+            <th>{{ 'ROLES.COL_DESCRIPTION' | translate }}</th>
+            <th>{{ 'ROLES.COL_STATUS' | translate }}</th>
+            <th class="text-right">{{ 'ROLES.COL_ACTIONS' | translate }}</th>
           </tr>
         </thead>
         <tbody>
           @for (role of rolesService.roles(); track role.id) {
-            <tr class="border-b border-hc-border/50 hover:bg-hc-hover transition-colors">
-              <td class="px-4 py-3 text-hc-text font-medium">{{ role.name }}</td>
-              <td class="px-4 py-3 text-hc-text-2">{{ role.description }}</td>
-              <td class="px-4 py-3">
-                @if (role.active) {
-                  <span class="px-2.5 py-0.5 rounded-full text-xs font-medium
-                               bg-hc-success-bg text-hc-success border border-hc-success/20">
-                    {{ 'ROLES.STATUS_ACTIVE' | translate }}
-                  </span>
+            <tr>
+              <td class="font-medium text-hc-text">{{ role.name }}</td>
+              <td class="text-hc-text-2 max-w-[240px] truncate">{{ role.description }}</td>
+              <td>
+                @if (role.isActive) {
+                  <span class="hc-badge-success">{{ 'ROLES.STATUS_ACTIVE' | translate }}</span>
                 } @else {
-                  <span class="px-2.5 py-0.5 rounded-full text-xs font-medium
-                               bg-hc-muted text-hc-text-3 border border-hc-border">
-                    {{ 'ROLES.STATUS_INACTIVE' | translate }}
-                  </span>
+                  <span class="hc-badge-muted">{{ 'ROLES.STATUS_INACTIVE' | translate }}</span>
                 }
               </td>
-              <td class="px-4 py-3 text-right">
-                <div class="flex items-center justify-end gap-2">
-                  <button
-                    (click)="goToEdit(role.id)"
-                    class="p-1.5 rounded-md bg-hc-muted hover:bg-hc-primary hover:text-white
-                           text-hc-text-2 transition-colors"
-                    [title]="'ROLES.COL_ACTIONS' | translate"
-                  >
+              <td>
+                <div class="flex items-center justify-end gap-1.5">
+                  <button (click)="goToEdit(role.id)"
+                          class="p-1.5 rounded-md bg-hc-muted hover:bg-hc-primary hover:text-white text-hc-text-2 transition-colors"
+                          [title]="'ROLES.COL_ACTIONS' | translate">
                     <fa-icon [icon]="faPencil" />
                   </button>
-                  <button
-                    (click)="delete(role.id)"
-                    class="p-1.5 rounded-md bg-hc-muted hover:bg-hc-error hover:text-white
-                           text-hc-text-2 transition-colors"
-                    [title]="'ROLES.COL_ACTIONS' | translate"
-                  >
+                  <button (click)="delete(role.id)"
+                          class="hc-btn-icon-danger"
+                          [title]="'ROLES.CONFIRM_DELETE' | translate">
                     <fa-icon [icon]="faTrash" />
                   </button>
                 </div>
@@ -83,9 +61,7 @@
             </tr>
           } @empty {
             <tr>
-              <td colspan="4" class="px-4 py-10 text-center text-hc-text-3">
-                {{ 'ROLES.EMPTY' | translate }}
-              </td>
+              <td colspan="4" class="hc-table-empty">{{ 'ROLES.EMPTY' | translate }}</td>
             </tr>
           }
         </tbody>

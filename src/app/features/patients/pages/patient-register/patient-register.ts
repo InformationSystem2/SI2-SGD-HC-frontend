@@ -1,26 +1,11 @@
 import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
-import { AbstractControl, FormBuilder, ReactiveFormsModule, ValidationErrors, Validators } from '@angular/forms';
+import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { faSpinner, faUserPlus } from '@fortawesome/free-solid-svg-icons';
 import { TranslatePipe } from '@ngx-translate/core';
 import { CreatePatientRequest } from '../../models/patient.model';
 import { PatientService } from '../../services/patient.service';
-
-function passwordStrengthValidator(control: AbstractControl): ValidationErrors | null {
-  const value: string = control.value ?? '';
-  const errors: ValidationErrors = {};
-  if (value.length < 8)     errors['minlength'] = true;
-  if (!/[A-Z]/.test(value)) errors['uppercase'] = true;
-  if (!/[0-9]/.test(value)) errors['number']    = true;
-  return Object.keys(errors).length ? errors : null;
-}
-
-function passwordsMatchValidator(group: AbstractControl): ValidationErrors | null {
-  const pw  = group.get('password')?.value;
-  const cpw = group.get('confirmPassword')?.value;
-  return pw && cpw && pw !== cpw ? { passwordsMismatch: true } : null;
-}
 
 @Component({
   selector: 'app-patient-register',
@@ -37,27 +22,22 @@ export class PatientRegister {
   readonly faUserPlus = faUserPlus;
   readonly faSpinner  = faSpinner;
 
-  readonly documentTypes = ['CI', 'PASSPORT', 'OTHER'];
+  readonly documentTypes = ['CI', 'PASAPORTE'];
   readonly genders = [
-    { value: 'male',   label: 'Masculino' },
-    { value: 'female', label: 'Femenino'  },
+    { value: 'MALE',   label: 'Masculino' },
+    { value: 'FEMALE', label: 'Femenino'  },
   ];
 
-  form = this.fb.group(
-    {
-      firstName:       ['', Validators.required],
-      lastName:        ['', Validators.required],
-      email:           ['', [Validators.required, Validators.email]],
-      password:        ['', [Validators.required, passwordStrengthValidator]],
-      confirmPassword: ['', Validators.required],
-      documentType:    [''],
-      documentNumber:  [''],
-      phone:           [''],
-      gender:          [''],
-      birthDate:       [''],
-    },
-    { validators: passwordsMatchValidator },
-  );
+  form = this.fb.group({
+    firstName:      ['', Validators.required],
+    lastName:       ['', Validators.required],
+    documentType:   [''],
+    documentNumber: [''],
+    phone:          [''],
+    address:        [''],
+    gender:         ['', Validators.required],
+    birthDate:      ['', Validators.required],
+  });
 
   onSubmit(): void {
     if (this.form.invalid) {
@@ -69,11 +49,10 @@ export class PatientRegister {
     const payload: CreatePatientRequest = {
       firstName: v.firstName!,
       lastName:  v.lastName!,
-      email:     v.email!,
-      password:  v.password!,
       ...(v.documentType   ? { documentType: v.documentType }     : {}),
       ...(v.documentNumber ? { documentNumber: v.documentNumber } : {}),
       ...(v.phone          ? { phone: v.phone }                   : {}),
+      ...(v.address        ? { address: v.address }               : {}),
       ...(v.gender         ? { gender: v.gender }                 : {}),
       ...(v.birthDate      ? { birthDate: v.birthDate }           : {}),
     };

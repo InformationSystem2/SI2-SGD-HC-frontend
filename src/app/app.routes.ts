@@ -10,6 +10,10 @@ export const routes: Routes = [
     loadChildren: () => import('./features/auth/auth.routes').then(m => m.authRoutes),
   },
   {
+    path: 'tenants',
+    loadChildren: () => import('./features/tenants/tenants.routes').then(m => m.tenantsRoutes),
+  },
+  {
     path: 'dashboard',
     component: MainLayout,
     canActivate: [authGuard],
@@ -33,6 +37,12 @@ export const routes: Routes = [
     component: MainLayout,
     canActivate: [permissionGuard('PATIENT_READ')],
     loadChildren: () => import('./features/patients/patients.routes').then(m => m.patientsRoutes),
+  },
+  {
+    path: 'documentos',
+    component: MainLayout,
+    canActivate: [permissionGuard('DOCUMENT_READ')],
+    loadChildren: () => import('./features/documents/documents.routes').then(m => m.documentsRoutes),
   },
   {
     path: '',

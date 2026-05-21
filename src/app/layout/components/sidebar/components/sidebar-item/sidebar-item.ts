@@ -19,6 +19,7 @@ import {
   faGear,
   faCircle,
   faHeartPulse,
+  faChevronDown,
   type IconDefinition,
 } from '@fortawesome/free-solid-svg-icons';
 
@@ -41,25 +42,46 @@ const ICON_MAP: Record<string, IconDefinition> = {
 export class SidebarItem {
   item = input.required<NavItem>();
 
+  readonly sidebarService = inject(SidebarService);
+
+  /** Controla el acordeón (expanded) o el popup flotante (collapsed) */
+  readonly open = signal(false);
+
+  private hoverTimeout: ReturnType<typeof setTimeout> | null = null;
+
+  readonly faChevronDown = faChevronDown;
+
   getIcon(name: string): IconDefinition {
     return ICON_MAP[name] ?? faCircle;
   }
 
-  readonly sidebarService = inject(SidebarService);
-  readonly showSubmenu = signal(false);
+  hasSubItems(): boolean {
+    return (this.item().subItems?.length ?? 0) > 0;
+  }
 
-  private timeout: ReturnType<typeof setTimeout> | null = null;
+  // ── Modo expandido: acordeón por click ──────────────────────────────────
+
+  toggleAccordion(event: Event): void {
+    if (!this.hasSubItems()) return;
+    event.preventDefault();
+    event.stopPropagation();
+    this.open.update(v => !v);
+  }
+
+  // ── Modo colapsado: popup por hover ─────────────────────────────────────
 
   onMouseEnter(): void {
-    if (this.timeout) clearTimeout(this.timeout);
-    if (this.item().subItems?.length) this.showSubmenu.set(true);
+    if (this.sidebarService.expanded()) return;
+    if (this.hoverTimeout) clearTimeout(this.hoverTimeout);
+    if (this.hasSubItems()) this.open.set(true);
   }
 
   onMouseLeave(): void {
-    this.timeout = setTimeout(() => this.showSubmenu.set(false), 200);
+    if (this.sidebarService.expanded()) return;
+    this.hoverTimeout = setTimeout(() => this.open.set(false), 200);
   }
 
-  onSubmenuEnter(): void {
-    if (this.timeout) clearTimeout(this.timeout);
+  onPopupEnter(): void {
+    if (this.hoverTimeout) clearTimeout(this.hoverTimeout);
   }
 }

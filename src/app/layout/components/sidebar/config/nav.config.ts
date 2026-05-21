@@ -8,8 +8,15 @@ export const NAV_ITEMS: NavItem[] = [
   },
   {
     label: 'NAV.DOCUMENTS',
-    path: '/dashboard/documentos',
+    path: '/documentos/list',
     icon: 'file-text',
+    permissions: ['DOCUMENT_READ'],
+    subItems: [
+      { label: 'NAV.DOCUMENT_LIST',        path: '/documentos/list' },
+      { label: 'NAV.DOCUMENT_UPLOAD',      path: '/documentos/upload' },
+      { label: 'NAV.DOCUMENT_TEMPLATES',   path: '/documentos/templates' },
+      { label: 'NAV.DOCUMENT_TEMPLATE_NEW', path: '/documentos/templates/new' },
+    ],
   },
   {
     label: 'NAV.ROLES',
@@ -36,10 +43,5 @@ export const NAV_ITEMS: NavItem[] = [
       { label: 'NAV.PATIENT_LIST',     path: '/pacientes/list' },
       { label: 'NAV.PATIENT_REGISTER', path: '/pacientes/register' },
     ],
-  },
-  {
-    label: 'NAV.SETTINGS',
-    path: '/dashboard/configuracion',
-    icon: 'settings',
   },
 ];

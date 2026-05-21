@@ -39,10 +39,10 @@ export class UserRegister implements OnInit {
   readonly faUserPlus = faUserPlus;
   readonly faSpinner  = faSpinner;
 
-  readonly documentTypes = ['CI', 'PASSPORT', 'OTHER'];
+  readonly documentTypes = ['CI', 'PASAPORTE'];
   readonly genders       = [
-    { value: 'male', label: 'Masculino' },
-    { value: 'female', label: 'Femenino'  },
+    { value: 'MALE',   label: 'Masculino' },
+    { value: 'FEMALE', label: 'Femenino'  },
   ];
 
   ngOnInit(): void {
@@ -57,17 +57,17 @@ export class UserRegister implements OnInit {
       email:           ['', [Validators.required, Validators.email]],
       password:        ['', [Validators.required, passwordStrengthValidator]],
       confirmPassword: ['', Validators.required],
-      documentType:    [''],
-      documentNumber:  [''],
+      documentType:    ['', Validators.required],
+      documentNumber:  ['', Validators.required],
       phone:           [''],
-      gender:          [''],
-      rolesIds:        [[] as number[], Validators.required],
+      gender:          ['', Validators.required],
+      rolesIds:        [[] as string[], Validators.required],
     },
     { validators: passwordsMatchValidator },
   );
 
 
-  toggleRole(id: number): void {
+  toggleRole(id: string): void {
     const current = this.form.value.rolesIds ?? [];
     const updated = current.includes(id)
       ? current.filter(role => role !== id)
@@ -75,7 +75,7 @@ export class UserRegister implements OnInit {
     this.form.patchValue({ rolesIds: updated });
   }
 
-  isRoleSelected(id: number): boolean {
+  isRoleSelected(id: string): boolean {
     return (this.form.value.rolesIds ?? []).includes(id);
   }
 

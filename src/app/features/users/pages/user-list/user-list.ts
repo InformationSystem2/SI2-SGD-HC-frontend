@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, computed, inject, OnInit } from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed, inject, OnInit, signal } from '@angular/core';
 import { UserService } from '../../services/user.service';
 import { RolesService } from '../../../roles/services/roles.service';
 import { AuthService } from '../../../../core/auth/services/auth.service';
@@ -37,12 +37,31 @@ export class UserList implements OnInit {
     this.authService.roles().includes('ROLE_SUPERUSER'),
   );
 
+  readonly PAGE_SIZE    = 20;
+  readonly page         = signal(0);
+  readonly totalItems   = computed(() => this.userService.users().length);
+  readonly totalPages   = computed(() => Math.ceil(this.totalItems() / this.PAGE_SIZE) || 1);
+  readonly paged        = computed(() => {
+    const s = this.page() * this.PAGE_SIZE;
+    return this.userService.users().slice(s, s + this.PAGE_SIZE);
+  });
+  readonly visiblePages = computed(() => {
+    const total = this.totalPages(), cur = this.page();
+    const start = Math.max(0, Math.min(cur - 2, total - 5));
+    const end   = Math.min(total - 1, start + 4);
+    return Array.from({ length: end - start + 1 }, (_, i) => start + i);
+  });
+
+  prevPage()          { this.page.update(p => Math.max(0, p - 1)); }
+  nextPage()          { this.page.update(p => Math.min(this.totalPages() - 1, p + 1)); }
+  goToPage(n: number) { this.page.set(n); }
+
   ngOnInit(): void {
     this.userService.getUsers().subscribe();
     this.rolesService.loadRoles().subscribe();
   }
 
-  getRoleNames(ids: number[]): string[] {
+  getRoleNames(ids: string[]): string[] {
     return (ids ?? []).map(id => {
       const role = this.rolesService.roles().find(r => r.id === id);
       return role?.name ?? `#${id}`;
@@ -53,19 +72,19 @@ export class UserList implements OnInit {
     this.router.navigate(['/usuarios/register']);
   }
 
-  goToDetail(id: number): void {
+  goToDetail(id: string): void {
     this.router.navigate(['/usuarios/detail', id]);
   }
 
-  goToEdit(id: number): void {
+  goToEdit(id: string): void {
     this.router.navigate(['/usuarios/form', id]);
   }
 
-  goToPassword(id: number): void {
+  goToPassword(id: string): void {
     this.router.navigate(['/usuarios/password', id]);
   }
 
-  delete(id: number): void {
+  delete(id: string): void {
     if (!confirm('¿Eliminar este usuario?')) return;
     this.userService.deleteUser(id).subscribe();
   }

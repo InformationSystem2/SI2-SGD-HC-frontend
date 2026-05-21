@@ -36,7 +36,7 @@ export class RolesService {
   }
 
 
-  getRole(id: number) {
+  getRole(id: string) {
     return this.http.get<Role>(`${this.BASE}/${id}`);
   }
 
@@ -59,7 +59,7 @@ export class RolesService {
   }
 
 
-  updateRole(id: number, data: UpdateRoleRequest) {
+  updateRole(id: string, data: UpdateRoleRequest) {
     this.loading.set(true);
     this.error.set(null);
 
@@ -79,7 +79,7 @@ export class RolesService {
   }
 
 
-  deleteRole(id: number) {
+  deleteRole(id: string) {
     this.loading.set(true);
     this.error.set(null);
 

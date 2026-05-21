@@ -41,7 +41,7 @@ export class UserPassword implements OnInit {
   readonly faSpinner    = faSpinner;
   readonly faFloppyDisk = faFloppyDisk;
 
-  readonly userId      = signal<number | null>(null);
+  readonly userId      = signal<string | null>(null);
   readonly currentUser = signal<User | null>(null);
   readonly loading     = signal(true);
 
@@ -54,7 +54,7 @@ export class UserPassword implements OnInit {
   );
 
   ngOnInit(): void {
-    const id = Number(this.route.snapshot.paramMap.get('id'));
+    const id = this.route.snapshot.paramMap.get('id')!;
     this.userId.set(id);
 
     this.userService.getUser(id).subscribe({

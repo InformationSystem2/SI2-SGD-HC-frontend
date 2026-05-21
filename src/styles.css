@@ -10,14 +10,15 @@
 */
 @theme {
   /* Brand — Teal */
-  --color-hc-primary:      #0D9488;
-  --color-hc-primary-dark: #0F766E;
-  --color-hc-primary-50:   #F0FDFA;
-  --color-hc-primary-100:  #CCFBF1;
+  --color-hc-primary:       #0D9488;
+  --color-hc-primary-dark:  #0F766E;
+  --color-hc-primary-light: #2DD4BF;
+  --color-hc-primary-50:    #F0FDFA;
+  --color-hc-primary-100:   #CCFBF1;
 
-  /* Accent — Sky blue */
-  --color-hc-accent:       #0EA5E9;
-  --color-hc-accent-dark:  #0284C7;
+  /* Accent — Teal-400 (coherente con primary, reemplaza sky-blue) */
+  --color-hc-accent:        #2DD4BF;
+  --color-hc-accent-dark:   #0D9488;
 
   /* Semantic surfaces — override via CSS vars below */
   --color-hc-app:          var(--hc-bg-app);
@@ -50,38 +51,49 @@
   --color-hc-info-bg:      #EFF6FF;
 }
 
-/* ─── Light Theme (default) ─────────────────────────── */
+/* ─── Light Theme ────────────────────────────────────── */
+/*
+  Jerarquía de superficies:
+  app (fondo) → surface (página) → card → input
+  sidebar con tinte teal para distinguir navegación
+*/
 :root {
-  --hc-bg-app:        #F0F9FF;
+  --hc-bg-app:        #F8FAFC;   /* slate-50: neutro, no azulado */
   --hc-bg-surface:    #FFFFFF;
-  --hc-bg-sidebar:    #FFFFFF;
+  --hc-bg-sidebar:    #F0FDFA;   /* teal-50: distingue la nav del contenido */
   --hc-bg-navbar:     #FFFFFF;
   --hc-bg-card:       #FFFFFF;
-  --hc-bg-muted:      #F8FAFC;
-  --hc-bg-hover:      #F0FDFA;
+  --hc-bg-muted:      #F1F5F9;   /* slate-100: más visible que antes */
+  --hc-bg-hover:      #CCFBF1;   /* teal-100: hover más expresivo */
   --hc-bg-input:      #FFFFFF;
-  --hc-border:        #E2E8F0;
-  --hc-border-input:  #CBD5E1;
-  --hc-text-primary:  #0F172A;
-  --hc-text-secondary:#475569;
-  --hc-text-muted:    #94A3B8;
+  --hc-border:        #E2E8F0;   /* slate-200 */
+  --hc-border-input:  #94A3B8;   /* slate-400: borde de input más visible */
+  --hc-border-sidebar:#B2E0DA;   /* teal-200: borde sidebar → contenido */
+  --hc-text-primary:  #0F172A;   /* slate-900 */
+  --hc-text-secondary:#334155;   /* slate-700: más contraste que antes */
+  --hc-text-muted:    #64748B;   /* slate-500 */
 }
 
 /* ─── Dark Theme ─────────────────────────────────────── */
+/*
+  Jerarquía: app (más oscuro) → surface → card (más claro)
+  Cada capa tiene al menos 6-8 puntos de diferencia en luminosidad
+*/
 .dark {
-  --hc-bg-app:        #020C18;
-  --hc-bg-surface:    #0A1628;
-  --hc-bg-sidebar:    #0C1A30;
-  --hc-bg-navbar:     #0C1A30;
-  --hc-bg-card:       #112240;
-  --hc-bg-muted:      #172B4D;
-  --hc-bg-hover:      #1A3360;
-  --hc-bg-input:      #172B4D;
-  --hc-border:        #1E3A5F;
-  --hc-border-input:  #2A4A73;
-  --hc-text-primary:  #E2EBF4;
-  --hc-text-secondary:#9EB4CC;
-  --hc-text-muted:    #5A7FA0;
+  --hc-bg-app:        #0B1220;   /* azul-pizarra más frío que navy puro */
+  --hc-bg-surface:    #0D1829;
+  --hc-bg-sidebar:    #0F1A2E;   /* sidebar ligeramente distinto de app */
+  --hc-bg-navbar:     #0F1A2E;
+  --hc-bg-card:       #131F35;   /* más claro que app — jerarquía clara */
+  --hc-bg-muted:      #1A2D47;   /* mayor contraste con card */
+  --hc-bg-hover:      #1E3455;   /* hover visible */
+  --hc-bg-input:      #162540;   /* input distinguible del card */
+  --hc-border:        #1E3352;   /* borde sutil pero presente */
+  --hc-border-sidebar:#1E3352;   /* mismo en dark */
+  --hc-border-input:  #2A4466;   /* borde input más definido */
+  --hc-text-primary:  #E8F0F8;   /* blanco-azulado clínico */
+  --hc-text-secondary:#8BAFC8;   /* azul-gris medio */
+  --hc-text-muted:    #4D6F8A;   /* muted con contraste suficiente */
 }
 
 /* ─── Base styles ────────────────────────────────────── */
@@ -102,7 +114,150 @@ body {
   transition-timing-function: ease;
 }
 
-/* Override for elements that should NOT transition (animations, transforms) */
 .no-transition {
   transition: none !important;
+}
+
+/* ─── Component layer ────────────────────────────────── */
+@layer components {
+
+  /* Cards */
+  .hc-card {
+    @apply bg-hc-card rounded-xl border border-hc-border;
+    box-shadow: 0 1px 3px 0 rgb(0 0 0 / 0.06), 0 1px 2px -1px rgb(0 0 0 / 0.04);
+  }
+  .dark .hc-card {
+    box-shadow: 0 1px 3px 0 rgb(0 0 0 / 0.4), 0 1px 2px -1px rgb(0 0 0 / 0.2);
+  }
+
+  /* Buttons */
+  .hc-btn-primary {
+    @apply inline-flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium
+           bg-hc-primary hover:bg-hc-primary-dark text-white shadow-sm transition-colors
+           disabled:opacity-50 disabled:cursor-not-allowed;
+  }
+  .hc-btn-secondary {
+    @apply inline-flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium
+           bg-hc-muted hover:bg-hc-hover text-hc-text-2 border border-hc-border
+           transition-colors;
+  }
+  .hc-btn-icon {
+    @apply p-1.5 rounded-md bg-hc-muted hover:bg-hc-hover text-hc-text-2 transition-colors;
+  }
+  .hc-btn-icon-primary {
+    @apply p-1.5 rounded-md bg-hc-muted hover:bg-hc-primary/10 hover:text-hc-primary
+           text-hc-text-2 transition-colors;
+  }
+  .hc-btn-icon-danger {
+    @apply p-1.5 rounded-md bg-hc-muted hover:bg-hc-error hover:text-white
+           text-hc-text-2 transition-colors;
+  }
+
+  /* Form controls */
+  .hc-input {
+    @apply w-full bg-hc-input border border-hc-border-i rounded-lg px-3 py-2 text-sm
+           text-hc-text placeholder:text-hc-text-3
+           focus:outline-none focus:ring-2 focus:ring-hc-primary/30 focus:border-hc-primary
+           transition-colors;
+  }
+  .hc-select {
+    @apply w-full bg-hc-input border border-hc-border-i rounded-lg px-3 py-2 text-sm
+           text-hc-text focus:outline-none focus:ring-2 focus:ring-hc-primary/30
+           focus:border-hc-primary transition-colors;
+  }
+  .hc-label {
+    @apply block text-sm font-medium text-hc-text-2 mb-1;
+  }
+
+  /* Badges */
+  .hc-badge-primary {
+    @apply px-2 py-0.5 rounded-full text-xs font-medium
+           bg-hc-primary-100 text-hc-primary-dark border border-hc-primary/20;
+  }
+  .hc-badge-success {
+    @apply px-2 py-0.5 rounded-full text-xs font-medium bg-hc-success-bg text-hc-success;
+  }
+  .hc-badge-error {
+    @apply px-2 py-0.5 rounded-full text-xs font-medium bg-hc-error-bg text-hc-error;
+  }
+  .hc-badge-warning {
+    @apply px-2 py-0.5 rounded-full text-xs font-medium bg-hc-warning-bg text-hc-warning;
+  }
+  .hc-badge-muted {
+    @apply px-2 py-0.5 rounded-full text-xs font-medium bg-hc-muted text-hc-text-2
+           border border-hc-border;
+  }
+
+  /* Page structure */
+  .hc-page-header {
+    @apply flex items-center justify-between mb-4;
+  }
+  .hc-page-title {
+    @apply text-xl font-semibold text-hc-text flex items-center gap-2;
+  }
+  .hc-section-label {
+    @apply text-xs font-semibold text-hc-text-3 uppercase tracking-wider;
+  }
+
+  /* Alerts */
+  .hc-alert-error {
+    @apply p-3 rounded-lg bg-hc-error-bg border border-hc-error/30 text-hc-error text-sm;
+  }
+  .hc-alert-success {
+    @apply p-3 rounded-lg bg-hc-success-bg border border-hc-success/30 text-hc-success text-sm;
+  }
+  .hc-alert-info {
+    @apply p-3 rounded-lg bg-hc-info-bg border border-hc-info/30 text-hc-info text-sm;
+  }
+
+  /* Tables */
+  .hc-table-wrap {
+    @apply bg-hc-card rounded-xl border border-hc-border shadow-sm overflow-hidden overflow-x-auto;
+  }
+  .hc-table {
+    @apply w-full text-sm;
+  }
+  .hc-table thead tr {
+    @apply border-b border-hc-border bg-hc-muted text-left;
+  }
+  .hc-table thead th {
+    @apply px-4 py-3 text-xs font-semibold text-hc-text-3 uppercase tracking-wide whitespace-nowrap;
+  }
+  .hc-table tbody tr {
+    @apply border-b border-hc-border/50 hover:bg-hc-hover transition-colors;
+  }
+  .hc-table tbody td {
+    @apply px-4 py-3;
+  }
+  .hc-table-empty {
+    @apply px-4 py-12 text-center text-hc-text-3 italic text-sm;
+  }
+
+  /* Pagination */
+  .hc-pagination {
+    @apply flex items-center justify-between px-4 py-3 border-t border-hc-border bg-hc-muted/30;
+  }
+  .hc-page-btn {
+    @apply px-2.5 py-1.5 rounded-md text-xs font-medium bg-hc-muted hover:bg-hc-hover
+           text-hc-text-2 disabled:opacity-40 disabled:cursor-not-allowed transition-colors;
+  }
+  .hc-page-btn-active {
+    @apply px-2.5 py-1.5 rounded-md text-xs font-medium bg-hc-primary text-white;
+  }
+
+  /* Stat card (dashboard) */
+  .hc-stat-card {
+    @apply bg-hc-card rounded-xl border border-hc-border shadow-sm p-5 flex items-start gap-4
+           hover:shadow-md transition-shadow;
+  }
+  .hc-stat-icon {
+    @apply w-11 h-11 rounded-xl flex items-center justify-center shrink-0 text-lg;
+  }
+
+  /* Quick action card */
+  .hc-action-card {
+    @apply bg-hc-card rounded-xl border border-hc-border shadow-sm p-5
+           flex flex-col items-center gap-3 cursor-pointer
+           hover:border-hc-primary/40 hover:shadow-md transition-all text-center;
+  }
 }

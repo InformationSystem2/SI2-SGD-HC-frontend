@@ -1,161 +1,120 @@
 <div class="max-w-2xl mx-auto">
 
-  <h2 class="text-xl font-semibold text-hc-text mb-6 flex items-center gap-2">
-    <fa-icon [icon]="faFloppyDisk" class="text-hc-primary" />
-    {{ 'PATIENTS.EDIT_TITLE' | translate }}
-  </h2>
+  <div class="hc-page-header mb-6">
+    <h2 class="hc-page-title">
+      <fa-icon [icon]="faFloppyDisk" class="text-hc-primary"/>
+      {{ 'PATIENTS.EDIT_TITLE' | translate }}
+    </h2>
+  </div>
 
   @if (loadingPatient()) {
     <div class="flex justify-center py-12">
-      <fa-icon [icon]="faSpinner" class="animate-spin text-2xl text-hc-primary" />
+      <fa-icon [icon]="faSpinner" class="animate-spin text-2xl text-hc-primary"/>
     </div>
   }
 
   @if (notFound()) {
-    <div class="p-4 rounded-lg bg-hc-error-bg border border-hc-error/30 text-hc-error text-sm">
-      {{ 'PATIENTS.NOT_FOUND' | translate }}
-    </div>
+    <div class="hc-alert-error">{{ 'PATIENTS.NOT_FOUND' | translate }}</div>
   }
 
   @if (!loadingPatient() && !notFound()) {
 
     @if (patientService.error()) {
-      <div class="mb-4 p-3 rounded-lg bg-hc-error-bg border border-hc-error/30 text-hc-error text-sm">
-        {{ patientService.error() }}
-      </div>
+      <div class="hc-alert-error mb-4">{{ patientService.error() }}</div>
     }
 
-    <form [formGroup]="form" (ngSubmit)="onSubmit()"
-          class="bg-hc-card rounded-xl p-6 border border-hc-border shadow-sm space-y-5">
+    <form [formGroup]="form" (ngSubmit)="onSubmit()" class="hc-card overflow-hidden">
 
-      <!-- First name & Last name -->
-      <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-        <div>
-          <label class="block text-sm font-medium text-hc-text-2 mb-1">
-            {{ 'PATIENTS.FIELD_FIRST_NAME' | translate }} <span class="text-hc-error">*</span>
-          </label>
-          <input formControlName="firstName" type="text"
-                 class="w-full bg-hc-input border border-hc-border-i rounded-lg px-3 py-2
-                        text-hc-text focus:outline-none focus:ring-2 focus:ring-hc-primary/30
-                        focus:border-hc-primary transition-colors" />
-          @if (form.get('firstName')?.invalid && form.get('firstName')?.touched) {
-            <p class="text-hc-error text-xs mt-1">{{ 'PATIENTS.VAL_REQUIRED' | translate }}</p>
-          }
-        </div>
-        <div>
-          <label class="block text-sm font-medium text-hc-text-2 mb-1">
-            {{ 'PATIENTS.FIELD_LAST_NAME' | translate }} <span class="text-hc-error">*</span>
-          </label>
-          <input formControlName="lastName" type="text"
-                 class="w-full bg-hc-input border border-hc-border-i rounded-lg px-3 py-2
-                        text-hc-text focus:outline-none focus:ring-2 focus:ring-hc-primary/30
-                        focus:border-hc-primary transition-colors" />
-        </div>
+      <!-- ── Sección: Identidad ──────────────────────── -->
+      <div class="px-6 py-3 bg-hc-muted border-b border-hc-border">
+        <p class="hc-section-label">{{ 'PATIENTS.SECTION_IDENTITY' | translate }}</p>
       </div>
-
-      <!-- Birth date -->
-      <div>
-        <label class="block text-sm font-medium text-hc-text-2 mb-1">
-          {{ 'PATIENTS.FIELD_BIRTH_DATE' | translate }}
-        </label>
-        <input formControlName="birthDate" type="date"
-               class="w-full bg-hc-input border border-hc-border-i rounded-lg px-3 py-2
-                      text-hc-text focus:outline-none focus:ring-2 focus:ring-hc-primary/30
-                      focus:border-hc-primary transition-colors" />
-      </div>
-
-      <!-- Document type & number -->
-      <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-        <div>
-          <label class="block text-sm font-medium text-hc-text-2 mb-1">
-            {{ 'PATIENTS.FIELD_DOC_TYPE' | translate }}
-          </label>
-          <select formControlName="documentType"
-                  class="w-full bg-hc-input border border-hc-border-i rounded-lg px-3 py-2
-                         text-hc-text focus:outline-none focus:ring-2 focus:ring-hc-primary/30
-                         focus:border-hc-primary transition-colors">
-            <option value="">— Seleccionar —</option>
-            @for (dt of documentTypes; track dt) {
-              <option [value]="dt">{{ dt }}</option>
+      <div class="px-6 py-5 space-y-4">
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <div>
+            <label class="hc-label">{{ 'PATIENTS.FIELD_FIRST_NAME' | translate }} <span
+              class="text-hc-error">*</span></label>
+            <input formControlName="firstName" type="text" class="hc-input"/>
+            @if (form.get('firstName')?.invalid && form.get('firstName')?.touched) {
+              <p class="text-hc-error text-xs mt-1">{{ 'PATIENTS.VAL_REQUIRED' | translate }}</p>
             }
-          </select>
-        </div>
-        <div>
-          <label class="block text-sm font-medium text-hc-text-2 mb-1">
-            {{ 'PATIENTS.FIELD_DOC_NUMBER' | translate }}
-          </label>
-          <input formControlName="documentNumber" type="text"
-                 class="w-full bg-hc-input border border-hc-border-i rounded-lg px-3 py-2
-                        text-hc-text focus:outline-none focus:ring-2 focus:ring-hc-primary/30
-                        focus:border-hc-primary transition-colors" />
-        </div>
-      </div>
-
-      <!-- Phone & Gender -->
-      <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-        <div>
-          <label class="block text-sm font-medium text-hc-text-2 mb-1">
-            {{ 'PATIENTS.FIELD_PHONE' | translate }}
-          </label>
-          <input formControlName="phone" type="tel"
-                 class="w-full bg-hc-input border border-hc-border-i rounded-lg px-3 py-2
-                        text-hc-text focus:outline-none focus:ring-2 focus:ring-hc-primary/30
-                        focus:border-hc-primary transition-colors" />
-        </div>
-        <div>
-          <label class="block text-sm font-medium text-hc-text-2 mb-1">
-            {{ 'PATIENTS.FIELD_GENDER' | translate }}
-          </label>
-          <select formControlName="gender"
-                  class="w-full bg-hc-input border border-hc-border-i rounded-lg px-3 py-2
-                         text-hc-text focus:outline-none focus:ring-2 focus:ring-hc-primary/30
-                         focus:border-hc-primary transition-colors">
-            <option value="">— Seleccionar —</option>
-            @for (g of genders; track g.value) {
-              <option [value]="g.value">{{ g.label }}</option>
+          </div>
+          <div>
+            <label class="hc-label">{{ 'PATIENTS.FIELD_LAST_NAME' | translate }} <span
+              class="text-hc-error">*</span></label>
+            <input formControlName="lastName" type="text" class="hc-input"/>
+            @if (form.get('lastName')?.invalid && form.get('lastName')?.touched) {
+              <p class="text-hc-error text-xs mt-1">{{ 'PATIENTS.VAL_REQUIRED' | translate }}</p>
             }
-          </select>
+          </div>
+        </div>
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <div>
+            <label class="hc-label">{{ 'PATIENTS.FIELD_BIRTH_DATE' | translate }}
+              <span class="text-hc-error">*</span></label>
+            <input formControlName="birthDate" type="date" class="hc-input"/>
+            @if (form.get('birthDate')?.invalid && form.get('birthDate')?.touched) {
+              <p class="text-hc-error text-xs mt-1">{{ 'PATIENTS.VAL_REQUIRED' | translate }}</p>
+            }
+          </div>
+          <div>
+            <label class="hc-label">{{ 'PATIENTS.FIELD_GENDER' | translate }}
+              <span class="text-hc-error">*</span></label>
+            <select formControlName="gender" class="hc-select">
+              <option value="">— Seleccionar —</option>
+              @for (g of genders; track g.value) {
+                <option [value]="g.value">{{ g.label }}</option>
+              }
+            </select>
+            @if (form.get('gender')?.invalid && form.get('gender')?.touched) {
+              <p class="text-hc-error text-xs mt-1">{{ 'PATIENTS.VAL_REQUIRED' | translate }}</p>
+            }
+          </div>
+        </div>
+        <div>
+          <label class="hc-label">{{ 'PATIENTS.FIELD_ADDRESS' | translate }}</label>
+          <input formControlName="address" type="text" class="hc-input"
+                 [placeholder]="'PATIENTS.PH_ADDRESS' | translate"/>
+        </div>
+        <div>
+          <label class="hc-label">{{ 'PATIENTS.FIELD_PHONE' | translate }}</label>
+          <input formControlName="phone" type="tel" class="hc-input"/>
         </div>
       </div>
 
-      <!-- Active -->
-      <div class="flex items-center gap-3">
-        <input formControlName="isActive" type="checkbox" id="isActive"
-               class="w-4 h-4 rounded border-hc-border-i accent-hc-primary" />
-        <label for="isActive" class="text-sm font-medium text-hc-text-2">
-          {{ 'PATIENTS.FIELD_ACTIVE' | translate }}
-        </label>
+      <!-- ── Sección: Documento ─────────────────────── -->
+      <div class="px-6 py-3 bg-hc-muted border-t border-b border-hc-border">
+        <p class="hc-section-label">{{ 'PATIENTS.SECTION_DOCUMENT' | translate }}</p>
+      </div>
+      <div class="px-6 py-5">
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <div>
+            <label class="hc-label">{{ 'PATIENTS.FIELD_DOC_TYPE' | translate }}</label>
+            <select formControlName="documentType" class="hc-select">
+              <option value="">— Seleccionar —</option>
+              @for (dt of documentTypes; track dt) {
+                <option [value]="dt">{{ dt }}</option>
+              }
+            </select>
+          </div>
+          <div>
+            <label class="hc-label">{{ 'PATIENTS.FIELD_DOC_NUMBER' | translate }}</label>
+            <input formControlName="documentNumber" type="text" class="hc-input"/>
+          </div>
+        </div>
       </div>
 
-      <!-- New password (optional) -->
-      <div>
-        <label class="block text-sm font-medium text-hc-text-2 mb-1">
-          {{ 'PATIENTS.FIELD_NEW_PASSWORD' | translate }}
-        </label>
-        <input formControlName="password" type="password"
-               class="w-full bg-hc-input border border-hc-border-i rounded-lg px-3 py-2
-                      text-hc-text placeholder:text-hc-text-3
-                      focus:outline-none focus:ring-2 focus:ring-hc-primary/30 focus:border-hc-primary transition-colors"
-               placeholder="Dejar en blanco para mantener" />
-      </div>
-
-      <!-- Actions -->
-      <div class="flex gap-3 pt-2">
-        <button type="submit"
-                [disabled]="patientService.loading()"
-                class="flex-1 flex items-center justify-center gap-2
-                       bg-hc-primary hover:bg-hc-primary-dark disabled:opacity-50 disabled:cursor-not-allowed
-                       text-white font-semibold py-2.5 rounded-lg transition-colors shadow-sm">
+      <!-- ── Acciones ───────────────────────────────── -->
+      <div class="px-6 py-4 border-t border-hc-border bg-hc-muted/40 flex gap-3">
+        <button type="submit" [disabled]="patientService.loading()" class="hc-btn-primary flex-1 justify-center py-2.5">
           @if (patientService.loading()) {
-            <fa-icon [icon]="faSpinner" class="animate-spin" />
+            <fa-icon [icon]="faSpinner" class="animate-spin"/>
           } @else {
-            <fa-icon [icon]="faFloppyDisk" />
+            <fa-icon [icon]="faFloppyDisk"/>
           }
           {{ 'PATIENTS.SAVE_CHANGES' | translate }}
         </button>
-        <button type="button" (click)="cancel()"
-                class="px-5 py-2.5 rounded-lg bg-hc-muted hover:bg-hc-hover
-                       text-hc-text-2 transition-colors border border-hc-border">
+        <button type="button" (click)="cancel()" class="hc-btn-secondary px-6">
           {{ 'PATIENTS.CANCEL' | translate }}
         </button>
       </div>

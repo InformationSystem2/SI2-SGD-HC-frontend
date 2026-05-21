@@ -16,6 +16,12 @@ export class Login {
   auth = inject(AuthService);
   hidePassword = signal(true);
 
+  readonly features = [
+    { label: 'Gestión centralizada de historias clínicas' },
+    { label: 'Control de acceso por roles y permisos' },
+    { label: 'Documentos digitales con firma electrónica' },
+  ];
+
   protected form = this.fb.group({
     username: ['', Validators.required],
     password: ['', Validators.required],

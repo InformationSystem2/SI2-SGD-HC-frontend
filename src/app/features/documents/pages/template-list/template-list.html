@@ -1,0 +1,109 @@
+<div class="space-y-4">
+
+  <!-- Header -->
+  <div class="flex items-center justify-between">
+    <div class="flex items-center gap-2">
+      <fa-icon [icon]="faFileAlt" class="text-hc-primary text-xl" />
+      <h2 class="text-xl font-semibold text-hc-text">
+        {{ 'DOCUMENTS.TEMPLATES_TITLE' | translate }}
+      </h2>
+    </div>
+    <button
+      (click)="goToCreate()"
+      class="flex items-center gap-2 px-4 py-2 bg-hc-primary hover:bg-hc-primary-dark
+             text-white text-sm font-medium rounded-lg transition-colors shadow-sm"
+    >
+      <fa-icon [icon]="faPlus" />
+      {{ 'DOCUMENTS.NEW_TEMPLATE' | translate }}
+    </button>
+  </div>
+
+  <!-- Error -->
+  @if (templateService.error()) {
+    <div class="p-3 rounded-lg bg-hc-error-bg border border-hc-error/30 text-hc-error text-sm">
+      {{ templateService.error() }}
+    </div>
+  }
+
+  <!-- Loading -->
+  @if (templateService.loading()) {
+    <div class="flex justify-center py-12">
+      <fa-icon [icon]="faSpinner" class="animate-spin text-2xl text-hc-primary" />
+    </div>
+  }
+
+  <!-- Grid de plantillas -->
+  @if (!templateService.loading()) {
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+
+      @for (template of templateService.templates(); track template.id) {
+        <div class="bg-hc-card rounded-xl border border-hc-border shadow-sm p-5
+                    flex flex-col gap-3 hover:border-hc-primary/40 transition-colors">
+
+          <div class="flex items-start justify-between gap-2">
+            <div class="flex items-start gap-3 min-w-0">
+              <div class="p-2 rounded-lg bg-hc-primary/10 text-hc-primary shrink-0">
+                <fa-icon [icon]="faFileMedical" class="text-lg" />
+              </div>
+              <div class="min-w-0">
+                <h3 class="font-semibold text-hc-text text-sm leading-snug">
+                  {{ template.name }}
+                </h3>
+                @if (template.description) {
+                  <p class="text-xs text-hc-text-2 mt-0.5 line-clamp-2">
+                    {{ template.description }}
+                  </p>
+                }
+              </div>
+            </div>
+            <!-- Acciones editar / eliminar -->
+            <div class="flex gap-1 shrink-0">
+              <button
+                (click)="goToEdit(template.id)"
+                class="p-1.5 rounded-md bg-hc-muted hover:bg-hc-primary hover:text-white
+                       text-hc-text-2 transition-colors"
+                [title]="'DOCUMENTS.EDIT_TEMPLATE' | translate"
+              >
+                <fa-icon [icon]="faPencil" class="text-xs" />
+              </button>
+              <button
+                (click)="delete(template.id)"
+                class="p-1.5 rounded-md bg-hc-muted hover:bg-hc-error hover:text-white
+                       text-hc-text-2 transition-colors"
+                [title]="'DOCUMENTS.DELETE_TEMPLATE' | translate"
+              >
+                <fa-icon [icon]="faTrash" class="text-xs" />
+              </button>
+            </div>
+          </div>
+
+          <!-- Campos del uiSchema -->
+          <div class="flex flex-wrap gap-1.5">
+            @for (field of (template.uiSchema | keyvalue); track field.key) {
+              <span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium
+                           bg-hc-primary/8 text-hc-primary border border-hc-primary/20">
+                {{ field.value.label || field.key }}
+              </span>
+            }
+          </div>
+
+          <button
+            (click)="useTemplate(template.id)"
+            class="mt-auto w-full py-2 px-4 rounded-lg border border-hc-primary
+                   text-hc-primary hover:bg-hc-primary hover:text-white
+                   text-sm font-medium transition-colors"
+          >
+            {{ 'DOCUMENTS.USE_TEMPLATE' | translate }}
+          </button>
+
+        </div>
+      } @empty {
+        <div class="col-span-full py-16 text-center text-hc-text-3">
+          {{ 'DOCUMENTS.TEMPLATES_EMPTY' | translate }}
+        </div>
+      }
+
+    </div>
+  }
+
+</div>

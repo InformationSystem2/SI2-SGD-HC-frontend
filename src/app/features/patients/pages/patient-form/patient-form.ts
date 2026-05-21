@@ -25,12 +25,12 @@ export class PatientForm implements OnInit {
 
   readonly loadingPatient = signal(false);
   readonly notFound       = signal(false);
-  patientId!: number;
+  patientId!: string;
 
-  readonly documentTypes = ['CI', 'PASSPORT', 'OTHER'];
+  readonly documentTypes = ['CI', 'PASAPORTE'];
   readonly genders = [
-    { value: 'male',   label: 'Masculino' },
-    { value: 'female', label: 'Femenino'  },
+    { value: 'MALE',   label: 'Masculino' },
+    { value: 'FEMALE', label: 'Femenino'  },
   ];
 
   form = this.fb.group({
@@ -39,14 +39,13 @@ export class PatientForm implements OnInit {
     documentType:   [''],
     documentNumber: [''],
     phone:          [''],
-    gender:         [''],
-    isActive:       [true],
-    password:       [''],
-    birthDate:      [''],
+    address:        [''],
+    gender:         ['', Validators.required],
+    birthDate:      ['', Validators.required],
   });
 
   ngOnInit(): void {
-    this.patientId = Number(this.route.snapshot.paramMap.get('id'));
+    this.patientId = this.route.snapshot.paramMap.get('id')!;
     this.loadingPatient.set(true);
 
     this.patientService.getPatient(this.patientId).subscribe({
@@ -57,9 +56,9 @@ export class PatientForm implements OnInit {
           documentType:   patient.documentType ?? '',
           documentNumber: patient.documentNumber ?? '',
           phone:          patient.phone ?? '',
-          gender:         patient.gender ?? '',
-          isActive:       patient.isActive,
-          birthDate:      patient.birthDate ?? '',
+          address:        patient.address ?? '',
+          gender:         patient.gender,
+          birthDate:      patient.birthDate,
         });
         this.loadingPatient.set(false);
       },
@@ -78,14 +77,13 @@ export class PatientForm implements OnInit {
 
     const v = this.form.value;
     const payload: UpdatePatientRequest = {
-      firstName:  v.firstName!,
-      lastName:   v.lastName!,
-      isActive:   v.isActive!,
+      firstName: v.firstName!,
+      lastName:  v.lastName!,
       ...(v.documentType   ? { documentType: v.documentType }     : {}),
       ...(v.documentNumber ? { documentNumber: v.documentNumber } : {}),
       ...(v.phone          ? { phone: v.phone }                   : {}),
+      ...(v.address        ? { address: v.address }               : {}),
       ...(v.gender         ? { gender: v.gender }                 : {}),
-      ...(v.password       ? { password: v.password }             : {}),
       ...(v.birthDate      ? { birthDate: v.birthDate }           : {}),
     };
 

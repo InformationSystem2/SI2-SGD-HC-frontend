@@ -1,26 +1,39 @@
 <div class="space-y-4">
 
   <!-- Header -->
-  <div class="flex items-center justify-between">
-    <h2 class="text-xl font-semibold text-hc-text flex items-center gap-2">
+  <div class="hc-page-header">
+    <h2 class="hc-page-title">
       <fa-icon [icon]="faUsers" class="text-hc-primary" />
       {{ 'PATIENTS.TITLE' | translate }}
     </h2>
-    <button
-      (click)="goToRegister()"
-      class="flex items-center gap-2 px-4 py-2 bg-hc-primary hover:bg-hc-primary-dark
-             text-white text-sm font-medium rounded-lg transition-colors shadow-sm"
-    >
+    <button (click)="goToRegister()" class="hc-btn-primary">
       <fa-icon [icon]="faUserPlus" />
       {{ 'PATIENTS.NEW' | translate }}
     </button>
   </div>
 
+  <!-- Search bar -->
+  <div class="relative">
+    <fa-icon [icon]="faMagnifyingGlass"
+             class="absolute left-3 top-1/2 -translate-y-1/2 text-hc-text-3 text-sm pointer-events-none" />
+    <input
+      type="search"
+      [value]="search()"
+      (input)="onSearch($any($event.target).value)"
+      [placeholder]="'PATIENTS.SEARCH_PLACEHOLDER' | translate"
+      class="hc-input pl-9 pr-9"
+    />
+    @if (search()) {
+      <button (click)="clearSearch()"
+              class="absolute right-3 top-1/2 -translate-y-1/2 text-hc-text-3 hover:text-hc-text transition-colors">
+        <fa-icon [icon]="faXmark" />
+      </button>
+    }
+  </div>
+
   <!-- Error -->
   @if (patientService.error()) {
-    <div class="p-3 rounded-lg bg-hc-error-bg border border-hc-error/30 text-hc-error text-sm">
-      {{ patientService.error() }}
-    </div>
+    <div class="hc-alert-error">{{ patientService.error() }}</div>
   }
 
   <!-- Loading -->
@@ -32,64 +45,43 @@
 
   <!-- Table -->
   @if (!patientService.loading()) {
-    <div class="bg-hc-card rounded-xl border border-hc-border overflow-hidden shadow-sm overflow-x-auto">
-      <table class="w-full text-sm min-w-[640px]">
+    <div class="hc-table-wrap">
+      <table class="hc-table min-w-[640px]">
         <thead>
-          <tr class="border-b border-hc-border bg-hc-muted text-hc-text-3 text-left">
-            <th class="px-4 py-3 font-semibold">{{ 'PATIENTS.COL_ID' | translate }}</th>
-            <th class="px-4 py-3 font-semibold">{{ 'PATIENTS.COL_NAME' | translate }}</th>
-            <th class="px-4 py-3 font-semibold">{{ 'PATIENTS.COL_EMAIL' | translate }}</th>
-            <th class="px-4 py-3 font-semibold">{{ 'PATIENTS.COL_BIRTH_DATE' | translate }}</th>
-            <th class="px-4 py-3 font-semibold">{{ 'PATIENTS.COL_STATUS' | translate }}</th>
-            <th class="px-4 py-3 font-semibold text-right">{{ 'PATIENTS.COL_ACTIONS' | translate }}</th>
+          <tr>
+            <th>{{ 'PATIENTS.COL_DOC_NUMBER' | translate }}</th>
+            <th>{{ 'PATIENTS.COL_NAME' | translate }}</th>
+            <th>{{ 'PATIENTS.COL_GENDER' | translate }}</th>
+            <th>{{ 'PATIENTS.COL_BIRTH_DATE' | translate }}</th>
+            <th>{{ 'PATIENTS.COL_PHONE' | translate }}</th>
+            <th class="text-right">{{ 'PATIENTS.COL_ACTIONS' | translate }}</th>
           </tr>
         </thead>
         <tbody>
-          @for (patient of patientService.patients(); track patient.id) {
-            <tr class="border-b border-hc-border/50 hover:bg-hc-hover transition-colors">
-              <td class="px-4 py-3 text-hc-text-3 font-mono text-xs">{{ patient.id }}</td>
-              <td class="px-4 py-3 text-hc-text font-medium">
+          @for (patient of paged(); track patient.id) {
+            <tr>
+              <td class="text-hc-text-3 font-mono text-xs">{{ patient.documentNumber ?? '—' }}</td>
+              <td class="font-medium text-hc-text">
                 {{ patient.firstName }} {{ patient.lastName }}
               </td>
-              <td class="px-4 py-3 text-hc-text-2">{{ patient.email }}</td>
-              <td class="px-4 py-3 text-hc-text-2">{{ patient.birthDate ?? '—' }}</td>
-              <td class="px-4 py-3">
-                @if (patient.isActive) {
-                  <span class="flex items-center gap-1.5 text-hc-success text-xs font-medium">
-                    <fa-icon [icon]="faCircleCheck" />
-                    {{ 'PATIENTS.STATUS_ACTIVE' | translate }}
-                  </span>
-                } @else {
-                  <span class="flex items-center gap-1.5 text-hc-text-3 text-xs">
-                    <fa-icon [icon]="faCircleXmark" />
-                    {{ 'PATIENTS.STATUS_INACTIVE' | translate }}
-                  </span>
-                }
-              </td>
-              <td class="px-4 py-3 text-right">
+              <td class="text-hc-text-2">{{ patient.gender ?? '—' }}</td>
+              <td class="text-hc-text-2 whitespace-nowrap">{{ patient.birthDate ?? '—' }}</td>
+              <td class="text-hc-text-2">{{ patient.phone ?? '—' }}</td>
+              <td>
                 <div class="flex items-center justify-end gap-1.5">
-                  <button
-                    (click)="goToDetail(patient.id)"
-                    class="p-1.5 rounded-md bg-hc-muted hover:bg-hc-primary/10 hover:text-hc-primary
-                           text-hc-text-2 transition-colors"
-                    [title]="'PATIENTS.VIEW' | translate"
-                  >
+                  <button (click)="goToDetail(patient.id)"
+                          class="hc-btn-icon-primary"
+                          [title]="'PATIENTS.VIEW' | translate">
                     <fa-icon [icon]="faEye" />
                   </button>
-                  <button
-                    (click)="goToEdit(patient.id)"
-                    class="p-1.5 rounded-md bg-hc-muted hover:bg-hc-primary hover:text-white
-                           text-hc-text-2 transition-colors"
-                    [title]="'PATIENTS.EDIT' | translate"
-                  >
+                  <button (click)="goToEdit(patient.id)"
+                          class="p-1.5 rounded-md bg-hc-muted hover:bg-hc-primary hover:text-white text-hc-text-2 transition-colors"
+                          [title]="'PATIENTS.EDIT' | translate">
                     <fa-icon [icon]="faPencil" />
                   </button>
-                  <button
-                    (click)="delete(patient.id)"
-                    class="p-1.5 rounded-md bg-hc-muted hover:bg-hc-error hover:text-white
-                           text-hc-text-2 transition-colors"
-                    [title]="'PATIENTS.DELETE' | translate"
-                  >
+                  <button (click)="delete(patient.id)"
+                          class="hc-btn-icon-danger"
+                          [title]="'PATIENTS.DELETE' | translate">
                     <fa-icon [icon]="faTrash" />
                   </button>
                 </div>
@@ -97,13 +89,37 @@
             </tr>
           } @empty {
             <tr>
-              <td colspan="6" class="px-4 py-10 text-center text-hc-text-3">
-                {{ 'PATIENTS.EMPTY' | translate }}
+              <td colspan="6" class="hc-table-empty">
+                @if (search()) {
+                  {{ 'PATIENTS.SEARCH_EMPTY' | translate }}
+                } @else {
+                  {{ 'PATIENTS.EMPTY' | translate }}
+                }
               </td>
             </tr>
           }
         </tbody>
       </table>
+
+      <!-- Paginación -->
+      @if (totalPages() > 1) {
+        <div class="hc-pagination">
+          <span class="text-xs text-hc-text-3">
+            {{ page() * PAGE_SIZE + 1 }}–{{ page() * PAGE_SIZE + paged().length }}
+            de {{ totalItems() }}
+          </span>
+          <div class="flex items-center gap-1">
+            <button (click)="prevPage()" [disabled]="page() === 0" class="hc-page-btn">‹</button>
+            @for (p of visiblePages(); track p) {
+              <button (click)="goToPage(p)"
+                      [class]="p === page() ? 'hc-page-btn-active' : 'hc-page-btn'">
+                {{ p + 1 }}
+              </button>
+            }
+            <button (click)="nextPage()" [disabled]="page() === totalPages() - 1" class="hc-page-btn">›</button>
+          </div>
+        </div>
+      }
     </div>
   }
 

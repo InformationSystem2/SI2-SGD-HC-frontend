@@ -1,210 +1,162 @@
 <div class="max-w-2xl mx-auto">
 
-  <h2 class="text-xl font-semibold text-hc-text mb-6 flex items-center gap-2">
-    <fa-icon [icon]="faUserPlus" class="text-hc-primary" />
-    {{ 'USERS.REGISTER_TITLE' | translate }}
-  </h2>
+  <div class="hc-page-header mb-6">
+    <h2 class="hc-page-title">
+      <fa-icon [icon]="faUserPlus" class="text-hc-primary" />
+      {{ 'USERS.REGISTER_TITLE' | translate }}
+    </h2>
+  </div>
 
-  <!-- Success alert -->
   @if (userService.success()) {
-    <div class="mb-4 p-3 rounded-lg bg-hc-success-bg border border-hc-success/20 text-hc-success text-sm">
-      {{ 'USERS.SUCCESS' | translate }}
-    </div>
+    <div class="hc-alert-success mb-4">{{ 'USERS.SUCCESS' | translate }}</div>
   }
-
-  <!-- Error alert -->
   @if (userService.error()) {
-    <div class="mb-4 p-3 rounded-lg bg-hc-error-bg border border-hc-error/30 text-hc-error text-sm">
-      {{ userService.error() }}
-    </div>
+    <div class="hc-alert-error mb-4">{{ userService.error() }}</div>
   }
 
-  <form [formGroup]="form" (ngSubmit)="onSubmit()"
-        class="bg-hc-card rounded-xl p-6 border border-hc-border shadow-sm space-y-5">
+  <form [formGroup]="form" (ngSubmit)="onSubmit()" class="hc-card overflow-hidden">
 
-    <!-- First name & Last name -->
-    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-      <div>
-        <label class="block text-sm font-medium text-hc-text-2 mb-1">
-          {{ 'USERS.FIELD_FIRST_NAME' | translate }} <span class="text-hc-error">*</span>
-        </label>
-        <input formControlName="firstName" type="text"
-               class="w-full bg-hc-input border border-hc-border-i rounded-lg px-3 py-2
-                      text-hc-text placeholder:text-hc-text-3
-                      focus:outline-none focus:ring-2 focus:ring-hc-primary/30 focus:border-hc-primary
-                      transition-colors"
-               [placeholder]="'USERS.PH_FIRST_NAME' | translate" />
-        @if (form.get('firstName')?.invalid && form.get('firstName')?.touched) {
-          <p class="text-hc-error text-xs mt-1">{{ 'USERS.VAL_REQUIRED' | translate }}</p>
-        }
-      </div>
-      <div>
-        <label class="block text-sm font-medium text-hc-text-2 mb-1">
-          {{ 'USERS.FIELD_LAST_NAME' | translate }} <span class="text-hc-error">*</span>
-        </label>
-        <input formControlName="lastName" type="text"
-               class="w-full bg-hc-input border border-hc-border-i rounded-lg px-3 py-2
-                      text-hc-text placeholder:text-hc-text-3
-                      focus:outline-none focus:ring-2 focus:ring-hc-primary/30 focus:border-hc-primary
-                      transition-colors"
-               [placeholder]="'USERS.PH_LAST_NAME' | translate" />
-        @if (form.get('lastName')?.invalid && form.get('lastName')?.touched) {
-          <p class="text-hc-error text-xs mt-1">{{ 'USERS.VAL_REQUIRED' | translate }}</p>
-        }
-      </div>
+    <!-- ── Sección: Datos personales ─────────────────── -->
+    <div class="px-6 py-3 bg-hc-muted border-b border-hc-border">
+      <p class="hc-section-label">{{ 'USERS.SECTION_IDENTITY' | translate }}</p>
     </div>
-
-    <!-- Email -->
-    <div>
-      <label class="block text-sm font-medium text-hc-text-2 mb-1">
-        {{ 'USERS.FIELD_EMAIL' | translate }} <span class="text-hc-error">*</span>
-      </label>
-      <input formControlName="email" type="email"
-             class="w-full bg-hc-input border border-hc-border-i rounded-lg px-3 py-2
-                    text-hc-text placeholder:text-hc-text-3
-                    focus:outline-none focus:ring-2 focus:ring-hc-primary/30 focus:border-hc-primary
-                    transition-colors"
-             [placeholder]="'USERS.PH_EMAIL' | translate" />
-      @if (form.get('email')?.invalid && form.get('email')?.touched) {
-        <p class="text-hc-error text-xs mt-1">{{ 'USERS.VAL_EMAIL' | translate }}</p>
-      }
-    </div>
-
-    <!-- Password & Confirm -->
-    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-      <div>
-        <label class="block text-sm font-medium text-hc-text-2 mb-1">
-          {{ 'USERS.FIELD_PASSWORD' | translate }} <span class="text-hc-error">*</span>
-        </label>
-        <input formControlName="password" type="password"
-               class="w-full bg-hc-input border border-hc-border-i rounded-lg px-3 py-2
-                      text-hc-text placeholder:text-hc-text-3
-                      focus:outline-none focus:ring-2 focus:ring-hc-primary/30 focus:border-hc-primary
-                      transition-colors"
-               [placeholder]="'USERS.PH_PASSWORD' | translate" />
-        @if (form.get('password')?.touched) {
-          @if (form.get('password')?.hasError('required')) {
+    <div class="px-6 py-5 space-y-4">
+      <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+        <div>
+          <label class="hc-label">{{ 'USERS.FIELD_FIRST_NAME' | translate }} <span class="text-hc-error">*</span></label>
+          <input formControlName="firstName" type="text" class="hc-input"
+                 [placeholder]="'USERS.PH_FIRST_NAME' | translate" />
+          @if (form.get('firstName')?.invalid && form.get('firstName')?.touched) {
             <p class="text-hc-error text-xs mt-1">{{ 'USERS.VAL_REQUIRED' | translate }}</p>
-          } @else if (form.get('password')?.hasError('minlength')) {
-            <p class="text-hc-error text-xs mt-1">{{ 'USERS.VAL_MIN_PW' | translate }}</p>
-          } @else if (form.get('password')?.hasError('uppercase')) {
-            <p class="text-hc-error text-xs mt-1">{{ 'USERS.VAL_UPPERCASE' | translate }}</p>
-          } @else if (form.get('password')?.hasError('number')) {
-            <p class="text-hc-error text-xs mt-1">{{ 'USERS.VAL_NUMBER' | translate }}</p>
           }
-        }
-      </div>
-      <div>
-        <label class="block text-sm font-medium text-hc-text-2 mb-1">
-          {{ 'USERS.FIELD_CONFIRM_PASSWORD' | translate }} <span class="text-hc-error">*</span>
-        </label>
-        <input formControlName="confirmPassword" type="password"
-               class="w-full bg-hc-input border border-hc-border-i rounded-lg px-3 py-2
-                      text-hc-text placeholder:text-hc-text-3
-                      focus:outline-none focus:ring-2 focus:ring-hc-primary/30 focus:border-hc-primary
-                      transition-colors"
-               [placeholder]="'USERS.PH_CONFIRM' | translate" />
-        @if (form.get('confirmPassword')?.touched) {
-          @if (form.get('confirmPassword')?.hasError('required')) {
+        </div>
+        <div>
+          <label class="hc-label">{{ 'USERS.FIELD_LAST_NAME' | translate }} <span class="text-hc-error">*</span></label>
+          <input formControlName="lastName" type="text" class="hc-input"
+                 [placeholder]="'USERS.PH_LAST_NAME' | translate" />
+          @if (form.get('lastName')?.invalid && form.get('lastName')?.touched) {
             <p class="text-hc-error text-xs mt-1">{{ 'USERS.VAL_REQUIRED' | translate }}</p>
-          } @else if (form.hasError('passwordsMismatch')) {
-            <p class="text-hc-error text-xs mt-1">{{ 'USERS.VAL_PW_MISMATCH' | translate }}</p>
           }
+        </div>
+      </div>
+      <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+        <div>
+          <label class="hc-label">{{ 'USERS.FIELD_PHONE' | translate }}</label>
+          <input formControlName="phone" type="tel" class="hc-input"
+                 [placeholder]="'USERS.PH_PHONE' | translate" />
+        </div>
+        <div>
+          <label class="hc-label">{{ 'USERS.FIELD_GENDER' | translate }}</label>
+          <select formControlName="gender" class="hc-select">
+            <option value="">{{ 'USERS.PH_SELECT' | translate }}</option>
+            @for (g of genders; track g.value) {
+              <option [value]="g.value">{{ g.label }}</option>
+            }
+          </select>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── Sección: Credenciales ─────────────────────── -->
+    <div class="px-6 py-3 bg-hc-muted border-t border-b border-hc-border">
+      <p class="hc-section-label">{{ 'AUTH.TITLE' | translate }}</p>
+    </div>
+    <div class="px-6 py-5 space-y-4">
+      <div>
+        <label class="hc-label">{{ 'USERS.FIELD_EMAIL' | translate }} <span class="text-hc-error">*</span></label>
+        <input formControlName="email" type="email" class="hc-input"
+               [placeholder]="'USERS.PH_EMAIL' | translate" />
+        @if (form.get('email')?.invalid && form.get('email')?.touched) {
+          <p class="text-hc-error text-xs mt-1">{{ 'USERS.VAL_EMAIL' | translate }}</p>
         }
       </div>
-    </div>
-
-    <!-- Document type & number -->
-    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-      <div>
-        <label class="block text-sm font-medium text-hc-text-2 mb-1">
-          {{ 'USERS.FIELD_DOC_TYPE' | translate }}
-        </label>
-        <select formControlName="documentType"
-                class="w-full bg-hc-input border border-hc-border-i rounded-lg px-3 py-2
-                       text-hc-text focus:outline-none focus:ring-2 focus:ring-hc-primary/30
-                       focus:border-hc-primary transition-colors">
-          <option value="">{{ 'USERS.PH_SELECT' | translate }}</option>
-          @for (dt of documentTypes; track dt) {
-            <option [value]="dt">{{ dt }}</option>
+      <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+        <div>
+          <label class="hc-label">{{ 'USERS.FIELD_PASSWORD' | translate }} <span class="text-hc-error">*</span></label>
+          <input formControlName="password" type="password" class="hc-input"
+                 [placeholder]="'USERS.PH_PASSWORD' | translate" />
+          @if (form.get('password')?.touched) {
+            @if (form.get('password')?.hasError('required')) {
+              <p class="text-hc-error text-xs mt-1">{{ 'USERS.VAL_REQUIRED' | translate }}</p>
+            } @else if (form.get('password')?.hasError('minlength')) {
+              <p class="text-hc-error text-xs mt-1">{{ 'USERS.VAL_MIN_PW' | translate }}</p>
+            } @else if (form.get('password')?.hasError('uppercase')) {
+              <p class="text-hc-error text-xs mt-1">{{ 'USERS.VAL_UPPERCASE' | translate }}</p>
+            } @else if (form.get('password')?.hasError('number')) {
+              <p class="text-hc-error text-xs mt-1">{{ 'USERS.VAL_NUMBER' | translate }}</p>
+            }
           }
-        </select>
-      </div>
-      <div>
-        <label class="block text-sm font-medium text-hc-text-2 mb-1">
-          {{ 'USERS.FIELD_DOC_NUMBER' | translate }}
-        </label>
-        <input formControlName="documentNumber" type="text"
-               class="w-full bg-hc-input border border-hc-border-i rounded-lg px-3 py-2
-                      text-hc-text placeholder:text-hc-text-3
-                      focus:outline-none focus:ring-2 focus:ring-hc-primary/30 focus:border-hc-primary
-                      transition-colors"
-               [placeholder]="'USERS.PH_DOC_NUMBER' | translate" />
-      </div>
-    </div>
-
-    <!-- Phone & Gender -->
-    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-      <div>
-        <label class="block text-sm font-medium text-hc-text-2 mb-1">
-          {{ 'USERS.FIELD_PHONE' | translate }}
-        </label>
-        <input formControlName="phone" type="tel"
-               class="w-full bg-hc-input border border-hc-border-i rounded-lg px-3 py-2
-                      text-hc-text placeholder:text-hc-text-3
-                      focus:outline-none focus:ring-2 focus:ring-hc-primary/30 focus:border-hc-primary
-                      transition-colors"
-               [placeholder]="'USERS.PH_PHONE' | translate" />
-      </div>
-      <div>
-        <label class="block text-sm font-medium text-hc-text-2 mb-1">
-          {{ 'USERS.FIELD_GENDER' | translate }}
-        </label>
-        <select formControlName="gender"
-                class="w-full bg-hc-input border border-hc-border-i rounded-lg px-3 py-2
-                       text-hc-text focus:outline-none focus:ring-2 focus:ring-hc-primary/30
-                       focus:border-hc-primary transition-colors">
-          <option value="">{{ 'USERS.PH_SELECT' | translate }}</option>
-          @for (g of genders; track g.value) {
-            <option [value]="g.value">{{ g.label }}</option>
+        </div>
+        <div>
+          <label class="hc-label">{{ 'USERS.FIELD_CONFIRM_PASSWORD' | translate }} <span class="text-hc-error">*</span></label>
+          <input formControlName="confirmPassword" type="password" class="hc-input"
+                 [placeholder]="'USERS.PH_CONFIRM' | translate" />
+          @if (form.get('confirmPassword')?.touched) {
+            @if (form.get('confirmPassword')?.hasError('required')) {
+              <p class="text-hc-error text-xs mt-1">{{ 'USERS.VAL_REQUIRED' | translate }}</p>
+            } @else if (form.hasError('passwordsMismatch')) {
+              <p class="text-hc-error text-xs mt-1">{{ 'USERS.VAL_PW_MISMATCH' | translate }}</p>
+            }
           }
-        </select>
+        </div>
       </div>
     </div>
 
-    <!-- Roles -->
-    <div>
-      <label class="block text-sm font-medium text-hc-text-2 mb-2">
-        {{ 'USERS.FIELD_ROLES' | translate }} <span class="text-hc-error">*</span>
-      </label>
+    <!-- ── Sección: Identificación ───────────────────── -->
+    <div class="px-6 py-3 bg-hc-muted border-t border-b border-hc-border">
+      <p class="hc-section-label">{{ 'USERS.SECTION_DOCUMENT' | translate }}</p>
+    </div>
+    <div class="px-6 py-5">
+      <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+        <div>
+          <label class="hc-label">{{ 'USERS.FIELD_DOC_TYPE' | translate }}<span class="text-hc-error">*</span></label>
+          <select formControlName="documentType" class="hc-select">
+            <option value="">{{ 'USERS.PH_SELECT' | translate }}</option>
+            @for (dt of documentTypes; track dt) {
+              <option [value]="dt">{{ dt }}</option>
+            }
+          </select>
+          @if (form.get('documentType')?.invalid && form.get('documentType')?.touched) {
+            <p class="text-hc-error text-xs mt-1">{{ 'USERS.VAL_REQUIRED' | translate }}</p>
+          }
+        </div>
+        <div>
+          <label class="hc-label">{{ 'USERS.FIELD_DOC_NUMBER' | translate }}<span class="text-hc-error">*</span></label>
+          <input formControlName="documentNumber" type="text" class="hc-input"
+                 [placeholder]="'USERS.PH_DOC_NUMBER' | translate" />
+          @if (form.get('documentNumber')?.invalid && form.get('documentNumber')?.touched) {
+            <p class="text-hc-error text-xs mt-1">{{ 'USERS.VAL_REQUIRED' | translate }}</p>
+          }
+        </div>
+      </div>
+    </div>
+
+    <!-- ── Sección: Roles ────────────────────────────── -->
+    <div class="px-6 py-3 bg-hc-muted border-t border-b border-hc-border">
+      <p class="hc-section-label">{{ 'USERS.FIELD_ROLES' | translate }} <span class="text-hc-error">*</span></p>
+    </div>
+    <div class="px-6 py-5">
       <div class="flex flex-wrap gap-2">
         @if (rolesService.loading()) {
           <span class="text-hc-text-3 text-sm">{{ 'USERS.LOADING_ROLES' | translate }}</span>
         }
         @for (role of rolesService.roles(); track role.id) {
-          <button type="button"
-            (click)="toggleRole(role.id)"
+          <button type="button" (click)="toggleRole(role.id)"
             [class]="'px-3 py-1.5 rounded-lg text-sm font-medium border transition-colors ' +
                      (isRoleSelected(role.id)
                        ? 'bg-hc-primary border-hc-primary text-white shadow-sm'
                        : 'bg-hc-muted border-hc-border text-hc-text-2 hover:border-hc-primary hover:text-hc-primary')"
-          >
-            {{ role.name }}
-          </button>
+          >{{ role.name }}</button>
         }
       </div>
       @if (form.get('rolesIds')?.invalid && form.get('rolesIds')?.touched) {
-        <p class="text-hc-error text-xs mt-1">{{ 'USERS.VAL_ROLE' | translate }}</p>
+        <p class="text-hc-error text-xs mt-2">{{ 'USERS.VAL_ROLE' | translate }}</p>
       }
     </div>
 
-    <!-- Submit -->
-    <div class="flex gap-3 pt-2">
-      <button type="submit"
-              [disabled]="userService.loading()"
-              class="flex-1 flex items-center justify-center gap-2
-                     bg-hc-primary hover:bg-hc-primary-dark disabled:opacity-50 disabled:cursor-not-allowed
-                     text-white font-semibold py-2.5 rounded-lg transition-colors shadow-sm">
+    <!-- ── Acciones ───────────────────────────────────── -->
+    <div class="px-6 py-4 border-t border-hc-border bg-hc-muted/40 flex gap-3">
+      <button type="submit" [disabled]="userService.loading()" class="hc-btn-primary flex-1 justify-center py-2.5">
         @if (userService.loading()) {
           <fa-icon [icon]="faSpinner" class="animate-spin" />
           {{ 'USERS.CREATING' | translate }}
@@ -213,9 +165,7 @@
           {{ 'USERS.CREATE_BTN' | translate }}
         }
       </button>
-      <button type="button" (click)="cancel()"
-              class="px-5 py-2.5 rounded-lg bg-hc-muted hover:bg-hc-hover
-                     text-hc-text-2 transition-colors border border-hc-border">
+      <button type="button" (click)="cancel()" class="hc-btn-secondary px-6">
         {{ 'USERS.CANCEL' | translate }}
       </button>
     </div>

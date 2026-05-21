@@ -1,0 +1,107 @@
+<div class="space-y-4">
+
+  <div class="hc-page-header">
+    <h2 class="hc-page-title">
+      <fa-icon [icon]="faFileLines" class="text-hc-primary" />
+      {{ 'DOCUMENTS.LIST_TITLE' | translate }}
+    </h2>
+    <button (click)="goToUpload()" class="hc-btn-primary">
+      <fa-icon [icon]="faUpload" />
+      {{ 'DOCUMENTS.UPLOAD_BTN' | translate }}
+    </button>
+  </div>
+
+  @if (documentService.error()) {
+    <div class="hc-alert-error">{{ documentService.error() }}</div>
+  }
+
+  @if (documentService.loading()) {
+    <div class="flex justify-center py-12">
+      <fa-icon [icon]="faSpinner" class="animate-spin text-2xl text-hc-primary" />
+    </div>
+  }
+
+  @if (!documentService.loading()) {
+    <div class="hc-table-wrap">
+      <table class="hc-table min-w-[800px]">
+        <thead>
+          <tr>
+            <th>{{ 'DOCUMENTS.COL_NAME' | translate }}</th>
+            <th>{{ 'DOCUMENTS.COL_PATIENT' | translate }}</th>
+            <th>{{ 'DOCUMENTS.COL_DATE' | translate }}</th>
+            <th>{{ 'DOCUMENTS.COL_STATUS' | translate }}</th>
+            <th>{{ 'DOCUMENTS.COL_TYPE' | translate }}</th>
+            <th class="text-right">{{ 'DOCUMENTS.COL_ACTIONS' | translate }}</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (doc of paged(); track doc.id) {
+            <tr>
+              <td class="font-medium text-hc-text max-w-[200px] truncate">{{ docTitle(doc) }}</td>
+              <td class="text-hc-text-2 max-w-[150px] truncate">{{ doc.patientName }}</td>
+              <td class="text-hc-text-2 whitespace-nowrap">{{ doc.issueDate }}</td>
+              <td>
+                <span [class]="statusClass(doc.status) + ' hc-badge-muted'">
+                  {{ statusLabel(doc.status) }}
+                </span>
+              </td>
+              <td>
+                @if (doc.isExternalSource) {
+                  <span class="px-2 py-0.5 rounded-full text-xs bg-purple-100 text-purple-700
+                               dark:bg-purple-900/30 dark:text-purple-400 font-medium">
+                    {{ 'DOCUMENTS.TYPE_EXTERNAL' | translate }}
+                  </span>
+                } @else {
+                  <span class="hc-badge-muted">{{ 'DOCUMENTS.TYPE_TEMPLATE' | translate }}</span>
+                }
+              </td>
+              <td>
+                <div class="flex items-center justify-end gap-1.5">
+                  <button (click)="view(doc.id)" class="hc-btn-icon-primary" title="Ver detalle">
+                    <fa-icon [icon]="faEye" />
+                  </button>
+                  <button (click)="edit(doc.id)"
+                          class="p-1.5 rounded-md bg-hc-muted hover:bg-blue-100 hover:text-blue-600 text-hc-text-2 transition-colors"
+                          title="Editar">
+                    <fa-icon [icon]="faEdit" />
+                  </button>
+                  <button (click)="delete(doc.id)" [disabled]="deletingId() === doc.id"
+                          class="hc-btn-icon-danger disabled:opacity-40 disabled:cursor-not-allowed"
+                          title="Eliminar">
+                    @if (deletingId() === doc.id) {
+                      <fa-icon [icon]="faSpinner" class="animate-spin" />
+                    } @else {
+                      <fa-icon [icon]="faTrash" />
+                    }
+                  </button>
+                </div>
+              </td>
+            </tr>
+          } @empty {
+            <tr>
+              <td colspan="6" class="hc-table-empty">{{ 'DOCUMENTS.LIST_EMPTY' | translate }}</td>
+            </tr>
+          }
+        </tbody>
+      </table>
+
+      @if (totalPages() > 1) {
+        <div class="hc-pagination">
+          <span class="text-xs text-hc-text-3">
+            {{ page() * PAGE_SIZE + 1 }}–{{ page() * PAGE_SIZE + paged().length }} de {{ totalItems() }}
+          </span>
+          <div class="flex items-center gap-1">
+            <button (click)="prevPage()" [disabled]="page() === 0" class="hc-page-btn">‹</button>
+            @for (p of visiblePages(); track p) {
+              <button (click)="goToPage(p)" [class]="p === page() ? 'hc-page-btn-active' : 'hc-page-btn'">
+                {{ p + 1 }}
+              </button>
+            }
+            <button (click)="nextPage()" [disabled]="page() === totalPages() - 1" class="hc-page-btn">›</button>
+          </div>
+        </div>
+      }
+    </div>
+  }
+
+</div>
