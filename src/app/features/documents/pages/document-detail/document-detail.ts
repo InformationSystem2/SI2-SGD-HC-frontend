@@ -3,9 +3,12 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import {
   faArrowLeft, faFileLines, faSpinner, faBookOpen,
+  faMagnifyingGlass, faRotateRight,
 } from '@fortawesome/free-solid-svg-icons';
 import { DocumentService } from '../../services/document.service';
+import { OcrService, OcrResult } from '../../services/ocr.service';
 import { Document } from '../../models/document.model';
+import { environment } from '../../../../../environments/environment';
 
 @Component({
   selector: 'app-document-detail',
@@ -15,25 +18,90 @@ import { Document } from '../../models/document.model';
 })
 export class DocumentDetail implements OnInit {
 
-  private route   = inject(ActivatedRoute);
-  private router  = inject(Router);
-  private docSvc  = inject(DocumentService);
+  private route  = inject(ActivatedRoute);
+  private router = inject(Router);
+  private docSvc = inject(DocumentService);
+  private ocrSvc = inject(OcrService);
 
-  readonly faArrowLeft = faArrowLeft;
-  readonly faFileLines = faFileLines;
-  readonly faSpinner   = faSpinner;
-  readonly faBookOpen  = faBookOpen;
+  readonly faArrowLeft   = faArrowLeft;
+  readonly faFileLines   = faFileLines;
+  readonly faSpinner     = faSpinner;
+  readonly faBookOpen    = faBookOpen;
+  readonly faExpand        = faMagnifyingGlass;   // faScan no existe en FA free
+  readonly faRotateRight = faRotateRight;
 
   readonly doc     = signal<Document | null>(null);
   readonly loading = signal(true);
   readonly error   = signal<string | null>(null);
 
+  readonly ocrResult  = signal<OcrResult | null>(null);
+  readonly ocrLoading = signal(false);
+  readonly ocrError   = signal<string | null>(null);
+
+  imgError = false;
+
   ngOnInit(): void {
     const id = this.route.snapshot.paramMap.get('id')!;
     this.docSvc.getById(id).subscribe({
-      next: d  => { this.doc.set(d); this.loading.set(false); },
-      error: e => { this.error.set(e.error?.message ?? 'Error al cargar el documento'); this.loading.set(false); },
+      next: d => {
+        this.doc.set(d);
+        this.loading.set(false);
+        if (d.fileUrl) this.loadOcr(d.id);
+      },
+      error: e => {
+        this.error.set(e.error?.message ?? 'Error al cargar el documento');
+        this.loading.set(false);
+      },
     });
+  }
+
+  private loadOcr(docId: string): void {
+    this.ocrSvc.getOcr(docId).subscribe({
+      next:  r => this.ocrResult.set(r),
+      error: () => this.ocrResult.set(null), // 404 = sin OCR todavía, ok
+    });
+  }
+
+  processOcr(): void {
+    const id = this.doc()?.id;
+    if (!id) return;
+    this.ocrLoading.set(true);
+    this.ocrError.set(null);
+    this.ocrSvc.triggerOcr(id).subscribe({
+      next:  r => { this.ocrResult.set(r); this.ocrLoading.set(false); },
+      error: e => { this.ocrError.set(e.error?.message ?? 'Error al procesar OCR'); this.ocrLoading.set(false); },
+    });
+  }
+
+  /** Construye la URL completa del archivo para mostrar en <img>. */
+  fileFullUrl(fileUrl: string): string {
+    // Esto quita el '/api' del final para que la imagen cargue bien
+    const baseUrl = environment.apiUrl.split('/api')[0]; 
+    return `${baseUrl}${fileUrl}`;
+  }
+
+  /** True si la extensión del archivo es una imagen. */
+  isImage(fileUrl: string): boolean {
+    const ext = fileUrl.split('.').pop()?.toLowerCase() ?? '';
+    return ['jpg', 'jpeg', 'png', 'webp', 'bmp', 'gif'].includes(ext);
+  }
+
+  confidenceLabel(): string {
+    const s = this.ocrResult()?.confidence_score ?? 0;
+    if (s >= 0.75) return 'Alta';
+    if (s >= 0.45) return 'Media';
+    return 'Baja';
+  }
+
+  confidenceClass(): string {
+    const s = this.ocrResult()?.confidence_score ?? 0;
+    if (s >= 0.75) return 'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400';
+    if (s >= 0.45) return 'bg-yellow-100 text-yellow-700 dark:bg-yellow-900/30 dark:text-yellow-400';
+    return 'bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400';
+  }
+
+  confidencePercent(): string {
+    return Math.round((this.ocrResult()?.confidence_score ?? 0) * 100) + '%';
   }
 
   docTitle(): string {
@@ -67,6 +135,18 @@ export class DocumentDetail implements OnInit {
     this.router.navigate(['/documentos/editor'], {
       queryParams: { docId: this.doc()!.id, mode: 'view' },
     });
+  }
+  objectKeys(obj: any): string[] {
+    return obj ? Object.keys(obj) : [];
+  }
+
+  datosKeys(obj: any): string[] {
+    // Muestra tipo_documento separado, el resto en orden
+    return Object.keys(obj).filter(k => k !== 'tipo_documento');
+  }
+
+  isObject(val: any): boolean {
+    return val !== null && typeof val === 'object' && !Array.isArray(val);
   }
 
   back(): void {
