@@ -1,0 +1,239 @@
+<div class="space-y-6">
+
+  @if (tenantService.error()) {
+    <div class="hc-alert-error">{{ tenantService.error() }}</div>
+  }
+
+  @if (tenantService.loading()) {
+    <div class="space-y-6 animate-pulse">
+      <div class="flex items-center gap-3">
+        <div class="w-10 h-10 bg-hc-muted rounded-lg"></div>
+        <div class="space-y-2">
+          <div class="h-6 w-48 bg-hc-muted rounded"></div>
+          <div class="h-4 w-24 bg-hc-muted rounded"></div>
+        </div>
+      </div>
+      <div class="grid grid-cols-1 lg:grid-cols-2 gap-4">
+        <div class="hc-card p-5 space-y-3">
+          <div class="h-4 w-24 bg-hc-muted rounded"></div>
+          @for (i of [1,2,3,4]; track i) {
+            <div class="h-4 w-full bg-hc-muted rounded"></div>
+          }
+        </div>
+        <div class="hc-card p-5 space-y-3">
+          <div class="h-4 w-24 bg-hc-muted rounded"></div>
+          @for (i of [1,2,3]; track i) {
+            <div class="h-4 w-full bg-hc-muted rounded"></div>
+          }
+        </div>
+      </div>
+      <div class="hc-card p-5">
+        <div class="h-4 w-24 bg-hc-muted rounded mb-4"></div>
+        <div class="grid grid-cols-3 gap-4">
+          @for (i of [1,2,3]; track i) {
+            <div class="h-16 bg-hc-muted rounded-lg"></div>
+          }
+        </div>
+      </div>
+    </div>
+  }
+
+  @if (!tenantService.loading() && tenantService.currentTenant()) {
+    <div class="hc-page-header">
+      <div class="flex items-center gap-3">
+        <button (click)="goBack()" class="hc-btn-icon">
+          <fa-icon [icon]="faArrowLeft" />
+        </button>
+        <div>
+          <div class="flex items-center gap-2">
+            <h2 class="hc-page-title">
+              <fa-icon [icon]="faBuilding" class="text-hc-primary" />
+              {{ tenantService.currentTenant()!.name }}
+            </h2>
+            <span [class]="getStatusBadge()">
+              {{ 'TENANTS.STATUS_' + tenantService.currentTenant()!.subscriptionStatus | translate }}
+            </span>
+          </div>
+          <p class="text-sm text-hc-text-3">/{{ tenantService.currentTenant()!.slug }}</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-4">
+
+      <div class="hc-card p-5">
+        <h3 class="hc-section-label mb-4">{{ 'TENANTS.INFO_CLINIC' | translate }}</h3>
+        <div class="space-y-3">
+          <div class="flex justify-between items-center text-sm">
+            <span class="text-hc-text-3">{{ 'TENANTS.EMAIL' | translate }}</span>
+            <span class="text-hc-text font-medium">{{ tenantService.currentTenant()!.email }}</span>
+          </div>
+          @if (tenantService.currentTenant()!.phone) {
+            <div class="flex justify-between items-center text-sm">
+              <span class="text-hc-text-3">{{ 'TENANTS.PHONE' | translate }}</span>
+              <span class="text-hc-text">{{ tenantService.currentTenant()!.phone }}</span>
+            </div>
+          }
+          <div class="flex justify-between items-center text-sm">
+            <span class="text-hc-text-3">{{ 'TENANTS.PLAN' | translate }}</span>
+            <span [class]="getPlanBadge()">{{ getPlanLabel() }}</span>
+          </div>
+          <div class="flex justify-between items-center text-sm">
+            <span class="text-hc-text-3">{{ 'TENANTS.START_DATE' | translate }}</span>
+            <span class="text-hc-text">
+              {{ tenantService.currentTenant()!.subscriptionStartDate | date:'mediumDate' }}
+            </span>
+          </div>
+          @if (tenantService.currentTenant()!.address) {
+            <div class="flex justify-between items-center text-sm">
+              <span class="text-hc-text-3">{{ 'TENANTS.ADDRESS' | translate }}</span>
+              <span class="text-hc-text text-right max-w-[200px]">{{ tenantService.currentTenant()!.address }}</span>
+            </div>
+          }
+        </div>
+      </div>
+
+      <div class="hc-card p-5">
+        <h3 class="hc-section-label mb-4">{{ 'TENANTS.ADMIN' | translate }}</h3>
+        @if (tenantService.currentTenant()!.admin) {
+          <div class="space-y-3">
+            <div class="flex justify-between items-center text-sm">
+              <span class="text-hc-text-3">{{ 'TENANTS.NAME' | translate }}</span>
+              <span class="text-hc-text font-medium">
+                {{ tenantService.currentTenant()!.admin!.firstName }}
+                {{ tenantService.currentTenant()!.admin!.lastName }}
+              </span>
+            </div>
+            <div class="flex justify-between items-center text-sm">
+              <span class="text-hc-text-3">{{ 'TENANTS.USERNAME' | translate }}</span>
+              <span class="text-hc-text">{{ tenantService.currentTenant()!.admin!.username }}</span>
+            </div>
+            <div class="flex justify-between items-center text-sm">
+              <span class="text-hc-text-3">{{ 'TENANTS.EMAIL' | translate }}</span>
+              <span class="text-hc-text truncate max-w-[200px]">
+                {{ tenantService.currentTenant()!.admin!.email }}
+              </span>
+            </div>
+          </div>
+        } @else {
+          <p class="text-hc-text-3 text-sm italic text-center py-4">—</p>
+        }
+      </div>
+
+    </div>
+
+    <div class="hc-card p-5">
+      <h3 class="hc-section-label mb-4">{{ 'TENANTS.USAGE' | translate }}</h3>
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <div class="space-y-2">
+          <div class="flex justify-between text-sm">
+            <span class="flex items-center gap-1.5 text-hc-text-2">
+              <fa-icon [icon]="faUsers" class="text-hc-primary" />
+              {{ 'TENANTS.USERS' | translate }}
+            </span>
+            <span class="font-semibold text-hc-text">
+              {{ tenantService.currentTenant()!.stats.userCount }} / {{ tenantService.currentTenant()!.stats.maxUsers }}
+            </span>
+          </div>
+          <div class="w-full bg-hc-muted rounded-full h-2.5 overflow-hidden">
+            <div class="h-full rounded-full transition-all duration-500"
+                 [style.width.%]="getUserPercent()"
+                 [class.bg-hc-primary]="getUserPercent() < 80"
+                 [class.bg-hc-warning]="getUserPercent() >= 80 && getUserPercent() < 95"
+                 [class.bg-hc-error]="getUserPercent() >= 95"></div>
+          </div>
+          <span class="text-xs text-hc-text-3">{{ getUserPercent() }}%</span>
+        </div>
+        <div class="space-y-2">
+          <div class="flex justify-between text-sm">
+            <span class="flex items-center gap-1.5 text-hc-text-2">
+              <fa-icon [icon]="faDatabase" class="text-hc-primary" />
+              {{ 'TENANTS.STORAGE' | translate }}
+            </span>
+            <span class="font-semibold text-hc-text">
+              {{ tenantService.currentTenant()!.stats.storageUsedMB }} / {{ tenantService.currentTenant()!.stats.maxStorageMB }} MB
+            </span>
+          </div>
+          <div class="w-full bg-hc-muted rounded-full h-2.5 overflow-hidden">
+            <div class="h-full rounded-full transition-all duration-500"
+                 [style.width.%]="getStoragePercent()"
+                 [class.bg-blue-500]="getStoragePercent() < 80"
+                 [class.bg-hc-warning]="getStoragePercent() >= 80 && getStoragePercent() < 95"
+                 [class.bg-hc-error]="getStoragePercent() >= 95"></div>
+          </div>
+          <span class="text-xs text-hc-text-3">{{ getStoragePercent() }}%</span>
+        </div>
+        <div class="space-y-2">
+          <div class="flex justify-between text-sm">
+            <span class="flex items-center gap-1.5 text-hc-text-2">
+              <fa-icon [icon]="faRocket" class="text-hc-primary" />
+              {{ 'TENANTS.API_LABEL' | translate }}
+            </span>
+            <span class="font-semibold text-hc-text">
+              {{ tenantService.currentTenant()!.stats.apiCallsUsed | number }} / {{ tenantService.currentTenant()!.stats.maxApiCalls | number }}
+            </span>
+          </div>
+          <div class="w-full bg-hc-muted rounded-full h-2.5 overflow-hidden">
+            <div class="h-full rounded-full transition-all duration-500"
+                 [style.width.%]="getApiPercent()"
+                 [class.bg-purple-500]="getApiPercent() < 80"
+                 [class.bg-hc-warning]="getApiPercent() >= 80 && getApiPercent() < 95"
+                 [class.bg-hc-error]="getApiPercent() >= 95"></div>
+          </div>
+          <span class="text-xs text-hc-text-3">{{ getApiPercent() }}%</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="hc-card p-5">
+      <h3 class="hc-section-label mb-4">{{ 'TENANTS.ACTIONS' | translate }}</h3>
+      <div class="flex flex-wrap gap-3">
+        @if (tenantService.currentTenant()!.subscriptionStatus !== 'CANCELED') {
+          @if (tenantService.currentTenant()!.subscriptionStatus === 'SUSPENDED') {
+            <button (click)="openConfirm('REACTIVATE')" class="hc-btn-primary">
+              <fa-icon [icon]="faCheck" />
+              {{ 'TENANTS.REACTIVATE' | translate }}
+            </button>
+          } @else {
+            <button (click)="openConfirm('SUSPEND')"
+                    class="inline-flex items-center gap-2 px-4 py-2 text-sm font-medium text-white bg-hc-error hover:bg-red-700 transition-colors rounded-lg">
+              <fa-icon [icon]="faBan" />
+              {{ 'TENANTS.SUSPEND' | translate }}
+            </button>
+          }
+        }
+        <button (click)="openHardDelete()"
+                class="inline-flex items-center gap-2 px-4 py-2 text-sm font-medium text-white bg-red-800 hover:bg-red-900 transition-colors rounded-lg">
+          <fa-icon [icon]="faExclamationTriangle" />
+          {{ 'TENANTS.HARD_DELETE' | translate }}
+        </button>
+      </div>
+    </div>
+
+  }
+
+</div>
+
+@if (showConfirmModal()) {
+  <app-confirm-dialog
+    [title]="confirmTitle()"
+    [message]="confirmMessage()"
+    [type]="confirmAction()!"
+    [confirmText]="confirmAction() === 'SUSPEND' ? ('TENANTS.SUSPEND' | translate) : ('TENANTS.REACTIVATE' | translate)"
+    (confirmed)="onConfirmAction()"
+    (cancelled)="closeConfirm()"
+  />
+}
+
+@if (showHardDeleteModal() && tenantService.currentTenant()) {
+  <app-confirm-dialog
+    [title]="'TENANTS.CONFIRM_HARD_DELETE_TITLE' | translate"
+    [message]="'TENANTS.CONFIRM_HARD_DELETE_PROMPT' | translate: { name: tenantService.currentTenant()!.name }"
+    [type]="'HARD_DELETE'"
+    [confirmText]="'TENANTS.HARD_DELETE' | translate"
+    [dangerPlaceholder]="tenantService.currentTenant()!.name"
+    [dangerMatchValue]="tenantService.currentTenant()!.name"
+    (confirmed)="onHardDeleteConfirm()"
+    (cancelled)="closeHardDelete()"
+  />
+}

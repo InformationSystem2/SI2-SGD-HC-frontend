@@ -1,0 +1,189 @@
+<div class="space-y-4">
+
+  <div class="hc-page-header">
+    <h2 class="hc-page-title">
+      <fa-icon [icon]="faBuilding" class="text-hc-primary" />
+      {{ 'TENANTS.TITLE' | translate }}
+    </h2>
+  </div>
+
+  @if (tenantService.error()) {
+    <div class="hc-alert-error">{{ tenantService.error() }}</div>
+  }
+
+  <div class="flex flex-wrap items-center gap-3 mb-4">
+    <div class="relative flex-1 min-w-[240px]">
+      <fa-icon [icon]="faSearch" class="absolute left-3 top-1/2 -translate-y-1/2 text-hc-text-3" />
+      <input
+        type="text"
+        [value]="searchValue()"
+        (input)="onSearchInput($event)"
+        placeholder="{{ 'TENANTS.SEARCH' | translate }}"
+        class="hc-input pl-10"
+      />
+      @if (tenantService.loading()) {
+        <fa-icon [icon]="faSpinner" class="absolute right-3 top-1/2 -translate-y-1/2 animate-spin text-hc-text-3" />
+      }
+    </div>
+  </div>
+
+  @if (tenantService.loading()) {
+    <div class="hc-table-wrap">
+      <table class="hc-table">
+        <thead>
+          <tr>
+            <th>{{ 'TENANTS.COL_NAME' | translate }}</th>
+            <th>{{ 'TENANTS.COL_PLAN' | translate }}</th>
+            <th>{{ 'TENANTS.COL_ADMIN' | translate }}</th>
+            <th>{{ 'TENANTS.COL_USERS' | translate }}</th>
+            <th>{{ 'TENANTS.COL_STATUS' | translate }}</th>
+            <th class="text-right">{{ 'TENANTS.COL_ACTIONS' | translate }}</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (i of [1,2,3,4,5]; track i) {
+            <tr>
+              <td><div class="h-4 w-32 bg-hc-muted rounded animate-pulse"></div></td>
+              <td><div class="h-5 w-16 bg-hc-muted rounded-full animate-pulse"></div></td>
+              <td>
+                <div class="space-y-1">
+                  <div class="h-3 w-24 bg-hc-muted rounded animate-pulse"></div>
+                  <div class="h-2 w-32 bg-hc-muted rounded animate-pulse"></div>
+                </div>
+              </td>
+              <td><div class="h-4 w-8 bg-hc-muted rounded"></div></td>
+              <td><div class="h-5 w-20 bg-hc-muted rounded-full"></div></td>
+              <td><div class="h-8 w-20 bg-hc-muted rounded ml-auto"></div></td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+  } @else {
+    <div class="hc-table-wrap">
+      <table class="hc-table">
+        <thead>
+          <tr>
+            <th>{{ 'TENANTS.COL_NAME' | translate }}</th>
+            <th>{{ 'TENANTS.COL_PLAN' | translate }}</th>
+            <th>{{ 'TENANTS.COL_ADMIN' | translate }}</th>
+            <th>{{ 'TENANTS.COL_USERS' | translate }}</th>
+            <th>{{ 'TENANTS.COL_STATUS' | translate }}</th>
+            <th class="text-right">{{ 'TENANTS.COL_ACTIONS' | translate }}</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (tenant of paged(); track tenant.id) {
+            <tr class="cursor-pointer" (click)="goToDetail(tenant.id)">
+              <td class="font-medium text-hc-text">{{ tenant.name }}</td>
+              <td>
+                <span class="hc-badge-primary">{{ 'TENANTS.PLAN_' + tenant.subscriptionPlan | translate }}</span>
+              </td>
+              <td>
+                @if (tenant.adminName) {
+                  <div class="text-sm">{{ tenant.adminName }}</div>
+                  <div class="text-xs text-hc-text-3">{{ tenant.adminEmail }}</div>
+                } @else {
+                  <span class="text-hc-text-3">—</span>
+                }
+              </td>
+              <td>
+                <div class="flex items-center gap-1.5 text-sm text-hc-text-2">
+                  <fa-icon [icon]="faUsers" />
+                  {{ tenant.userCount }}
+                </div>
+              </td>
+              <td>
+                <span [class]="getStatusBadge(tenant)" class="inline-flex items-center gap-1.5 whitespace-nowrap">
+                  <fa-icon [icon]="getStatusIcon(tenant)" class="text-xs" />
+                  {{ 'TENANTS.STATUS_' + tenant.subscriptionStatus | translate }}
+                </span>
+              </td>
+              <td>
+                <div class="flex items-center justify-end gap-1.5" (click)="$event.stopPropagation()">
+                  <button (click)="goToDetail(tenant.id)" class="hc-btn-icon-primary"
+                          [title]="'TENANTS.VIEW' | translate">
+                    <fa-icon [icon]="faEye" />
+                  </button>
+                  @if (tenant.subscriptionStatus !== 'CANCELED') {
+                    @if (tenant.subscriptionStatus === 'SUSPENDED') {
+                      <button (click)="openConfirm(tenant, 'REACTIVATE')"
+                              class="inline-flex items-center justify-center w-8 h-8 rounded-lg bg-green-100 text-green-700 hover:bg-green-200 transition-colors"
+                              [title]="'TENANTS.REACTIVATE' | translate">
+                        <fa-icon [icon]="faCheck" />
+                      </button>
+                    } @else {
+                      <button (click)="openConfirm(tenant, 'SUSPEND')"
+                              class="inline-flex items-center justify-center w-8 h-8 rounded-lg bg-hc-muted text-hc-text-2 hover:bg-hc-error hover:text-white transition-colors"
+                              [title]="'TENANTS.SUSPEND' | translate">
+                        <fa-icon [icon]="faBan" />
+                      </button>
+                    }
+                    <div class="relative group">
+                      <button class="hc-btn-icon" [title]="'TENANTS.DELETE' | translate">
+                        <fa-icon [icon]="faTrash" />
+                      </button>
+                      <div class="absolute right-0 top-full mt-1 bg-hc-surface border border-hc-border rounded-lg shadow-lg opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all z-10 min-w-[180px] p-1">
+                        <button (click)="openHardDelete(tenant)"
+                                class="w-full text-left px-3 py-2 text-sm text-hc-error hover:bg-hc-error-bg rounded-lg">
+                          {{ 'TENANTS.HARD_DELETE' | translate }}
+                        </button>
+                      </div>
+                    </div>
+                  }
+                </div>
+              </td>
+            </tr>
+          } @empty {
+            <tr>
+              <td colspan="6" class="hc-table-empty">{{ 'TENANTS.EMPTY' | translate }}</td>
+            </tr>
+          }
+        </tbody>
+      </table>
+
+      @if (totalPages() > 1) {
+        <div class="hc-pagination">
+          <span class="text-xs text-hc-text-3">
+            {{ page() * PAGE_SIZE + 1 }}–{{ page() * PAGE_SIZE + paged().length }} {{ 'TENANTS.PAGINATION_OF' | translate }} {{ totalItems() }}
+          </span>
+          <div class="flex items-center gap-1">
+            <button (click)="prevPage()" [disabled]="page() === 0" class="hc-page-btn">‹</button>
+            @for (p of visiblePages(); track p) {
+              <button (click)="goToPage(p)"
+                      [class]="p === page() ? 'hc-page-btn-active' : 'hc-page-btn'">
+                {{ p + 1 }}
+              </button>
+            }
+            <button (click)="nextPage()" [disabled]="page() >= totalPages() - 1" class="hc-page-btn">›</button>
+          </div>
+        </div>
+      }
+    </div>
+  }
+
+</div>
+
+@if (showConfirmModal()) {
+  <app-confirm-dialog
+    [title]="confirmTitle()"
+    [message]="confirmMessage()"
+    [type]="confirmAction()!"
+    [confirmText]="confirmAction() === 'SUSPEND' ? ('TENANTS.SUSPEND' | translate) : ('TENANTS.REACTIVATE' | translate)"
+    (confirmed)="onConfirmAction()"
+    (cancelled)="closeConfirm()"
+  />
+}
+
+@if (showHardDeleteModal() && hardDeleteTenant()) {
+  <app-confirm-dialog
+    [title]="'TENANTS.CONFIRM_HARD_DELETE_TITLE' | translate"
+    [message]="'TENANTS.CONFIRM_HARD_DELETE_PROMPT' | translate: { name: hardDeleteTenant()!.name }"
+    [type]="'HARD_DELETE'"
+    [confirmText]="'TENANTS.HARD_DELETE' | translate"
+    [dangerPlaceholder]="hardDeleteTenant()!.name"
+    [dangerMatchValue]="hardDeleteTenant()!.name"
+    (confirmed)="onHardDeleteConfirm()"
+    (cancelled)="closeHardDelete()"
+  />
+}

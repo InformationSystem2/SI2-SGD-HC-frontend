@@ -4,7 +4,7 @@ import { Router } from '@angular/router';
 import { environment } from '../../../../environments/environment';
 import { catchError, EMPTY, tap } from 'rxjs';
 import { AuthState, LoginRequest, LoginResponse } from '../models/auth.models';
-
+import { BrandingService } from '../../services/branding.service';
 
 
 @Injectable({ providedIn: 'root' })
@@ -12,6 +12,7 @@ export class AuthService {
 
   private http = inject(HttpClient);
   private router = inject(Router);
+  private branding = inject(BrandingService);  
 
   private _state = signal<AuthState>((() => {
     const accessToken = localStorage.getItem('accessToken');
@@ -70,11 +71,13 @@ export class AuthService {
           error: null,
         });
 
+        this.branding.load();        
         this.router.navigate(['/dashboard']);
       }),
       catchError( err => {
         const message = err.error?.message ?? 'ERRORS.LOGIN_FAILED';
         this._state.update( s => ({ ...s, loading: false, error: message }));
+        console.error('Login error:', err);
         return EMPTY;
       })
     );

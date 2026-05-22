@@ -1,0 +1,234 @@
+<div class="bg-hc-card rounded-xl p-4 border border-hc-border sticky top-4">
+  <h3 class="text-sm font-semibold text-hc-text mb-4 flex items-center gap-2">
+    <i class="fas fa-eye"></i>
+    {{ 'IDENTITY.LIVE_PREVIEW' | translate }}
+  </h3>
+
+  <div
+    class="space-y-3"
+    [style.font-family]="typography().fontFamily + ', sans-serif'"
+    [style.font-size.px]="typography().baseSize"
+  >
+    <div
+      class="rounded-lg overflow-hidden border"
+      [style.border-color]="colors()['border']"
+      [style.border-radius.px]="8"
+    >
+      <div class="flex h-8" [style.background-color]="colors()['navbar']">
+        <div
+          class="w-1/3 h-full"
+          [style.background-color]="colors()['primaryLight']"
+        ></div>
+        <div class="flex-1 flex items-center px-3 gap-2">
+          <span class="text-white font-semibold text-xs"
+            >{{ tenantName() || ('IDENTITY.MY_CLINIC' | translate) }}</span
+          >
+          <div class="ml-auto flex gap-1">
+            <div class="w-3 h-3 rounded-full bg-white/20"></div>
+            <div class="w-3 h-3 rounded-full bg-white/20"></div>
+          </div>
+        </div>
+      </div>
+      <div class="flex">
+        <div
+          class="w-10 py-4 flex flex-col items-center gap-3"
+          [style.background-color]="colors()['sidebar']"
+        >
+          <div
+            class="w-6 h-6 rounded"
+            [style.background-color]="colors()['primary']"
+          ></div>
+          <div
+            class="w-6 h-6 rounded opacity-30"
+            [style.background-color]="colors()['border']"
+          ></div>
+          <div
+            class="w-6 h-6 rounded opacity-30"
+            [style.background-color]="colors()['border']"
+          ></div>
+          <div
+            class="w-6 h-6 rounded opacity-30"
+            [style.background-color]="colors()['border']"
+          ></div>
+        </div>
+        <div
+          class="flex-1 p-3 space-y-2"
+          [style.background-color]="colors()['background']"
+        >
+          <div
+            class="h-16 rounded-lg flex items-center px-3 gap-2"
+            [style.background-color]="colors()['surface']"
+            [style.border]="'1px solid ' + colors()['border']"
+          >
+            <div
+              class="w-8 h-8 rounded-full"
+              [style.background-color]="colors()['primaryLight']"
+            ></div>
+            <div class="flex-1">
+              <div
+                class="h-2 rounded w-3/4 mb-1"
+                [style.background-color]="colors()['muted']"
+              ></div>
+              <div
+                class="h-2 rounded w-1/2"
+                [style.background-color]="colors()['muted']"
+              ></div>
+            </div>
+          </div>
+          <div
+            class="h-16 rounded-lg flex items-center px-3 gap-2"
+            [style.background-color]="colors()['surface']"
+            [style.border]="'1px solid ' + colors()['border']"
+          >
+            <div
+              class="w-8 h-8 rounded-full"
+              [style.background-color]="colors()['muted']"
+            ></div>
+            <div class="flex-1">
+              <div
+                class="h-2 rounded w-2/3 mb-1"
+                [style.background-color]="colors()['muted']"
+              ></div>
+              <div
+                class="h-2 rounded w-1/3"
+                [style.background-color]="colors()['muted']"
+              ></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div
+      class="rounded-lg p-3 space-y-2"
+      [style.background-color]="colors()['surface']"
+      [style.border]="'1px solid ' + colors()['border']"
+      [style.border-radius.px]="8"
+    >
+      <div class="flex items-center gap-2 mb-2">
+        <div
+          class="w-3 h-3 rounded-full"
+          [style.background-color]="colors()['success']"
+        ></div>
+        <span class="text-xs" [style.color]="colors()['textSecondary']"
+          >{{ 'COMMON.SUCCESS' | translate }}</span
+        >
+      </div>
+      <div class="flex items-center gap-2 mb-2">
+        <div
+          class="w-3 h-3 rounded-full"
+          [style.background-color]="colors()['warning']"
+        ></div>
+        <span class="text-xs" [style.color]="colors()['textSecondary']"
+          >{{ 'COMMON.WARNING' | translate }}</span
+        >
+      </div>
+      <div class="flex items-center gap-2">
+        <div
+          class="w-3 h-3 rounded-full"
+          [style.background-color]="colors()['error']"
+        ></div>
+        <span class="text-xs" [style.color]="colors()['textSecondary']"
+          >{{ 'COMMON.ERROR' | translate }}</span
+        >
+      </div>
+    </div>
+
+    <div
+      class="flex items-center justify-between p-3 rounded-lg"
+      [style.background-color]="colors()['surface']"
+      [style.border]="'1px solid ' + colors()['border']"
+      [style.border-radius.px]="8"
+    >
+      <span class="text-sm" [style.color]="colors()['textPrimary']"
+        >{{ 'IDENTITY.BOX_EXAMPLE' | translate }}</span
+      >
+      <span
+        class="text-xs px-2 py-1 rounded"
+        [style.background-color]="colors()['primaryLight']"
+        [style.color]="colors()['primary']"
+        >{{ 'IDENTITY.BADGE' | translate }}</span
+      >
+    </div>
+
+    <div class="flex gap-2">
+      <button
+        class="px-4 py-2 text-white text-xs font-medium shadow-sm"
+        [style.background-color]="colors()['primary']"
+        [style.border-radius.px]="8"
+      >
+        {{ 'IDENTITY.BUTTON_PRIMARY' | translate }}
+      </button>
+      <button
+        class="px-4 py-2 border text-xs font-medium"
+        [style.border-color]="colors()['primary']"
+        [style.color]="colors()['primary']"
+        [style.background-color]="'transparent'"
+        [style.border-radius.px]="8"
+      >
+        {{ 'IDENTITY.BUTTON_SECONDARY' | translate }}
+      </button>
+      <button
+        class="px-4 py-2 text-xs font-medium"
+        [style.background-color]="colors()['muted']"
+        [style.color]="colors()['textSecondary']"
+        [style.border-radius.px]="8"
+      >
+        {{ 'IDENTITY.BUTTON_TERTIARY' | translate }}
+      </button>
+    </div>
+
+    <div
+      class="p-4 rounded-lg"
+      [style.background-color]="colors()['muted']"
+      [style.border-radius.px]="8"
+    >
+      <p class="text-sm font-medium" [style.color]="colors()['textPrimary']">
+        {{ 'IDENTITY.COLOR_TEXT_PRIMARY' | translate }}
+      </p>
+      <p class="text-xs" [style.color]="colors()['textSecondary']">
+        {{ 'IDENTITY.COLOR_TEXT_SECONDARY' | translate }}
+      </p>
+      <p class="text-xs" [style.color]="colors()['textMuted']">
+        {{ 'IDENTITY.COLOR_TEXT_MUTED' | translate }}
+      </p>
+    </div>
+
+    <div
+      class="p-4 rounded-lg"
+      [style.background-color]="colors()['primary']"
+      [style.border-radius.px]="8"
+    >
+      <p class="text-white text-sm font-medium">
+        {{ 'IDENTITY.BUTTON_PRIMARY' | translate }}
+      </p>
+      <p class="text-white/70 text-xs">
+        {{ 'IDENTITY.BUTTON_PRIMARY_DESC' | translate }}
+      </p>
+    </div>
+  </div>
+
+  <div class="mt-4 pt-4 border-t border-hc-border">
+    <h4 class="text-xs font-semibold text-hc-text-3 mb-2">
+      {{ 'IDENTITY.CONTRAST_WCAG' | translate }}
+    </h4>
+    <div class="space-y-2">
+      @for (item of contrastResults(); track item.key) {
+      <div class="flex items-center justify-between text-xs">
+        <span class="text-hc-text-2">{{ item.label | translate }}</span>
+        <span
+          class="px-2 py-0.5 rounded font-medium"
+          [class.bg-green-100]="item.level === 'AAA' || item.level === 'AA'"
+          [class.text-green-700]="item.level === 'AAA' || item.level === 'AA'"
+          [class.bg-yellow-100]="item.level === 'AA Large'"
+          [class.text-yellow-700]="item.level === 'AA Large'"
+          [class.bg-red-100]="item.level === 'Fail'"
+          [class.text-red-700]="item.level === 'Fail'"
+        >
+          {{ item.level }} ({{ item.ratio.toFixed(1) }})
+        </span>
+      </div>
+      }
+    </div>
+  </div>
+</div>

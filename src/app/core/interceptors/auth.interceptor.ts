@@ -2,10 +2,18 @@ import { HttpInterceptorFn } from "@angular/common/http";
 import { inject } from "@angular/core";
 import { AuthService } from "../auth/services/auth.service";
 
+function decodeJwt(token: string): any {
+  try {
+    const payload = token.split('.')[1];
+    return JSON.parse(atob(payload));
+  } catch {
+    return null;
+  }
+}
+
 export const authInterceptor: HttpInterceptorFn = (req, next) => {
   const auth = inject(AuthService);
   const accessToken = auth.accessToken();
-  const tenantSlug = localStorage.getItem('tenantSlug');
 
   // No agregar headers en endpoints de autenticación
   if (req.url.includes('/auth/')) {
@@ -16,10 +24,10 @@ export const authInterceptor: HttpInterceptorFn = (req, next) => {
 
   if (accessToken) {
     headers['Authorization'] = `Bearer ${accessToken}`;
-  }
-
-  if (tenantSlug) {
-    headers['X-Tenant-ID'] = tenantSlug;
+    const payload = decodeJwt(accessToken);
+    if (payload?.tenantSlug) {
+      headers['X-Tenant-ID'] = payload.tenantSlug;
+    }
   }
 
   if (Object.keys(headers).length > 0) {

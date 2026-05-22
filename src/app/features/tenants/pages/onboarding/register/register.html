@@ -1,0 +1,196 @@
+<div class="min-h-screen bg-hc-app flex items-center justify-center px-4 py-8">
+  <div class="w-full max-w-3xl">
+
+    <!-- Card -->
+    <div class="bg-hc-surface rounded-3xl shadow-2xl border border-hc-border p-6 md:p-10 animate-in fade-in slide-in-from-bottom-4 duration-700">
+
+      <!-- Progress Stepper -->
+      <app-progress-stepper [currentStep]="2" />
+
+      <!-- Header -->
+      <div class="mb-8 text-center">
+        <div class="flex justify-center mb-4">
+          <div class="w-14 h-14 rounded-2xl bg-gradient-to-br from-hc-primary to-hc-primary-dark flex items-center justify-center shadow-lg shadow-hc-primary/30">
+            <svg class="w-7 h-7 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
+            </svg>
+          </div>
+        </div>
+        <h1 class="hc-h1 text-hc-text">{{ 'TENANTS.REGISTER_CLINIC_TITLE' | translate }}</h1>
+        <p class="text-hc-text-3 mt-1 text-sm">{{ 'TENANTS.REGISTER_CLINIC_SUBTITLE' | translate }}</p>
+      </div>
+
+      <form [formGroup]="form" (ngSubmit)="onSubmit()" class="space-y-6">
+        
+        @if (tenantService.error()) {
+          <div class="p-4 bg-red-50 border border-red-200 rounded-2xl flex items-center gap-3 animate-in fade-in zoom-in duration-300">
+            <i class="fas fa-exclamation-circle text-red-500"></i>
+            <p class="text-sm font-medium text-red-600">{{ tenantService.error()! | translate }}</p>
+          </div>
+        }
+
+        <!-- Clinic Section -->
+        <div class="bg-gradient-to-r from-hc-primary/5 to-transparent rounded-2xl p-5 border border-hc-border-i">
+          <label class="block text-xs font-bold text-hc-primary uppercase tracking-[0.2em] mb-4 flex items-center gap-2">
+            <i class="fas fa-hospital"></i>
+            {{ 'TENANTS.INSTITUTION_DATA' | translate }}
+          </label>
+          <div class="relative">
+            <span class="absolute inset-y-0 left-0 flex items-center pl-4 text-hc-text-3">
+              <i class="fas fa-building"></i>
+            </span>
+            <input
+              type="text"
+              formControlName="tenantName"
+              [placeholder]="'TENANTS.CLINIC_NAME_PH' | translate"
+              class="w-full pl-11 pr-4 py-3.5 bg-hc-surface border border-hc-border rounded-xl text-sm
+                     text-hc-text focus:outline-none focus:ring-2 focus:ring-hc-primary/30 focus:border-hc-primary transition-all placeholder:text-hc-text-3/50"
+            />
+            @if (form.controls.tenantName.touched && form.controls.tenantName.hasError('required')) {
+              <p class="mt-2 text-xs text-hc-error font-medium">{{ 'TENANTS.CLINIC_NAME_REQ' | translate }}</p>
+            }
+          </div>
+        </div>
+
+        <!-- Admin Section -->
+        <div class="bg-gradient-to-r from-hc-primary/5 to-transparent rounded-2xl p-5 border border-hc-border-i">
+          <label class="block text-xs font-bold text-hc-primary uppercase tracking-[0.2em] mb-4 flex items-center gap-2">
+            <i class="fas fa-user-shield"></i>
+            {{ 'TENANTS.MASTER_ADMIN' | translate }}
+          </label>
+          
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+            <div class="relative">
+              <span class="absolute inset-y-0 left-0 flex items-center pl-4 text-hc-text-3">
+                <i class="fas fa-user"></i>
+              </span>
+              <input formControlName="adminFirstName" [placeholder]="'TENANTS.FIRST_NAME' | translate" 
+                class="w-full pl-11 pr-4 py-3.5 bg-hc-surface border border-hc-border rounded-xl text-sm text-hc-text focus:outline-none focus:ring-2 focus:ring-hc-primary/30 focus:border-hc-primary transition-all placeholder:text-hc-text-3/50" />
+            </div>
+            <div class="relative">
+              <span class="absolute inset-y-0 left-0 flex items-center pl-4 text-hc-text-3">
+                <i class="fas fa-user"></i>
+              </span>
+              <input formControlName="adminLastName" [placeholder]="'TENANTS.LAST_NAME' | translate" 
+                class="w-full pl-11 pr-4 py-3.5 bg-hc-surface border border-hc-border rounded-xl text-sm text-hc-text focus:outline-none focus:ring-2 focus:ring-hc-primary/30 focus:border-hc-primary transition-all placeholder:text-hc-text-3/50" />
+            </div>
+          </div>
+
+          <div class="relative mb-4">
+            <span class="absolute inset-y-0 left-0 flex items-center pl-4 text-hc-text-3">
+              <i class="fas fa-envelope"></i>
+            </span>
+            <input formControlName="adminEmail" type="email" [placeholder]="'TENANTS.CORP_EMAIL' | translate" 
+              class="w-full pl-11 pr-4 py-3.5 bg-hc-surface border border-hc-border rounded-xl text-sm text-hc-text focus:outline-none focus:ring-2 focus:ring-hc-primary/30 focus:border-hc-primary transition-all placeholder:text-hc-text-3/50" />
+          </div>
+          
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+            <div>
+              <div class="relative">
+                <span class="absolute inset-y-0 left-0 flex items-center pl-4 text-hc-text-3">
+                  <i class="fas fa-lock"></i>
+                </span>
+                <input [type]="hidePassword() ? 'password' : 'text'" formControlName="adminPassword" [placeholder]="'TENANTS.PASSWORD' | translate" 
+                  class="w-full pl-11 pr-12 py-3.5 bg-hc-surface border border-hc-border rounded-xl text-sm text-hc-text focus:outline-none focus:ring-2 focus:ring-hc-primary/30 focus:border-hc-primary transition-all placeholder:text-hc-text-3/50" />
+                <button type="button" (click)="hidePassword.set(!hidePassword())" class="absolute inset-y-0 right-0 flex items-center px-4 text-hc-text-3 hover:text-hc-primary transition-colors">
+                  <i class="fas" [class.fa-eye]="hidePassword()" [class.fa-eye-slash]="!hidePassword()"></i>
+                </button>
+              </div>
+              @if (form.controls.adminPassword.touched && form.controls.adminPassword.errors) {
+                <div class="mt-2 ml-1 flex flex-wrap gap-x-3 gap-y-1">
+                  @if (form.controls.adminPassword.errors['minlength']) { <p class="text-[10px] text-hc-error font-medium">• {{ 'TENANTS.VAL_MIN_8' | translate }}</p> }
+                  @if (form.controls.adminPassword.errors['uppercase']) { <p class="text-[10px] text-hc-error font-medium">• {{ 'TENANTS.VAL_UPPERCASE' | translate }}</p> }
+                  @if (form.controls.adminPassword.errors['number']) { <p class="text-[10px] text-hc-error font-medium">• {{ 'TENANTS.VAL_NUMBER' | translate }}</p> }
+                </div>
+              }
+            </div>
+            <div>
+              <div class="relative">
+                <span class="absolute inset-y-0 left-0 flex items-center pl-4 text-hc-text-3">
+                  <i class="fas fa-lock"></i>
+                </span>
+                <input [type]="hideConfirmPassword() ? 'password' : 'text'" formControlName="confirmPassword" [placeholder]="'TENANTS.CONFIRM_PASSWORD' | translate" 
+                  class="w-full pl-11 pr-12 py-3.5 bg-hc-surface border border-hc-border rounded-xl text-sm text-hc-text focus:outline-none focus:ring-2 focus:ring-hc-primary/30 focus:border-hc-primary transition-all placeholder:text-hc-text-3/50" />
+                <button type="button" (click)="hideConfirmPassword.set(!hideConfirmPassword())" class="absolute inset-y-0 right-0 flex items-center px-4 text-hc-text-3 hover:text-hc-primary transition-colors">
+                  <i class="fas" [class.fa-eye]="hideConfirmPassword()" [class.fa-eye-slash]="!hideConfirmPassword()"></i>
+                </button>
+              </div>
+            </div>
+          </div>
+          @if (form.hasError('passwordsMismatch') && form.controls.confirmPassword.touched) {
+            <p class="text-xs text-hc-error font-medium mb-4">{{ 'TENANTS.PW_MISMATCH' | translate }}</p>
+          }
+
+          <div class="grid grid-cols-2 md:grid-cols-4 gap-3">
+            <div class="relative col-span-1">
+              <select formControlName="adminDocumentType" 
+                class="w-full px-3 py-3.5 bg-hc-surface border border-hc-border rounded-xl text-sm text-hc-text focus:outline-none focus:ring-2 focus:ring-hc-primary/30 focus:border-hc-primary transition-all appearance-none">
+                @for (type of documentTypes; track type) {
+                  <option [value]="type">{{ 'TENANTS.DOC_TYPE_' + type | translate }}</option>
+                }
+              </select>
+            </div>
+            <div class="relative col-span-1">
+              <input formControlName="adminDocumentNumber" [placeholder]="'TENANTS.DOC_NUMBER' | translate" 
+                class="w-full px-3 py-3.5 bg-hc-surface border border-hc-border rounded-xl text-sm text-hc-text focus:outline-none focus:ring-2 focus:ring-hc-primary/30 focus:border-hc-primary transition-all placeholder:text-hc-text-3/50" />
+            </div>
+            <div class="relative col-span-1">
+              <select formControlName="adminGender" 
+                class="w-full px-3 py-3.5 bg-hc-surface border border-hc-border rounded-xl text-sm text-hc-text focus:outline-none focus:ring-2 focus:ring-hc-primary/30 focus:border-hc-primary transition-all appearance-none">
+                <option value="MALE">{{ 'TENANTS.GENDER_MALE' | translate }}</option>
+                <option value="FEMALE">{{ 'TENANTS.GENDER_FEMALE' | translate }}</option>
+              </select>
+            </div>
+            <div class="relative col-span-1">
+              <span class="absolute inset-y-0 left-0 flex items-center pl-3 text-hc-text-3">
+                <i class="fas fa-phone"></i>
+              </span>
+              <input formControlName="adminPhone" [placeholder]="'TENANTS.PHONE' | translate" 
+                class="w-full pl-10 pr-3 py-3.5 bg-hc-surface border border-hc-border rounded-xl text-sm text-hc-text focus:outline-none focus:ring-2 focus:ring-hc-primary/30 focus:border-hc-primary transition-all placeholder:text-hc-text-3/50" />
+            </div>
+          </div>
+        </div>
+
+        <!-- Submit -->
+        <div class="flex gap-4 pt-2">
+          <button
+            type="button"
+            (click)="goBack()"
+            class="py-3.5 px-6 border-2 border-hc-border text-hc-text-3 font-bold rounded-xl
+                   hover:bg-hc-input hover:border-hc-text-3 transition-all
+                   flex items-center justify-center gap-2 text-base"
+          >
+            <i class="fas fa-arrow-left text-sm"></i>
+            {{ 'TENANTS.BACK' | translate }}
+          </button>
+          <button
+            type="submit"
+            [disabled]="form.invalid || tenantService.loading()"
+            class="flex-1 py-3.5 px-6 bg-gradient-to-r from-hc-primary to-hc-primary-dark text-white font-bold rounded-xl
+                   hover:from-hc-primary-dark hover:to-hc-primary-dark active:scale-[0.98] transition-all
+                   shadow-lg shadow-hc-primary/30 disabled:opacity-50 disabled:shadow-none
+                   flex items-center justify-center gap-2 text-base"
+          >
+            @if (tenantService.loading()) {
+              <span class="w-5 h-5 border-3 border-white/30 border-t-white rounded-full animate-spin"></span>
+              {{ 'TENANTS.SETTING_UP' | translate }}
+            } @else {
+              {{ 'TENANTS.NEXT' | translate }}
+              <i class="fas fa-arrow-right text-sm"></i>
+            }
+          </button>
+        </div>
+
+      </form>
+
+      <!-- Footer -->
+      <div class="mt-6 pt-6 border-t border-hc-border text-center">
+        <p class="text-hc-text-3 text-sm">
+          {{ 'TENANTS.HAVE_CLINIC' | translate }}
+          <a routerLink="/auth/login" class="text-hc-primary hover:text-hc-primary-dark transition-colors font-bold ml-1">{{ 'TENANTS.LOGIN_LINK' | translate }}</a>
+        </p>
+      </div>
+
+    </div>
+  </div>
+</div>

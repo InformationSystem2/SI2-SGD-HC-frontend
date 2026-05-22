@@ -1,0 +1,227 @@
+<div class="space-y-6">
+  <div class="bg-hc-card rounded-xl p-6 border border-hc-border">
+    <h3 class="hc-h3 text-hc-text">
+      {{ 'IDENTITY.COLOR_PALETTE' | translate }}
+    </h3>
+    <div class="mb-6">
+      <label class="block text-sm font-medium text-hc-text mb-3"
+        >{{ 'IDENTITY.SELECT_PRESET' | translate }}</label
+      >
+      <div class="flex gap-3 flex-wrap">
+        @for (preset of presets; track preset.id) {
+        <button
+          (click)="onSelectPreset(preset.id)"
+          class="flex flex-col items-center p-3 rounded-xl border-2 transition-all"
+          [class.border-hc-primary]="selectedPresetId() === preset.id"
+          [class.shadow-md]="selectedPresetId() === preset.id"
+          [class.border-hc-border]="selectedPresetId() !== preset.id"
+          [class.bg-hc-surface]="selectedPresetId() !== preset.id"
+        >
+          <div class="flex gap-1 mb-2">
+            <div
+              class="w-6 h-6 rounded-full"
+              [style.background-color]="$any(preset.colors.light).primary"
+            ></div>
+            <div
+              class="w-6 h-6 rounded-full"
+              [style.background-color]="$any(preset.colors.light).accent"
+            ></div>
+            <div
+              class="w-6 h-6 rounded-full"
+              [style.background-color]="$any(preset.colors.light).background"
+            ></div>
+          </div>
+          <span class="text-xs font-medium text-hc-text">{{ preset.name | translate }}</span>
+        </button>
+        }
+      </div>
+    </div>
+  </div>
+
+  <div class="space-y-4">
+    <div>
+      <h4 class="text-sm font-semibold text-hc-text mb-3">
+        {{ 'IDENTITY.PRIMARY_COLORS' | translate }}
+      </h4>
+      <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+        @for (token of getColorTokensByCategory('primary'); track token.key) {
+        <div class="flex items-center gap-3 p-3 bg-hc-surface rounded-lg">
+          <div
+            class="w-10 h-10 rounded-lg cursor-pointer border border-hc-border"
+            [style.background-color]="getColorValue(token.key)"
+            (click)="onStartEditColor(token)"
+          ></div>
+          <div class="flex-1 min-w-0">
+            <p class="text-sm font-medium text-hc-text truncate">{{ token.label | translate }}</p>
+            <p class="text-xs text-hc-text-3">{{ getColorValue(token.key) }}</p>
+          </div>
+        </div>
+        }
+      </div>
+    </div>
+
+    <div>
+      <h4 class="text-sm font-semibold text-hc-text mb-3">
+        {{ 'IDENTITY.NEUTRAL_COLORS' | translate }}
+      </h4>
+      <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+        @for (token of getColorTokensByCategory('neutral'); track token.key) {
+        <div class="flex items-center gap-3 p-3 bg-hc-surface rounded-lg">
+          <div
+            class="w-10 h-10 rounded-lg cursor-pointer border border-hc-border"
+            [style.background-color]="getColorValue(token.key)"
+            (click)="onStartEditColor(token)"
+          ></div>
+          <div class="flex-1 min-w-0">
+            <p class="text-sm font-medium text-hc-text truncate">{{ token.label | translate }}</p>
+            <p class="text-xs text-hc-text-3">{{ getColorValue(token.key) }}</p>
+          </div>
+        </div>
+        }
+      </div>
+    </div>
+
+    <div>
+      <h4 class="text-sm font-semibold text-hc-text mb-3">
+        {{ 'IDENTITY.STATE_COLORS' | translate }}
+      </h4>
+      <div class="grid grid-cols-3 gap-4">
+        @for (token of getColorTokensByCategory('state'); track token.key) {
+        <div class="flex items-center gap-3 p-3 bg-hc-surface rounded-lg">
+          <div
+            class="w-10 h-10 rounded-lg cursor-pointer border border-hc-border"
+            [style.background-color]="getColorValue(token.key)"
+            (click)="onStartEditColor(token)"
+          ></div>
+          <div class="flex-1 min-w-0">
+            <p class="text-sm font-medium text-hc-text truncate">{{ token.label | translate }}</p>
+            <p class="text-xs text-hc-text-3">{{ getColorValue(token.key) }}</p>
+          </div>
+        </div>
+        }
+      </div>
+    </div>
+
+    <div>
+      <h4 class="text-sm font-semibold text-hc-text mb-3">
+        {{ 'IDENTITY.TEXT_COLORS' | translate }}
+      </h4>
+      <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+        @for (token of getColorTokensByCategory('text'); track token.key) {
+        <div class="flex items-center gap-3 p-3 bg-hc-surface rounded-lg">
+          <div
+            class="w-10 h-10 rounded-lg cursor-pointer border border-hc-border"
+            [style.background-color]="getColorValue(token.key)"
+            (click)="onStartEditColor(token)"
+          ></div>
+          <div class="flex-1 min-w-0">
+            <p class="text-sm font-medium text-hc-text truncate">{{ token.label | translate }}</p>
+            <p class="text-xs text-hc-text-3">{{ getColorValue(token.key) }}</p>
+          </div>
+        </div>
+        }
+      </div>
+    </div>
+  </div>
+</div>
+
+@if (editingColorKey()) {
+<div class="bg-hc-card rounded-xl p-6 border border-hc-border">
+  <h3 class="hc-h3 text-hc-text">
+    {{ 'IDENTITY.EDIT_COLOR' | translate }}
+  </h3>
+  <div class="flex items-center gap-6">
+    <input
+      type="color"
+      [value]="editingColorHex()"
+      (input)="onHexChange($any($event.target).value)"
+      class="h-20 w-24 rounded-xl cursor-pointer border-2 border-hc-border"
+    />
+    <div class="flex-1 space-y-3">
+      <div class="flex items-center gap-3">
+        <span class="w-4 text-sm font-mono text-hc-text-3 font-semibold">R</span>
+        <input
+          type="range"
+          min="0"
+          max="255"
+          [value]="editingColorRgb().r"
+          (input)="onRgbChange('r', +$any($event.target).value)"
+          class="flex-1 h-2 rounded-full appearance-none bg-red-500 cursor-pointer [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:w-4 [&::-webkit-slider-thumb]:h-4 [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:bg-white [&::-webkit-slider-thumb]:shadow-md"
+          style="background: linear-gradient(to right, #000, #f00)"
+        />
+        <input
+          type="number"
+          min="0"
+          max="255"
+          [value]="editingColorRgb().r"
+          (input)="onRgbChange('r', +$any($event.target).value)"
+          class="w-14 bg-hc-input border border-hc-border rounded-lg px-2 py-1 text-sm text-center text-hc-text font-mono"
+        />
+      </div>
+      <div class="flex items-center gap-3">
+        <span class="w-4 text-sm font-mono text-hc-text-3 font-semibold">G</span>
+        <input
+          type="range"
+          min="0"
+          max="255"
+          [value]="editingColorRgb().g"
+          (input)="onRgbChange('g', +$any($event.target).value)"
+          class="flex-1 h-2 rounded-full appearance-none bg-green-500 cursor-pointer [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:w-4 [&::-webkit-slider-thumb]:h-4 [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:bg-white [&::-webkit-slider-thumb]:shadow-md"
+          style="background: linear-gradient(to right, #000, #0f0)"
+        />
+        <input
+          type="number"
+          min="0"
+          max="255"
+          [value]="editingColorRgb().g"
+          (input)="onRgbChange('g', +$any($event.target).value)"
+          class="w-14 bg-hc-input border border-hc-border rounded-lg px-2 py-1 text-sm text-center text-hc-text font-mono"
+        />
+      </div>
+      <div class="flex items-center gap-3">
+        <span class="w-4 text-sm font-mono text-hc-text-3 font-semibold">B</span>
+        <input
+          type="range"
+          min="0"
+          max="255"
+          [value]="editingColorRgb().b"
+          (input)="onRgbChange('b', +$any($event.target).value)"
+          class="flex-1 h-2 rounded-full appearance-none bg-blue-500 cursor-pointer [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:w-4 [&::-webkit-slider-thumb]:h-4 [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:bg-white [&::-webkit-slider-thumb]:shadow-md"
+          style="background: linear-gradient(to right, #000, #00f)"
+        />
+        <input
+          type="number"
+          min="0"
+          max="255"
+          [value]="editingColorRgb().b"
+          (input)="onRgbChange('b', +$any($event.target).value)"
+          class="w-14 bg-hc-input border border-hc-border rounded-lg px-2 py-1 text-sm text-center text-hc-text font-mono"
+        />
+      </div>
+      <div class="pt-1">
+        <input
+          type="text"
+          [value]="editingColorHex()"
+          (input)="onHexChange($any($event.target).value)"
+          class="w-full rounded-lg border-hc-border bg-hc-input border py-2 px-3 text-sm text-hc-text uppercase font-mono text-center tracking-wider"
+          placeholder="#000000"
+        />
+      </div>
+    </div>
+    <div class="flex flex-col gap-2">
+      <button
+        (click)="onApplyColor()"
+        class="px-6 py-3 bg-gradient-to-r from-hc-primary to-hc-primary-dark text-white font-medium rounded-lg hover:from-hc-primary-dark hover:to-hc-primary-dark transition-all shadow-md"
+      >
+        {{ 'IDENTITY.APPLY' | translate }}
+      </button>
+      <button
+        (click)="onCancelEdit()"
+        class="px-6 py-3 border border-hc-border text-hc-text font-medium rounded-lg hover:bg-hc-input transition-colors"
+      >
+        {{ 'COMMON.CANCEL' | translate }}
+      </button>
+    </div>
+  </div>
+</div>
+}

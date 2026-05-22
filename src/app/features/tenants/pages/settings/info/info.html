@@ -1,0 +1,406 @@
+<div class="min-h-screen bg-hc-app p-6 md:p-8">
+  <div class="max-w-7xl mx-auto space-y-6">
+    <div class="flex items-center justify-between">
+      <div>
+        <h1 class="hc-h1 text-hc-text">
+          {{ 'IDENTITY.TITLE' | translate }}
+        </h1>
+      </div>
+      <button
+        (click)="goBack()"
+        class="py-2.5 px-4 border border-hc-border text-hc-text-3 font-medium rounded-xl hover:bg-hc-input transition-all flex items-center gap-2"
+      >
+        <i class="fas fa-arrow-left text-sm"></i>
+        {{ 'COMMON.BACK' | translate }}
+      </button>
+    </div>
+
+    @if (loading()) {
+    <div class="flex justify-center py-16">
+      <div
+        class="w-10 h-10 border-4 border-hc-primary/30 border-t-hc-primary rounded-full animate-spin"
+      ></div>
+    </div>
+    } @else {
+    <div class="grid grid-cols-1 lg:grid-cols-[1fr_320px] gap-6">
+      <div class="space-y-4">
+        <div class="bg-hc-card rounded-xl p-6 border border-hc-border">
+          <div class="flex items-center justify-between mb-5">
+            <div>
+              <h3 class="hc-h3 text-hc-text">
+                {{ 'IDENTITY.SECTION_CLINIC_INFO' | translate }}
+              </h3>
+              <p class="text-sm text-hc-text-3">
+                {{ 'IDENTITY.CLINIC_INFO_DESC' | translate }}
+              </p>
+            </div>
+            @if (!editingInfo()) {
+            <button
+              (click)="startEditInfo()"
+              class="px-4 py-2 bg-hc-primary text-white text-sm font-medium rounded-lg hover:bg-hc-primary-dark transition-colors flex items-center gap-2"
+            >
+              <i class="fas fa-edit text-xs"></i>
+              {{ 'IDENTITY.EDIT' | translate }}
+            </button>
+            }
+          </div>
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div>
+              <label class="block text-xs font-medium text-hc-text-3 mb-1.5"
+                >{{ 'IDENTITY.CLINIC_NAME' | translate }}</label
+              >
+              <input
+                type="text"
+                [value]="infoForm().name"
+                (input)="updateInfoField('name', $any($event.target).value)"
+                [readonly]="!editingInfo()"
+                class="block w-full rounded-lg border-hc-border bg-hc-input border py-2.5 px-3 text-sm text-hc-text focus:border-hc-primary focus:ring-1 focus:ring-hc-primary transition-colors"
+                [class.opacity-60]="!editingInfo()"
+                [class.cursor-not-allowed]="!editingInfo()"
+              />
+            </div>
+            <div>
+              <label class="block text-xs font-medium text-hc-text-3 mb-1.5"
+                >{{ 'IDENTITY.CONTACT_EMAIL' | translate }}</label
+              >
+              <div class="relative">
+                <i
+                  class="fas fa-envelope absolute left-3 top-1/2 -translate-y-1/2 text-hc-text-3"
+                ></i>
+                <input
+                  type="email"
+                  [value]="infoForm().email"
+                  (input)="updateInfoField('email', $any($event.target).value)"
+                  [readonly]="!editingInfo()"
+                  class="block w-full rounded-lg border-hc-border bg-hc-input border py-2.5 pl-9 pr-3 text-sm text-hc-text focus:border-hc-primary focus:ring-1 focus:ring-hc-primary transition-colors"
+                  [class.opacity-60]="!editingInfo()"
+                  [class.cursor-not-allowed]="!editingInfo()"
+                />
+              </div>
+            </div>
+            <div>
+              <label class="block text-xs font-medium text-hc-text-3 mb-1.5"
+                >{{ 'IDENTITY.PHONE' | translate }}</label
+              >
+              <div class="relative">
+                <i
+                  class="fas fa-phone absolute left-3 top-1/2 -translate-y-1/2 text-hc-text-3"
+                ></i>
+                <input
+                  type="text"
+                  [value]="infoForm().phone"
+                  (input)="updateInfoField('phone', $any($event.target).value)"
+                  [readonly]="!editingInfo()"
+                  class="block w-full rounded-lg border-hc-border bg-hc-input border py-2.5 pl-9 pr-3 text-sm text-hc-text focus:border-hc-primary focus:ring-1 focus:ring-hc-primary transition-colors"
+                  [class.opacity-60]="!editingInfo()"
+                  [class.cursor-not-allowed]="!editingInfo()"
+                />
+              </div>
+            </div>
+            <div>
+              <label class="block text-xs font-medium text-hc-text-3 mb-1.5"
+                >{{ 'IDENTITY.ADDRESS' | translate }}</label
+              >
+              <div class="relative">
+                <i
+                  class="fas fa-map-marker-alt absolute left-3 top-1/2 -translate-y-1/2 text-hc-text-3"
+                ></i>
+                <input
+                  type="text"
+                  [value]="infoForm().address"
+                  (input)="updateInfoField('address', $any($event.target).value)"
+                  [readonly]="!editingInfo()"
+                  class="block w-full rounded-lg border-hc-border bg-hc-input border py-2.5 pl-9 pr-3 text-sm text-hc-text focus:border-hc-primary focus:ring-1 focus:ring-hc-primary transition-colors"
+                  [class.opacity-60]="!editingInfo()"
+                  [class.cursor-not-allowed]="!editingInfo()"
+                />
+              </div>
+            </div>
+          </div>
+
+          <div class="mt-5 pt-4 border-t border-hc-border">
+            <label class="block text-xs font-medium text-hc-text-3 mb-3">
+              {{ 'IDENTITY.LOGO_TITLE' | translate }}
+            </label>
+            <div
+              class="relative flex items-center gap-4 p-4 rounded-xl border-2 border-dashed transition-all duration-200"
+              [class.border-hc-border]="!dragOverLogo()"
+              [class.border-hc-primary]="editingInfo() && !dragOverLogo()"
+              [class.bg-hc-surface]="!dragOverLogo()"
+              [class.border-green-400]="dragOverLogo()"
+              [class.bg-green-50]="dragOverLogo()"
+              (dragover)="onLogoDragOver($event)"
+              (dragleave)="dragOverLogo.set(false)"
+              (drop)="onLogoDrop($event)"
+            >
+              <div
+                class="relative w-16 h-16 rounded-2xl flex items-center justify-center overflow-hidden border-2 border-hc-border shrink-0 transition-all"
+                [style.background-color]="brandingService.branding()?.tokens?.colors?.light?.primaryLight || '#5EC8BF'"
+                [class.ring-2]="editingInfo()"
+                [class.ring-hc-primary]="editingInfo()"
+                [class.border-green-400]="dragOverLogo()"
+                [class.border-dashed]="dragOverLogo()"
+              >
+                @if (clinicLogoUrl()) {
+                  <img [src]="clinicLogoUrl()" class="w-full h-full object-contain" alt="Logo" />
+                } @else {
+                  <span class="text-2xl font-bold" [style.color]="brandingService.branding()?.tokens?.colors?.light?.primary || '#0D9488'"
+                    >{{ (infoForm().name || ('IDENTITY.MY_CLINIC' | translate))[0] }}</span>
+                }
+                @if (logoUploading()) {
+                  <div class="absolute inset-0 bg-black/40 flex items-center justify-center rounded-2xl">
+                    <i class="fas fa-spinner animate-spin text-white text-sm"></i>
+                  </div>
+                }
+              </div>
+              @if (editingInfo()) {
+                <div class="flex-1">
+                  <div class="flex items-center gap-2 mb-1">
+                    <i class="fas fa-cloud-upload-alt text-sm" [style.color]="brandingService.branding()?.tokens?.colors?.light?.primary || '#0D9488'"></i>
+                    <span class="text-sm font-medium text-hc-text">{{ 'IDENTITY.DRAG_LOGO_HERE' | translate }}</span>
+                  </div>
+                  <p class="text-xs text-hc-text-3 mb-3">{{ 'IDENTITY.LOGO_FORMATS' | translate }}</p>
+                  <label
+                    class="inline-flex items-center gap-2 px-4 py-2 text-sm font-medium rounded-lg cursor-pointer transition-all"
+                    [class.bg-hc-primary]="!dragOverLogo()"
+                    [class.text-white]="!dragOverLogo()"
+                    [class.hover:bg-hc-primary-dark]="!dragOverLogo()"
+                    [class.bg-green-500]="dragOverLogo()"
+                    [class.hover:bg-green-600]="dragOverLogo()"
+                    [class.text-white]="dragOverLogo()"
+                  >
+                    @if (dragOverLogo()) {
+                      <i class="fas fa-check"></i>
+                      {{ 'IDENTITY.DROP_HERE' | translate }}
+                    } @else {
+                      <i class="fas fa-upload"></i>
+                      {{ 'IDENTITY.UPLOAD_LOGO' | translate }}
+                    }
+                    <input
+                      type="file"
+                      accept="image/png,image/jpeg,image/webp,image/svg+xml"
+                      class="hidden"
+                      (change)="onLogoSelected($event)"
+                    />
+                  </label>
+                </div>
+              } @else {
+                @if (clinicLogoUrl()) {
+                  <div class="flex-1">
+                    <p class="text-xs font-medium text-hc-text">{{ 'IDENTITY.LOGO_CONFIGURED' | translate }}</p>
+                    <p class="text-xs text-hc-text-3">{{ 'IDENTITY.CLICK_EDIT_CHANGE' | translate }}</p>
+                  </div>
+                } @else {
+                  <div class="flex-1">
+                    <p class="text-xs text-hc-text-3">{{ 'IDENTITY.NO_LOGO_CONFIGURED' | translate }}</p>
+                  </div>
+                }
+              }
+            </div>
+          </div>
+
+          @if (editingInfo()) {
+          <div class="flex justify-end gap-3 mt-5 pt-4 border-t border-hc-border">
+            <button
+              (click)="cancelEditInfo()"
+              class="px-5 py-2.5 border border-hc-border text-hc-text font-medium rounded-lg hover:bg-hc-input transition-colors"
+            >
+              {{ 'COMMON.CANCEL' | translate }}
+            </button>
+            <button
+              (click)="saveInfo()"
+              [disabled]="saving()"
+              class="px-5 py-2.5 bg-gradient-to-r from-hc-primary to-hc-primary-dark text-white font-medium rounded-lg hover:from-hc-primary-dark hover:to-hc-primary-dark disabled:opacity-50 transition-all flex items-center gap-2"
+            >
+              @if (saving()) {
+              <span
+                class="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin"
+              ></span>
+              } @else {
+              <i class="fas fa-save text-sm"></i>
+              } {{ 'COMMON.SAVE' | translate }}
+            </button>
+          </div>
+          }
+        </div>
+
+        <div class="bg-hc-card rounded-xl p-6 border border-hc-border">
+          <h3 class="hc-h3 text-hc-text">
+            {{ 'SUBSCRIPTION.TITLE' | translate }}
+          </h3>
+          <p class="text-sm text-hc-text-3 mb-5">
+            {{ 'SUBSCRIPTION.DESCRIPTION' | translate }}
+          </p>
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <div class="bg-hc-surface rounded-xl p-4 border border-hc-border">
+              <p class="text-xs text-hc-text-3 font-medium mb-2">
+                {{ 'SUBSCRIPTION.PLAN' | translate }}
+              </p>
+              <p class="text-base font-bold text-hc-text flex items-center gap-2">
+                <i class="fas fa-crown text-yellow-500 text-sm"></i>
+                {{ tenantPlan() || ('IDENTITY.PROFESSIONAL_PLAN' | translate) }}
+              </p>
+            </div>
+            <div class="bg-hc-surface rounded-xl p-4 border border-hc-border">
+              <p class="text-xs text-hc-text-3 font-medium mb-2">
+                {{ 'USERS.COL_STATUS' | translate }}
+              </p>
+              <span
+                class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium"
+                [class.bg-green-100]="tenantStatus() === 'ACTIVE'"
+                [class.text-green-700]="tenantStatus() === 'ACTIVE'"
+                [class.bg-yellow-100]="tenantStatus() === 'PENDING'"
+                [class.text-yellow-700]="tenantStatus() === 'PENDING'"
+                [class.bg-red-100]="tenantStatus() === 'EXPIRED' || tenantStatus() === 'SUSPENDED'"
+                [class.text-red-700]="tenantStatus() === 'EXPIRED' || tenantStatus() === 'SUSPENDED'"
+              >
+                <span
+                  class="w-1.5 h-1.5 rounded-full"
+                  [class.bg-green-500]="tenantStatus() === 'ACTIVE'"
+                  [class.bg-yellow-500]="tenantStatus() === 'PENDING'"
+                  [class.bg-red-500]="tenantStatus() === 'EXPIRED' || tenantStatus() === 'SUSPENDED'"
+                ></span>
+                {{ tenantStatus() || ('IDENTITY.ACTIVE_STATUS' | translate) }}
+              </span>
+            </div>
+            <div class="bg-hc-surface rounded-xl p-4 border border-hc-border">
+              <p class="text-xs text-hc-text-3 font-medium mb-2">
+                {{ 'SUBSCRIPTION.FIELD_START_DATE' | translate }}
+              </p>
+              <p class="text-base font-semibold text-hc-text">{{ tenantStartDate() || '—' }}</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="space-y-4">
+        <div class="bg-hc-card rounded-xl p-5 border border-hc-border">
+          <h4 class="text-sm font-semibold text-hc-text mb-3">
+            {{ 'IDENTITY.ADMINISTRATOR' | translate }}
+          </h4>
+          <div class="space-y-2">
+            <div class="flex items-center gap-2.5">
+              <div
+                class="w-8 h-8 rounded-full flex items-center justify-center"
+                [style.background-color]="brandingService.branding()?.tokens?.colors?.light?.primaryLight || '#5EC8BF'"
+              >
+                <i class="fas fa-user text-xs" [style.color]="brandingService.branding()?.tokens?.colors?.light?.primary || '#0D9488'"></i>
+              </div>
+              <div>
+                <p class="text-sm font-medium text-hc-text">
+                  {{ adminFullName() || ('DOCUMENT_LIST.ADMIN_USER' | translate) }}
+                </p>
+                <p class="text-xs text-hc-text-3">
+                  {{ adminEmail() || ('DOCUMENT_LIST.ADMIN_EMAIL_FALLBACK' | translate) }}
+                </p>
+              </div>
+            </div>
+            @if (adminPhone()) {
+            <div class="flex items-center gap-2.5 ml-0.5">
+              <i class="fas fa-phone text-xs text-hc-text-3 w-4"></i>
+              <p class="text-xs text-hc-text-2">{{ adminPhone() }}</p>
+            </div>
+            }
+          </div>
+        </div>
+
+        <div class="bg-hc-card rounded-xl p-5 border border-hc-border">
+          <h4 class="text-sm font-semibold text-hc-text mb-3">
+            {{ 'IDENTITY.RESOURCE_USAGE' | translate }}
+          </h4>
+          <div class="space-y-4">
+            <div>
+              <div class="flex justify-between text-xs mb-1.5">
+                <span class="text-hc-text-2">{{ 'SUBSCRIPTION.USERS' | translate }}</span>
+                <span class="font-medium text-hc-text"
+                  >{{ usersCount() }}/{{ maxUsers() }}</span
+                >
+              </div>
+              <div class="w-full h-2 bg-hc-muted rounded-full overflow-hidden">
+                <div
+                  class="h-full rounded-full transition-all"
+                  [style.width.%]="getUsagePercent(usersCount(), maxUsers())"
+                  [style.background-color]="brandingService.branding()?.tokens?.colors?.light?.primary || '#0D9488'"
+                ></div>
+              </div>
+            </div>
+            <div>
+              <div class="flex justify-between text-xs mb-1.5">
+                <span class="text-hc-text-2">{{ 'SUBSCRIPTION.STORAGE' | translate }}</span>
+                <span class="font-medium text-hc-text"
+                  >{{ storageUsed() }} / {{ maxStorage() }} {{ 'SUBSCRIPTION.MB_LABEL' | translate }}</span
+                >
+              </div>
+              <div class="w-full h-2 bg-hc-muted rounded-full overflow-hidden">
+                <div
+                  class="h-full rounded-full transition-all"
+                  [style.width.%]="getUsagePercent(storageUsed(), maxStorage())"
+                  [style.background-color]="brandingService.branding()?.tokens?.colors?.light?.accent || '#259F94'"
+                ></div>
+              </div>
+            </div>
+            <div>
+              <div class="flex justify-between text-xs mb-1.5">
+                <span class="text-hc-text-2">{{ 'SUBSCRIPTION.API_CALLS' | translate }}</span>
+                <span class="font-medium text-hc-text"
+                  >{{ apiCalls() }}/{{ maxApiCalls() }}</span
+                >
+              </div>
+              <div class="w-full h-2 bg-hc-muted rounded-full overflow-hidden">
+                <div
+                  class="h-full rounded-full transition-all"
+                  [style.width.%]="getUsagePercent(apiCalls(), maxApiCalls())"
+                  [style.background-color]="brandingService.branding()?.tokens?.colors?.light?.warning || '#F59E0B'"
+                ></div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="bg-hc-card rounded-xl p-5 border border-hc-border">
+          <h4 class="text-sm font-semibold text-hc-text mb-3">
+            {{ 'IDENTITY.REFERENCE' | translate }}
+          </h4>
+          <div class="space-y-2 text-xs">
+            <div class="flex justify-between">
+              <span class="text-hc-text-3">{{ 'IDENTITY.SLUG' | translate }}</span>
+              <span class="font-mono text-hc-text-2 bg-hc-surface px-2 py-0.5 rounded"
+                >{{ tenantSlug() }}</span
+              >
+            </div>
+            <div class="flex justify-between">
+              <span class="text-hc-text-3">{{ 'IDENTITY.LOCALE' | translate }}</span>
+              <span class="text-hc-text-2">{{ tenantLocale() || ('IDENTITY.DEFAULT_LOCALE' | translate) }}</span>
+            </div>
+            <div class="flex justify-between">
+              <span class="text-hc-text-3">{{ 'IDENTITY.CURRENCY' | translate }}</span>
+              <span class="text-hc-text-2">{{ tenantCurrency() || 'PEN' }}</span>
+            </div>
+            <div class="flex justify-between">
+              <span class="text-hc-text-3">{{ 'IDENTITY.TIMEZONE' | translate }}</span>
+              <span class="text-hc-text-2">{{ tenantTimezone() || 'America/Lima' }}</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    } @if (message()) {
+    <div
+      class="fixed bottom-6 right-6 p-4 rounded-xl shadow-xl flex items-center gap-3 animate-in slide-in-from-bottom-2"
+      [class.bg-green-50]="messageType() === 'success'"
+      [class.border-green-200]="messageType() === 'success'"
+      [class.text-green-800]="messageType() === 'success'"
+      [class.bg-red-50]="messageType() === 'error'"
+      [class.border-red-200]="messageType() === 'error'"
+      [class.text-red-800]="messageType() === 'error'"
+    >
+      @if (messageType() === 'success') {
+      <i class="fas fa-check-circle text-lg"></i>
+      } @else {
+      <i class="fas fa-exclamation-circle text-lg"></i>
+      }
+      <span class="font-medium">{{ message() }}</span>
+    </div>
+    }
+  </div>
+</div>

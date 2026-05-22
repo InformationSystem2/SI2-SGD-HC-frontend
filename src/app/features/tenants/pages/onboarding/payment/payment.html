@@ -1,0 +1,106 @@
+<div class="min-h-screen bg-hc-app flex items-center justify-center px-4 py-8">
+  <div class="w-full max-w-3xl">
+
+    <div class="bg-hc-surface rounded-3xl shadow-2xl border border-hc-border p-6 md:p-10 animate-in fade-in slide-in-from-bottom-4 duration-700">
+
+      <app-progress-stepper [currentStep]="3" />
+
+      <div class="mb-8 text-center">
+        <div class="flex justify-center mb-4">
+          <div class="w-14 h-14 rounded-2xl bg-gradient-to-br from-hc-primary to-hc-primary-dark flex items-center justify-center shadow-lg shadow-hc-primary/30">
+            <svg class="w-7 h-7 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z" />
+            </svg>
+          </div>
+        </div>
+        <h1 class="hc-h1 text-hc-text">{{ 'TENANTS.PAYMENT_TITLE' | translate }}</h1>
+        <p class="text-hc-text-3 mt-1 text-sm">{{ 'TENANTS.PAYMENT_SUBTITLE' | translate }}</p>
+      </div>
+
+      <div class="bg-gradient-to-r from-hc-primary/5 to-transparent rounded-2xl border border-hc-border-i p-5 mb-6">
+        <div class="flex items-center justify-between py-2">
+          <span class="text-sm text-hc-text-3 flex items-center gap-2">
+            <i class="fas fa-layer-group text-hc-primary"></i>
+            {{ 'TENANTS.SELECTED_PLAN' | translate }}
+          </span>
+          <span class="px-3 py-1 bg-gradient-to-r from-hc-primary to-hc-primary-dark text-white rounded-full text-[10px] font-bold tracking-wider uppercase">
+            {{ PLAN_NAMES[selectedPlan()] || selectedPlan() | translate }}
+          </span>
+        </div>
+        <div class="flex items-center justify-between py-3 border-t border-hc-border-i mt-2">
+          <span class="text-base font-semibold text-hc-text">{{ 'TENANTS.TOTAL_PAY' | translate }}</span>
+          <span class="hc-h2 text-hc-primary">${{ planPrice() }}<span class="text-xs font-normal text-hc-text-3">/ {{ 'TENANTS.MONTH' | translate }}</span></span>
+        </div>
+      </div>
+
+      <div class="relative w-full max-w-md mx-auto h-56 bg-gradient-to-br from-blue-600 via-blue-500 to-blue-700 rounded-2xl p-6 shadow-2xl shadow-blue-500/30 overflow-hidden mb-8 group">
+        <div class="absolute -top-16 -right-16 w-56 h-56 bg-white/10 rounded-full blur-3xl group-hover:scale-150 transition-transform duration-1000"></div>
+        <div class="absolute -bottom-10 -left-10 w-40 h-40 bg-white/5 rounded-full blur-2xl"></div>
+        
+        <div class="relative h-full flex flex-col justify-between">
+          <div class="flex justify-between items-start">
+            <div class="flex items-center gap-2">
+              <div class="w-10 h-8 bg-gradient-to-br from-yellow-200 via-yellow-300 to-yellow-400 rounded-md opacity-90 shadow-inner"></div>
+              <div class="w-10 h-8 bg-gradient-to-br from-red-400 to-red-600 rounded-md opacity-80 -ml-2"></div>
+            </div>
+            <svg class="w-12 h-12 text-white/40" fill="currentColor" viewBox="0 0 24 24">
+              <path d="M20 4H4c-1.11 0-1.99.89-1.99 2L2 18c0 1.11.89 2 2 2h16c1.11 0 2-.89 2-2V6c0-1.11-.89-2-2-2zm0 14H4v-6h16v6zm0-10H4V6h16v2z"/>
+            </svg>
+          </div>
+          
+          <div class="hc-h2 text-white tracking-[0.3em] font-mono drop-shadow-lg mt-2">
+            {{ 'PAYMENT.CARD_NUMBER_MASK' | translate }}
+          </div>
+          
+          <div class="flex justify-between items-end text-white/90 mt-2">
+            <div>
+              <div class="text-[8px] font-bold uppercase tracking-widest opacity-50">{{ 'TENANTS.CARD_HOLDER' | translate }}</div>
+              <div class="text-base font-semibold tracking-wide">{{ 'PAYMENT.CARD_HOLDER_NAME' | translate }}</div>
+            </div>
+            <div class="text-right">
+              <div class="text-[8px] font-bold uppercase tracking-widest opacity-50">{{ 'TENANTS.CARD_EXPIRY' | translate }}</div>
+              <div class="text-base font-semibold">{{ 'PAYMENT.CARD_EXPIRY_DATE' | translate }}</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      @if (tenantService.error()) {
+        <div class="mb-4 p-4 bg-red-50 border border-red-200 rounded-2xl flex items-center gap-3 animate-in fade-in zoom-in duration-300">
+          <i class="fas fa-exclamation-circle text-red-500"></i>
+          <p class="text-sm font-medium text-red-600">{{ tenantService.error()! | translate }}</p>
+        </div>
+      }
+      
+      <div class="flex gap-4">
+        <button
+          type="button"
+          (click)="goBack()"
+          class="py-3.5 px-6 border-2 border-hc-border text-hc-text-3 font-bold rounded-xl
+                 hover:bg-hc-input hover:border-hc-text-3 transition-all
+                 flex items-center justify-center gap-2 text-base"
+        >
+          <i class="fas fa-arrow-left text-sm"></i>
+          {{ 'TENANTS.BACK' | translate }}
+        </button>
+        <button
+          (click)="confirmPayment()"
+          [disabled]="processing() || tenantService.loading()"
+          class="flex-1 py-3.5 px-6 bg-gradient-to-r from-hc-primary to-hc-primary-dark text-white font-bold rounded-xl
+                 hover:from-hc-primary-dark hover:to-hc-primary-dark active:scale-[0.98] transition-all
+                 shadow-lg shadow-hc-primary/30 disabled:opacity-50 disabled:shadow-none
+                 flex items-center justify-center gap-2 text-base"
+        >
+          @if (processing() || tenantService.loading()) {
+            <span class="w-5 h-5 border-3 border-white/30 border-t-white rounded-full animate-spin"></span>
+            {{ 'TENANTS.PROCESSING' | translate }}
+          } @else {
+            <i class="fas fa-lock text-sm"></i>
+            {{ 'TENANTS.PAY_ACTIVATE' | translate }}
+          }
+        </button>
+      </div>
+
+    </div>
+  </div>
+</div>

@@ -1,0 +1,425 @@
+<div class="min-h-screen bg-hc-app p-6 md:p-8">
+  <div class="max-w-3xl mx-auto space-y-6">
+
+    <div>
+      <h1 class="hc-h1 text-hc-text">{{ 'SUBSCRIPTION.TITLE' | translate }}</h1>
+      <p class="text-sm text-hc-text-3 mt-1">{{ 'SUBSCRIPTION.DESCRIPTION' | translate }}</p>
+    </div>
+
+    @if (loading()) {
+      <div class="flex justify-center py-12">
+        <div class="w-8 h-8 border-2 border-hc-primary/30 border-t-hc-primary rounded-full animate-spin"></div>
+      </div>
+    } @else if (tenantInfo(); as info) {
+
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+      <div class="relative bg-hc-surface rounded-2xl shadow-lg border border-hc-border p-6 overflow-hidden group hover:shadow-xl transition-shadow duration-300">
+        <div class="absolute top-0 right-0 w-32 h-32 bg-gradient-to-bl from-hc-primary/10 to-transparent rounded-bl-full opacity-0 group-hover:opacity-100 transition-opacity"></div>
+        <div class="flex items-center gap-4 mb-5">
+          <div class="w-16 h-16 rounded-2xl bg-gradient-to-br from-hc-primary to-hc-primary-dark flex items-center justify-center shadow-lg group-hover:scale-105 transition-transform duration-300">
+            <i class="fas fa-crown text-white text-2xl"></i>
+          </div>
+          <div>
+            <p class="text-[10px] text-hc-text-3 uppercase tracking-widest font-semibold">{{ 'SUBSCRIPTION.CURRENT_PLAN' | translate }}</p>
+            <p class="text-xl font-bold text-hc-text">{{ (PLAN_NAMES[info.subscriptionPlan] || info.subscriptionPlan) | translate }}</p>
+          </div>
+        </div>
+        <div class="flex items-baseline gap-2 mb-2">
+          <span class="text-4xl font-extrabold text-hc-primary">${{ PLAN_PRICES[info.subscriptionPlan] || '0' }}</span>
+          <span class="text-sm text-hc-text-3">/{{ 'TENANTS.MONTH' | translate }}</span>
+        </div>
+        <p class="text-xs text-hc-text-3">{{ (PLAN_DESCRIPTIONS[info.subscriptionPlan] || '') | translate }}</p>
+      </div>
+
+      <div class="relative bg-hc-surface rounded-2xl shadow-lg border border-hc-border p-6 overflow-hidden group hover:shadow-xl transition-shadow duration-300"
+           [class.border-hc-success]="info.subscriptionStatus === 'ACTIVE'"
+           [class.border-hc-warning]="info.subscriptionStatus !== 'ACTIVE'">
+        <div class="absolute top-0 right-0 w-32 h-32 opacity-0 group-hover:opacity-100 transition-opacity"
+             [class.bg-gradient-to-bl]="info.subscriptionStatus === 'ACTIVE'"
+             [class.from-hc-success-bg]="info.subscriptionStatus === 'ACTIVE'"
+             [class.bg-gradient-to-bl]="info.subscriptionStatus !== 'ACTIVE'"
+             [class.from-hc-warning-bg]="info.subscriptionStatus !== 'ACTIVE'"
+             [class.to-transparent]="true"
+             [class.rounded-bl-full]="true"></div>
+        <div class="flex items-center gap-4 mb-4">
+          <div class="w-16 h-16 rounded-2xl flex items-center justify-center shadow-lg group-hover:scale-105 transition-transform duration-300"
+               [class.bg-gradient-to-br]="info.subscriptionStatus === 'ACTIVE'"
+               [class.from-hc-success]="info.subscriptionStatus === 'ACTIVE'"
+               [class.to-hc-success]="info.subscriptionStatus === 'ACTIVE'"
+               [class.bg-gradient-to-br]="info.subscriptionStatus !== 'ACTIVE'"
+               [class.from-hc-warning]="info.subscriptionStatus !== 'ACTIVE'"
+               [class.to-hc-warning]="info.subscriptionStatus !== 'ACTIVE'">
+            <i class="fas fa-check-circle text-white text-2xl"></i>
+          </div>
+          <div>
+            <p class="text-[10px] text-hc-text-3 uppercase tracking-widest font-semibold">{{ 'USERS.COL_STATUS' | translate }}</p>
+            <p class="text-xl font-bold" [class.text-hc-success]="info.subscriptionStatus === 'ACTIVE'" [class.text-hc-warning]="info.subscriptionStatus !== 'ACTIVE'">
+              {{ info.subscriptionStatus === 'ACTIVE' ? ('SUBSCRIPTION.STATUS_ACTIVE' | translate) : info.subscriptionStatus }}
+            </p>
+          </div>
+        </div>
+        <div class="space-y-2.5 text-sm">
+          <div class="flex justify-between items-center py-2 px-3 rounded-lg bg-hc-muted/50">
+            <span class="text-hc-text-3">{{ 'SUBSCRIPTION.FIELD_START_DATE' | translate }}</span>
+            <span class="font-semibold text-hc-text">{{ info.subscriptionStartDate | date:'dd/MM/yyyy' }}</span>
+          </div>
+          @if (subscriptionEndDate()) {
+            <div class="flex justify-between items-center py-2 px-3 rounded-lg bg-hc-muted/50">
+              <span class="text-hc-text-3">{{ 'SUBSCRIPTION.END_DATE' | translate }}</span>
+              <span class="font-semibold text-hc-text">{{ subscriptionEndDate() | date:'dd/MM/yyyy' }}</span>
+            </div>
+          }
+        </div>
+        <div class="mt-4 p-3 rounded-xl" [class]="expirationBadgeClass()">
+          <div class="flex items-center gap-2">
+            <span class="w-2.5 h-2.5 rounded-full animate-pulse"
+                  [class.bg-hc-error]="daysUntilExpiration() <= 0 || daysUntilExpiration() <= 7"
+                  [class.bg-hc-warning]="daysUntilExpiration() > 7 && daysUntilExpiration() <= 30"
+                  [class.bg-hc-success]="daysUntilExpiration() > 30"></span>
+            <span class="text-xs font-bold">{{ expirationBadgeText() }}</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="bg-hc-surface rounded-2xl shadow-lg border border-hc-border overflow-hidden">
+      <div class="px-6 py-4 border-b border-hc-border bg-gradient-to-r from-hc-primary/5 to-transparent">
+        <div class="flex items-center gap-3">
+          <div class="w-8 h-8 rounded-lg bg-hc-primary/10 flex items-center justify-center">
+            <i class="fas fa-chart-pie text-hc-primary text-sm"></i>
+          </div>
+          <div>
+            <h3 class="hc-h3 text-hc-text">{{ 'SUBSCRIPTION.PLAN_LIMITS' | translate }}</h3>
+            <p class="text-xs text-hc-text-3">{{ 'SUBSCRIPTION.USAGE_READONLY' | translate }}</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="p-6">
+        @if (info.subscriptionPlan === 'ENTERPRISE') {
+          <div class="flex items-center justify-center py-10 text-center">
+            <div class="relative">
+              <div class="w-20 h-20 rounded-full bg-gradient-to-br from-hc-primary/20 to-hc-primary-light/20 flex items-center justify-center mb-4 animate-pulse">
+                <i class="fas fa-infinity text-4xl text-hc-primary"></i>
+              </div>
+              <div class="absolute -top-1 -right-1 w-6 h-6 rounded-full bg-hc-success flex items-center justify-center">
+                <i class="fas fa-check text-white text-xs"></i>
+              </div>
+            </div>
+            <div class="ml-4 text-left">
+              <p class="hc-h4 text-hc-text">{{ 'SUBSCRIPTION.UNLIMITED_RESOURCES' | translate }}</p>
+              <p class="text-sm text-hc-text-3 mt-1">{{ 'SUBSCRIPTION.UNLIMITED_DESC' | translate }}</p>
+            </div>
+          </div>
+        } @else {
+          <div class="space-y-5">
+            <div class="p-5 bg-hc-card rounded-2xl border border-hc-border hover:border-hc-primary/30 hover:shadow-md transition-all duration-300 group">
+              <div class="flex items-center justify-between mb-4">
+                <div class="flex items-center gap-3">
+                  <div class="w-10 h-10 rounded-xl bg-hc-primary/10 flex items-center justify-center group-hover:bg-hc-primary/20 transition-colors">
+                    <i class="fas fa-users text-hc-primary"></i>
+                  </div>
+                  <div>
+                    <span class="text-sm font-semibold text-hc-text">{{ 'SUBSCRIPTION.USERS' | translate }}</span>
+                    <p class="text-xs text-hc-text-3">Límite del plan</p>
+                  </div>
+                </div>
+                <span class="text-lg font-bold" [class.text-hc-success]="userPercent() < 80" [class.text-hc-warning]="userPercent() >= 80">
+                  {{ usage().currentUsers }} / {{ formatNumber(planLimits().maxUsers) }}
+                </span>
+              </div>
+              <div class="relative h-3 bg-hc-border rounded-full overflow-hidden">
+                <div class="absolute inset-0 bg-gradient-to-r from-hc-primary/20 to-transparent"></div>
+                <div
+                  class="h-full rounded-full transition-all duration-700 ease-out relative overflow-hidden"
+                  [class]="getBarGradient(userPercent())"
+                  [style.width.%]="userPercent()"
+                >
+                  <div class="absolute inset-0 bg-gradient-to-r from-transparent via-white/30 to-transparent animate-[shimmer_2s_ease-in-out_infinite]"></div>
+                </div>
+              </div>
+              <div class="flex justify-between mt-2 items-center">
+                <span class="text-xs text-hc-text-3">{{ userPercent().toFixed(1) }}% utilizado</span>
+                @if (userPercent() >= 80) {
+                  <span class="inline-flex items-center gap-1.5 text-xs font-bold text-hc-warning bg-hc-warning-bg px-2 py-1 rounded-full">
+                    <i class="fas fa-exclamation-triangle"></i> {{ 'SUBSCRIPTION.WARNING_LIMIT' | translate }}
+                  </span>
+                }
+              </div>
+            </div>
+
+            <div class="p-5 bg-hc-card rounded-2xl border border-hc-border hover:border-hc-primary/30 hover:shadow-md transition-all duration-300 group">
+              <div class="flex items-center justify-between mb-4">
+                <div class="flex items-center gap-3">
+                  <div class="w-10 h-10 rounded-xl bg-hc-primary/10 flex items-center justify-center group-hover:bg-hc-primary/20 transition-colors">
+                    <i class="fas fa-database text-hc-primary"></i>
+                  </div>
+                  <div>
+                    <span class="text-sm font-semibold text-hc-text">{{ 'SUBSCRIPTION.STORAGE' | translate }}</span>
+                    <p class="text-xs text-hc-text-3">Espacio en disco</p>
+                  </div>
+                </div>
+                <span class="text-lg font-bold" [class.text-hc-success]="storagePercent() < 80" [class.text-hc-warning]="storagePercent() >= 80">
+                  {{ formatStorage(usage().currentStorageMB) }} / {{ formatStorage(planLimits().maxStorageMB) }}
+                </span>
+              </div>
+              <div class="relative h-3 bg-hc-border rounded-full overflow-hidden">
+                <div class="absolute inset-0 bg-gradient-to-r from-hc-primary/20 to-transparent"></div>
+                <div
+                  class="h-full rounded-full transition-all duration-700 ease-out relative overflow-hidden"
+                  [class]="getBarGradient(storagePercent())"
+                  [style.width.%]="storagePercent()"
+                >
+                  <div class="absolute inset-0 bg-gradient-to-r from-transparent via-white/30 to-transparent animate-[shimmer_2s_ease-in-out_infinite]"></div>
+                </div>
+              </div>
+              <div class="flex justify-between mt-2 items-center">
+                <span class="text-xs text-hc-text-3">{{ storagePercent().toFixed(1) }}% utilizado</span>
+                @if (storagePercent() >= 80) {
+                  <span class="inline-flex items-center gap-1.5 text-xs font-bold text-hc-warning bg-hc-warning-bg px-2 py-1 rounded-full">
+                    <i class="fas fa-exclamation-triangle"></i> {{ 'SUBSCRIPTION.WARNING_LIMIT' | translate }}
+                  </span>
+                }
+              </div>
+            </div>
+
+            <div class="p-5 bg-hc-card rounded-2xl border border-hc-border hover:border-hc-primary/30 hover:shadow-md transition-all duration-300 group">
+              <div class="flex items-center justify-between mb-4">
+                <div class="flex items-center gap-3">
+                  <div class="w-10 h-10 rounded-xl bg-hc-primary/10 flex items-center justify-center group-hover:bg-hc-primary/20 transition-colors">
+                    <i class="fas fa-bolt text-hc-primary"></i>
+                  </div>
+                  <div>
+                    <span class="text-sm font-semibold text-hc-text">{{ 'SUBSCRIPTION.API_CALLS' | translate }}</span>
+                    <p class="text-xs text-hc-text-3">Llamadas este mes</p>
+                  </div>
+                </div>
+                <span class="text-lg font-bold" [class.text-hc-success]="apiPercent() < 80" [class.text-hc-warning]="apiPercent() >= 80">
+                  {{ formatNumber(usage().currentApiCalls) }} / {{ formatNumber(planLimits().maxApiCallsPerMonth) }}
+                </span>
+              </div>
+              <div class="relative h-3 bg-hc-border rounded-full overflow-hidden">
+                <div class="absolute inset-0 bg-gradient-to-r from-hc-primary/20 to-transparent"></div>
+                <div
+                  class="h-full rounded-full transition-all duration-700 ease-out relative overflow-hidden"
+                  [class]="getBarGradient(apiPercent())"
+                  [style.width.%]="apiPercent()"
+                >
+                  <div class="absolute inset-0 bg-gradient-to-r from-transparent via-white/30 to-transparent animate-[shimmer_2s_ease-in-out_infinite]"></div>
+                </div>
+              </div>
+              <div class="flex justify-between mt-2 items-center">
+                <span class="text-xs text-hc-text-3">{{ apiPercent().toFixed(1) }}% utilizado</span>
+                @if (apiPercent() >= 80) {
+                  <span class="inline-flex items-center gap-1.5 text-xs font-bold text-hc-warning bg-hc-warning-bg px-2 py-1 rounded-full">
+                    <i class="fas fa-exclamation-triangle"></i> {{ 'SUBSCRIPTION.WARNING_LIMIT' | translate }}
+                  </span>
+                }
+              </div>
+            </div>
+          </div>
+        }
+      </div>
+    </div>
+
+    <div class="relative bg-gradient-to-r from-hc-primary via-hc-primary-dark to-hc-primary rounded-2xl shadow-xl overflow-hidden">
+      <div class="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNjAiIGhlaWdodD0iNjAiIHZpZXdCb3g9IjAgMCA2MCA2MCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48ZyBmaWxsPSJub25lIiBmaWxsLXJ1bGU9ImV2ZW5vZGQiPjxwYXRoIGQ9Ik0zNiAxOGMtOS45NDEgMC0xOCA4LjA1OS0xOCAxOHM4LjA1OSAxOCAxOCAxOCAxOC04LjA1OSAxOC0xOC04LjA1OS0xOC0xOC0xOHptMCAzMmMtNy43MzIgMC0xNC02LjI2OC0xNC0xNHM2LjI2OC0xNCAxNC0xNCAxNCA2LjI2OCAxNCAxNC02LjI2OCAxNC0xNCAxNHoiIGZpbGw9IiNmZmYiIGZpbGwtb3BhY2l0eT0iLjA1Ii8+PC9nPjwvc3ZnPg==')] opacity-30"></div>
+      <div class="relative px-8 py-8 flex flex-col sm:flex-row items-center justify-between gap-6">
+        <div class="flex items-center gap-4">
+          <div class="w-16 h-16 rounded-2xl bg-hc-primary-light/30 flex items-center justify-center">
+            <i class="fas fa-rocket text-white text-2xl"></i>
+          </div>
+          <div>
+            <h3 class="text-xl font-bold text-white">{{ 'SUBSCRIPTION.MANAGE_SUBSCRIPTION' | translate }}</h3>
+            <p class="text-hc-on-primary/80 text-sm mt-1">Mantén tu suscripción activa y sin interrupciones</p>
+          </div>
+        </div>
+        <div class="flex flex-col sm:flex-row gap-3">
+          <button
+            (click)="renewPlan()"
+            [disabled]="renewing()"
+            class="px-8 py-4 bg-hc-surface text-hc-primary font-bold rounded-xl hover:bg-hc-muted active:scale-[0.98] transition-all shadow-lg flex items-center justify-center gap-2 text-sm"
+          >
+            @if (renewing()) {
+              <span class="w-5 h-5 border-2 border-hc-primary/30 border-t-hc-primary rounded-full animate-spin"></span>
+              {{ 'SUBSCRIPTION.RENEWING' | translate }}
+            } @else {
+              <i class="fas fa-sync-alt text-sm"></i>
+              {{ 'SUBSCRIPTION.RENEW_PLAN' | translate }}
+            }
+          </button>
+          <button
+            (click)="openChangePlanModal()"
+            class="px-8 py-4 bg-hc-primary-light/20 text-white font-bold rounded-xl hover:bg-hc-primary-light/30 active:scale-[0.98] transition-all border border-hc-primary-light/40 flex items-center justify-center gap-2 text-sm"
+          >
+            <i class="fas fa-exchange-alt text-sm"></i>
+            {{ 'SUBSCRIPTION.CHANGE_PLAN' | translate }}
+          </button>
+        </div>
+      </div>
+    </div>
+
+    @if (message()) {
+      <div class="fixed bottom-6 right-6 p-4 rounded-xl shadow-xl flex items-center gap-3 animate-in slide-in-from-bottom-2"
+           [class]="messageType() === 'success' ? 'bg-hc-success-bg text-hc-success border border-hc-success/30' : 'bg-hc-error-bg text-hc-error border border-hc-error/30'">
+        <i [class]="messageType() === 'success' ? 'fas fa-check-circle text-hc-success' : 'fas fa-exclamation-circle text-hc-error'"></i>
+        <span class="text-sm font-medium">{{ message() }}</span>
+      </div>
+    }
+    }
+
+  </div>
+
+  @if (showChangePlan()) {
+    <div class="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4 animate-in fade-in duration-200" (click)="closeChangePlanModal()">
+      <div class="bg-hc-surface rounded-2xl shadow-2xl max-w-4xl w-full p-8 max-h-[90vh] flex flex-col" (click)="$event.stopPropagation()">
+        <div class="flex items-center justify-between mb-8">
+          <div>
+            <h2 class="hc-h2 text-hc-text">{{ 'SUBSCRIPTION.CHANGE_PLAN' | translate }}</h2>
+            <p class="text-sm text-hc-text-3 mt-1">Elige el plan que mejor se adapte a tus necesidades</p>
+          </div>
+          <button (click)="closeChangePlanModal()" class="w-10 h-10 rounded-xl text-hc-text-3 hover:text-hc-text hover:bg-hc-muted transition-all flex items-center justify-center">
+            <i class="fas fa-times text-lg"></i>
+          </button>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-5 overflow-y-auto flex-1 scrollbar-hide pb-6 pt-8">
+          @for (plan of plans; track plan.id) {
+            <div
+              (click)="selectNewPlan(plan.id)"
+              class="relative cursor-pointer rounded-2xl border-2 border-hc-primary/30 p-6 transition-all duration-300 hover:-translate-y-2 hover:border-hc-primary/50 group flex flex-col h-auto"
+              [class.border-hc-primary]="selectedNewPlan() === plan.id"
+              [class.bg-gradient-to-b]="selectedNewPlan() === plan.id"
+              [class.from-hc-primary/5]="selectedNewPlan() === plan.id"
+              [class.to-hc-surface]="selectedNewPlan() === plan.id"
+              [class.bg-hc-surface]="selectedNewPlan() !== plan.id"
+              [class.shadow-xl]="selectedNewPlan() === plan.id"
+            >
+              @if (plan.popular) {
+                <div class="absolute -top-3 left-1/2 -translate-x-1/2">
+                  <span class="bg-gradient-to-r from-hc-primary to-hc-primary-dark text-white text-[10px] font-bold px-4 py-1.5 rounded-full uppercase tracking-wider shadow-lg">
+                    {{ 'TENANTS.POPULAR' | translate }}
+                  </span>
+                </div>
+              }
+              @if (plan.id === tenantInfo()?.subscriptionPlan) {
+                <div class="absolute -top-3 left-1/2 -translate-x-1/2">
+                  <span class="bg-hc-muted text-hc-text-3 text-[10px] font-bold px-4 py-1.5 rounded-full uppercase tracking-wider border border-hc-border">
+                    {{ 'SUBSCRIPTION.CURRENT_PLAN_BADGE' | translate }}
+                  </span>
+                </div>
+              }
+
+              <div class="flex justify-center mb-5">
+                <div class="w-16 h-16 rounded-2xl flex items-center justify-center transition-all duration-300 group-hover:scale-110 group-hover:shadow-lg"
+                     [class.bg-gradient-to-br]="selectedNewPlan() === plan.id"
+                     [class.from-hc-primary]="selectedNewPlan() === plan.id"
+                     [class.to-hc-primary-dark]="selectedNewPlan() === plan.id"
+                     [class.bg-hc-muted]="selectedNewPlan() !== plan.id">
+                  <i class="fas {{ plan.icon }} text-2xl" [class.text-white]="selectedNewPlan() === plan.id" [class.text-hc-text-3]="selectedNewPlan() !== plan.id"></i>
+                </div>
+              </div>
+
+              <h3 class="text-xl font-bold text-hc-text text-center mb-3">{{ plan.name | translate }}</h3>
+
+              <div class="text-center mb-5">
+                <div class="flex items-baseline justify-center gap-1">
+                  <span class="text-4xl font-extrabold" [class.text-hc-primary]="selectedNewPlan() === plan.id" [class.text-hc-text]="selectedNewPlan() !== plan.id">${{ plan.price }}</span>
+                  <span class="text-sm text-hc-text-3">/{{ 'TENANTS.MONTH' | translate }}</span>
+                </div>
+                @if (plan.price === '0') {
+                  <p class="text-xs text-hc-text-3 mt-1">{{ 'SUBSCRIPTION.FREE_FOREVER' | translate }}</p>
+                }
+              </div>
+
+              <p class="text-sm text-center text-hc-text-3 mb-5 min-h-[40px]">{{ plan.description | translate }}</p>
+
+              <ul class="space-y-3 mb-6 flex-1">
+                @for (feature of plan.features; track feature) {
+                  <li class="flex items-start gap-3 text-sm text-hc-text-2">
+                    <div class="w-5 h-5 rounded-full bg-hc-primary/10 flex items-center justify-center shrink-0 mt-0.5">
+                      <svg class="w-3 h-3 text-hc-primary" fill="currentColor" viewBox="0 0 20 20">
+                        <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd" />
+                      </svg>
+                    </div>
+                    <span>{{ feature | translate }}</span>
+                  </li>
+                }
+              </ul>
+
+              @if (plan.id === tenantInfo()?.subscriptionPlan) {
+                <div class="absolute top-4 right-4 w-6 h-6 rounded-full bg-hc-primary flex items-center justify-center">
+                  <i class="fas fa-check text-white text-xs"></i>
+                </div>
+              }
+            </div>
+          }
+        </div>
+
+        @if (selectedNewPlan() && selectedNewPlan() !== tenantInfo()?.subscriptionPlan) {
+          <div class="border-t border-hc-border pt-6 mt-4">
+            <div class="bg-hc-muted/30 rounded-xl p-4 mb-5">
+              <div class="flex items-center gap-3 text-sm">
+                <div class="w-8 h-8 rounded-lg bg-hc-primary/10 flex items-center justify-center">
+                  <i class="fas fa-info-circle text-hc-primary"></i>
+                </div>
+                <div>
+                  <p class="font-semibold text-hc-text">{{ 'SUBSCRIPTION.PLAN_CHANGE_INFO' | translate }}</p>
+                  <p class="text-hc-text-3">{{ 'SUBSCRIPTION.PLAN_CHANGE_DETAIL' | translate:{ current: getTranslatedPlanName(tenantInfo()?.subscriptionPlan || ''), target: getTranslatedPlanName(selectedNewPlan()), price: PLAN_PRICES[selectedNewPlan()] } }}</p>
+                </div>
+              </div>
+            </div>
+            <button
+              (click)="confirmPlanChange()"
+              [disabled]="changingPlan()"
+              class="w-full py-4 px-6 bg-gradient-to-r from-hc-primary to-hc-primary-dark text-white font-bold rounded-xl hover:from-hc-primary-dark hover:to-hc-primary-dark active:scale-[0.98] transition-all shadow-lg disabled:opacity-50 disabled:shadow-none flex items-center justify-center gap-2 text-sm"
+            >
+              @if (changingPlan()) {
+                <span class="w-5 h-5 border-2 border-hc-primary-light/30 border-t-hc-primary-light rounded-full animate-spin"></span>
+                {{ 'SUBSCRIPTION.CHANGING_PLAN' | translate }}
+              } @else {
+                <i class="fas fa-check text-sm"></i>
+                {{ 'SUBSCRIPTION.CONFIRM_PLAN_CHANGE' | translate:{ plan: getTranslatedPlanName(selectedNewPlan()), price: PLAN_PRICES[selectedNewPlan()] } }}
+              }
+            </button>
+          </div>
+        }
+      </div>
+    </div>
+  }
+
+  @if (showDowngradeWarning()) {
+    <div class="fixed inset-0 bg-black/50 z-[60] flex items-center justify-center p-4 animate-in fade-in duration-200" (click)="dismissDowngradeWarning()">
+      <div class="bg-hc-surface rounded-2xl shadow-2xl max-w-md w-full p-6 max-h-[90vh] overflow-y-auto" (click)="$event.stopPropagation()">
+        <div class="flex items-center gap-4 mb-5">
+          <div class="w-14 h-14 rounded-2xl bg-hc-error-bg flex items-center justify-center">
+            <i class="fas fa-exclamation-triangle text-hc-error text-2xl"></i>
+          </div>
+          <div>
+            <h3 class="hc-h3 text-hc-text">{{ 'SUBSCRIPTION.DOWNGRADE_WARNING' | translate }}</h3>
+            <p class="text-xs text-hc-text-3">Se detectaron conflictos con tu uso actual</p>
+          </div>
+        </div>
+
+        <ul class="space-y-3 mb-6">
+          @for (warning of downgradeWarnings(); track warning) {
+            <li class="flex items-start gap-3 text-sm text-hc-text-3 bg-hc-error-bg rounded-xl p-4 border border-hc-error/30">
+              <i class="fas fa-exclamation-circle text-hc-error mt-0.5 shrink-0"></i>
+              <span>{{ warning }}</span>
+            </li>
+          }
+        </ul>
+
+        <p class="text-xs text-hc-text-3 mb-6 p-4 bg-hc-muted/50 rounded-xl">{{ 'SUBSCRIPTION.DOWNGRADE_BLOCKED' | translate }}</p>
+
+        <button
+          (click)="dismissDowngradeWarning()"
+          class="w-full py-3.5 px-6 bg-hc-muted text-hc-text font-bold rounded-xl hover:bg-hc-border transition-all text-sm flex items-center justify-center gap-2"
+        >
+          <i class="fas fa-times"></i>
+          {{ 'COMMON.CLOSE' | translate }}
+        </button>
+      </div>
+    </div>
+  }
+</div>

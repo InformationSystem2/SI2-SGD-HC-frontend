@@ -2,6 +2,7 @@ import { ChangeDetectionStrategy, Component, inject, signal } from '@angular/cor
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { RouterLink } from '@angular/router';
 import { AuthService } from '../../../../core/auth/services/auth.service';
+import { BrandingService } from '../../../../core/services/branding.service';
 import { TranslatePipe } from '@ngx-translate/core';
 
 @Component({
@@ -14,6 +15,7 @@ export class Login {
 
   private fb = inject(FormBuilder);
   auth = inject(AuthService);
+  branding = inject(BrandingService);  
   hidePassword = signal(true);
 
   readonly features = [

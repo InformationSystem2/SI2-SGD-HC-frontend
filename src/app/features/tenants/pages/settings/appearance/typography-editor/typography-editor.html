@@ -1,0 +1,142 @@
+<div class="space-y-6">
+  <div class="bg-hc-card rounded-xl p-6 border border-hc-border">
+    <h3 class="hc-h3 text-hc-text">
+      {{ 'IDENTITY.FONT_FAMILY' | translate }}
+    </h3>
+    <div class="mb-4">
+      <select
+        [value]="typography().fontFamily"
+        (change)="onSelectFont($any($event.target).value)"
+        class="block w-full rounded-lg border-hc-border bg-hc-input border py-3 px-4 text-sm text-hc-text focus:border-hc-primary focus:ring-1 focus:ring-hc-primary"
+      >
+        @for (group of fontOptions; track group.group) {
+        <optgroup [label]="group.group | translate">
+          @for (font of group.fonts; track font) {
+          <option [value]="font" [style.font-family]="font + ', sans-serif'">
+            {{ font }}
+          </option>
+          }
+        </optgroup>
+        }
+      </select>
+    </div>
+
+    <div class="p-4 rounded-lg border border-hc-border bg-hc-surface mb-4">
+      <p class="text-xs text-hc-text-3 font-semibold uppercase tracking-wider mb-2">
+        {{ 'IDENTITY.PREVIEW' | translate }}
+      </p>
+      <p class="text-2xl font-bold" [style]="getH1Style()">{{ 'IDENTITY.HEADING_1' | translate }} — H1</p>
+      <p class="text-xl font-semibold mt-1" [style]="getH2Style()">{{ 'IDENTITY.HEADING_2' | translate }} — H2</p>
+      <p class="text-base mt-1" [style]="getBodyStyle()">
+        {{ 'IDENTITY.TYPOGRAPHY_PREVIEW_TEXT' | translate }}
+      </p>
+    </div>
+  </div>
+
+  <div class="bg-hc-card rounded-xl p-6 border border-hc-border">
+    <h3 class="hc-h3 text-hc-text">
+      {{ 'IDENTITY.TYPE_SCALE' | translate }}
+    </h3>
+    <div class="space-y-4">
+      <div class="grid grid-cols-2 md:grid-cols-3 gap-4">
+        @for (level of [ {key: 'h1Size', label: 'H1'}, {key: 'h2Size', label: 'H2'},
+        {key: 'h3Size', label: 'H3'}, {key: 'h4Size', label: 'H4'}, {key: 'h5Size',
+        label: 'H5'}, {key: 'h6Size', label: 'H6'} ]; track level.key) {
+        <div>
+          <div class="flex items-center justify-between mb-1">
+            <label class="text-sm font-medium text-hc-text">{{ level.label }}</label>
+            <span class="text-xs text-hc-text-3 font-mono"
+              >{{ getTypographyProp(level.key) }}x</span
+            >
+          </div>
+          <input
+            type="range"
+            min="0.75"
+            max="4"
+            step="0.05"
+            [value]="getTypographyProp(level.key)"
+            (input)="onUpdateTypography(level.key, +$any($event.target).value)"
+            class="w-full"
+          />
+        </div>
+        }
+      </div>
+    </div>
+  </div>
+
+  <div class="bg-hc-card rounded-xl p-6 border border-hc-border">
+    <h3 class="hc-h3 text-hc-text">
+      {{ 'IDENTITY.ADVANCED_SETTINGS' | translate }}
+    </h3>
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+      <div>
+        <label class="block text-sm font-medium text-hc-text mb-2"
+          >{{ 'IDENTITY.BASE_SIZE' | translate }}: {{ typography().baseSize }}px</label
+        >
+        <input
+          type="range"
+          min="12"
+          max="22"
+          [value]="typography().baseSize"
+          (input)="onUpdateTypography('baseSize', +$any($event.target).value)"
+          class="w-full"
+        />
+        <p class="text-xs text-hc-text-3 mt-1">
+          {{ 'IDENTITY.BASE_SIZE_HELP' | translate }}
+        </p>
+      </div>
+      <div>
+        <label class="block text-sm font-medium text-hc-text mb-2"
+          >{{ 'IDENTITY.HEADING_WEIGHT' | translate }}: {{ typography().headingWeight }}</label
+        >
+        <select
+          [value]="typography().headingWeight"
+          (change)="onUpdateTypography('headingWeight', +$any($event.target).value)"
+          class="block w-full rounded-lg border-hc-border bg-hc-input border py-2 px-3 text-sm text-hc-text"
+        >
+          <option value="300">{{ 'DOCUMENT_LIST.FONT_WEIGHT_LIGHT' | translate }}</option>
+          <option value="400">{{ 'DOCUMENT_LIST.FONT_WEIGHT_REGULAR' | translate }}</option>
+          <option value="500">{{ 'DOCUMENT_LIST.FONT_WEIGHT_MEDIUM' | translate }}</option>
+          <option value="600">{{ 'DOCUMENT_LIST.FONT_WEIGHT_SEMIBOLD' | translate }}</option>
+          <option value="700" selected>{{ 'DOCUMENT_LIST.FONT_WEIGHT_BOLD' | translate }}</option>
+          <option value="800">{{ 'DOCUMENT_LIST.FONT_WEIGHT_EXTRABOLD' | translate }}</option>
+          <option value="900">{{ 'DOCUMENT_LIST.FONT_WEIGHT_BLACK' | translate }}</option>
+        </select>
+      </div>
+      <div>
+        <label class="block text-sm font-medium text-hc-text mb-2"
+          >{{ 'IDENTITY.LINE_HEIGHT' | translate }}: {{ typography().lineHeight }}</label
+        >
+        <input
+          type="range"
+          min="1"
+          max="2"
+          step="0.05"
+          [value]="typography().lineHeight"
+          (input)="onUpdateTypography('lineHeight', +$any($event.target).value)"
+          class="w-full"
+        />
+        <p class="text-xs text-hc-text-3 mt-1">
+          {{ 'IDENTITY.LINE_HEIGHT_HELP' | translate }}
+        </p>
+      </div>
+      <div>
+        <label class="block text-sm font-medium text-hc-text mb-2"
+          >{{ 'IDENTITY.LETTER_SPACING' | translate }}: {{ typography().letterSpacing }}px</label
+        >
+        <input
+          type="range"
+          min="-0.05"
+          max="0.15"
+          step="0.01"
+          [value]="typography().letterSpacing"
+          (input)="onUpdateTypography('letterSpacing', +$any($event.target).value)"
+          class="w-full"
+        />
+        <p class="text-xs text-hc-text-3 mt-1">
+          {{ 'IDENTITY.LETTER_SPACING_HELP' | translate }}
+        </p>
+      </div>
+    </div>
+  </div>
+</div>
