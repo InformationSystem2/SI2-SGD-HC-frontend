@@ -13,7 +13,7 @@
       }
 
       @if (field[1].type === FieldType.ARRAY) {
-        <div class="rounded-xl border border-hc-border overflow-hidden bg-hc-surface">
+        <div class="rounded-xl border border-hc-border overflow-hidden bg-hc-input">
           <div class="w-full overflow-x-auto">
             <div class="min-w-max">
 
@@ -39,7 +39,7 @@
                     @for (col of getSubCols(field[1]); track col[0]) {
 
                       @if (col[1].type === FieldType.SELECT) {
-                        <select [formControlName]="col[0]" class="w-full rounded-md border border-hc-border bg-hc-surface px-2.5 py-1.5
+                        <select [formControlName]="col[0]" class="w-full rounded-md border border-hc-border bg-hc-input px-2.5 py-1.5
                            text-sm text-hc-text
                            focus:outline-none focus:ring-2 focus:ring-hc-primary/50" 
                            [class.border-hc-error]="asFormGroup(getFormArray(field[0]).at(ri)).get(col[0])?.invalid
@@ -58,7 +58,7 @@
                         </div>
                       } @else {
                         <input [formControlName]="col[0]" [type]="getSubInputType(col[1])" [placeholder]="col[1].label || col[0]"
-                          class="w-full rounded-md border border-hc-border bg-hc-surface px-2.5 py-1.5
+                          class="w-full rounded-md border border-hc-border bg-hc-input px-2.5 py-1.5
                            text-sm text-hc-text placeholder:text-hc-text-3
                            focus:outline-none focus:ring-2 focus:ring-hc-primary/50" 
                            [class.border-hc-error]="asFormGroup(getFormArray(field[0]).at(ri)).get(col[0])?.invalid
@@ -99,7 +99,7 @@
           [id]="field[0]"
           [formControlName]="field[0]"
           rows="3"
-          class="w-full rounded-lg border border-hc-border bg-hc-surface px-3 py-2
+          class="w-full rounded-lg border border-hc-border bg-hc-input px-3 py-2
                  text-sm text-hc-text placeholder:text-hc-text-3
                  focus:outline-none focus:ring-2 focus:ring-hc-primary/50
                  disabled:opacity-50 resize-none"
@@ -110,7 +110,7 @@
         <select
           [id]="field[0]"
           [formControlName]="field[0]"
-          class="w-full rounded-lg border border-hc-border bg-hc-surface px-3 py-2
+          class="w-full rounded-lg border border-hc-border bg-hc-input px-3 py-2
                  text-sm text-hc-text
                  focus:outline-none focus:ring-2 focus:ring-hc-primary/50 disabled:opacity-50"
           [class.border-hc-error]="form.get(field[0])?.invalid && form.get(field[0])?.touched"
@@ -166,7 +166,7 @@
           [id]="field[0]"
           [formControlName]="field[0]"
           [type]="getInputType(field[1])"
-          class="w-full rounded-lg border border-hc-border bg-hc-surface px-3 py-2
+          class="w-full rounded-lg border border-hc-border bg-hc-input px-3 py-2
                  text-sm text-hc-text placeholder:text-hc-text-3
                  focus:outline-none focus:ring-2 focus:ring-hc-primary/50
                  disabled:opacity-50"

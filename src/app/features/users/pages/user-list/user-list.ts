@@ -8,7 +8,7 @@ import {
   faPencil, faSpinner, faTrash, faUserPlus, faUsers,
 } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
-import { TranslatePipe } from '@ngx-translate/core';
+import { TranslatePipe, TranslateService } from '@ngx-translate/core';
 
 @Component({
   selector: 'app-user-list',
@@ -22,6 +22,7 @@ export class UserList implements OnInit {
   readonly rolesService = inject(RolesService);
   private authService   = inject(AuthService);
   private router        = inject(Router);
+  private translate    = inject(TranslateService);
 
   readonly faUserPlus    = faUserPlus;
   readonly faSpinner     = faSpinner;
@@ -85,7 +86,8 @@ export class UserList implements OnInit {
   }
 
   delete(id: string): void {
-    if (!confirm('¿Eliminar este usuario?')) return;
+    const msg = this.translate.instant('COMMON.CONFIRM_DELETE');
+    if (!confirm(msg)) return;
     this.userService.deleteUser(id).subscribe();
   }
 }

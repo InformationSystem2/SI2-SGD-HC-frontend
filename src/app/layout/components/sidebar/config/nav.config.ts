@@ -61,5 +61,26 @@ export const NAV_ITEMS: NavItem[] = [
     path: '/historiales',
     icon: 'search',
     permissions: ['DOCUMENT_READ'],
-  }
+  },
+  {
+    label: 'NAV.CONFIG',
+    path: '/dashboard/tenant/info',
+    icon: 'settings',
+    permissions: ['ROLE_ADMIN', 'ROLE_SUPERUSER'],
+    subItems: [
+      { label: 'NAV.INFO',          path: '/dashboard/tenant/info' },
+      { label: 'NAV.APPEARANCE',    path: '/dashboard/tenant/appearance' },
+      { label: 'NAV.PREFERENCES',   path: '/dashboard/tenant/preferences' },
+      { label: 'NAV.SUBSCRIPTION',  path: '/dashboard/tenant/subscription' },
+    ],
+  },
+  {
+    label: 'NAV.ADMIN',
+    path: '/dashboard/admin/tenants',
+    icon: 'building',
+    permissions: ['ROLE_SUPERUSER'],
+    subItems: [
+      { label: 'NAV.TENANTS', path: '/dashboard/admin/tenants' },
+    ],
+  },  
 ];

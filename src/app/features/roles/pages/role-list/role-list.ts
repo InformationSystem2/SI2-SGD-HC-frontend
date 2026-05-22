@@ -9,7 +9,7 @@ import {
   faShieldHalved,
 } from '@fortawesome/free-solid-svg-icons';
 import { RolesService } from '../../services/roles.service';
-import { TranslatePipe } from '@ngx-translate/core';
+import { TranslatePipe, TranslateService } from '@ngx-translate/core';
 
 
 @Component({
@@ -22,6 +22,7 @@ export class RoleList implements OnInit{
 
   readonly rolesService = inject(RolesService);
   private router = inject(Router);
+  private translate = inject(TranslateService);  
 
   readonly faPlus          = faPlus;
   readonly faPencil        = faPencil;
@@ -42,7 +43,8 @@ export class RoleList implements OnInit{
   }
 
   delete(id: string): void {
-    if (!confirm('¿Eliminar este rol?')) return;
+    const msg = this.translate.instant('COMMON.CONFIRM_DELETE');
+    if (!confirm(msg)) return;
     this.rolesService.deleteRole(id).subscribe();
   }
 

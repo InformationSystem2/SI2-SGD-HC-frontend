@@ -7,7 +7,7 @@
       <fa-icon [icon]="faArrowLeft" />
     </button>
     <fa-icon [icon]="faFileLines" class="text-hc-primary text-xl" />
-    <h2 class="text-xl font-semibold text-hc-text">Detalle del documento</h2>
+    <h2 class="hc-h2 text-hc-text">{{ 'DOCUMENT_LIST.DOCUMENT_DETAIL' | translate }}</h2>
   </div>
 
   @if (loading()) {
@@ -27,7 +27,7 @@
     <!-- Ficha principal (sin cambios) -->
     <div class="bg-hc-card rounded-xl border border-hc-border shadow-sm overflow-hidden">
       <div class="px-6 py-4 border-b border-hc-border bg-hc-muted/40">
-        <p class="text-lg font-semibold text-hc-text">{{ docTitle() }}</p>
+        <p class="hc-h3 text-hc-text">{{ docTitle() }}</p>
         <span class="mt-1 inline-block px-2.5 py-0.5 rounded-full text-xs font-medium"
               [class]="statusClass(d.status)">
           {{ statusLabel(d.status) }}
@@ -36,39 +36,39 @@
       <div class="grid grid-cols-1 sm:grid-cols-2 gap-0 divide-y sm:divide-y-0 sm:divide-x divide-hc-border">
         <div class="px-6 py-4 space-y-4">
           <div>
-            <p class="text-xs text-hc-text-3 uppercase tracking-wide font-medium">Paciente</p>
+            <p class="text-xs text-hc-text-3 uppercase tracking-wide font-medium">{{ 'DOCUMENT_LIST.PATIENT' | translate }}</p>
             <p class="text-hc-text mt-0.5">{{ d.patientName }}</p>
           </div>
           <div>
-            <p class="text-xs text-hc-text-3 uppercase tracking-wide font-medium">Cargado por</p>
+            <p class="text-xs text-hc-text-3 uppercase tracking-wide font-medium">{{ 'DOCUMENT_LIST.ISSUED_BY' | translate }}</p>
             <p class="text-hc-text mt-0.5">{{ d.uploaderName }}</p>
           </div>
           <div>
-            <p class="text-xs text-hc-text-3 uppercase tracking-wide font-medium">Fecha de emisión</p>
+            <p class="text-xs text-hc-text-3 uppercase tracking-wide font-medium">{{ 'DOCUMENT_LIST.ISSUE_DATE' | translate }}</p>
             <p class="text-hc-text mt-0.5">{{ d.issueDate }}</p>
           </div>
           @if (d.expiryDate) {
             <div>
-              <p class="text-xs text-hc-text-3 uppercase tracking-wide font-medium">Fecha de vencimiento</p>
+            <p class="text-xs text-hc-text-3 uppercase tracking-wide font-medium">{{ 'DOCUMENT_LIST.ISSUE_DATE' | translate }}</p>
               <p class="text-hc-text mt-0.5">{{ d.expiryDate }}</p>
             </div>
           }
           <div>
-            <p class="text-xs text-hc-text-3 uppercase tracking-wide font-medium">Tipo</p>
-            <p class="text-hc-text mt-0.5">{{ d.isExternalSource ? 'Externo' : 'Plantilla' }}</p>
+            <p class="text-xs text-hc-text-3 uppercase tracking-wide font-medium">{{ 'DOCUMENT_LIST.DOCUMENT_TYPE' | translate }}</p>
+            <p class="text-hc-text mt-0.5">{{ d.isExternalSource ? ('DOCUMENTS.TYPE_EXTERNAL' | translate) : ('DOCUMENT_LIST.TEMPLATE' | translate) }}</p>
           </div>
         </div>
         <div class="px-6 py-4 space-y-4">
           <div>
-            <p class="text-xs text-hc-text-3 uppercase tracking-wide font-medium">Plantilla</p>
+            <p class="text-xs text-hc-text-3 uppercase tracking-wide font-medium">{{ 'DOCUMENT_LIST.TEMPLATE' | translate }}</p>
             <p class="text-hc-text mt-0.5">{{ d.templateName }}</p>
           </div>
           <div>
-            <p class="text-xs text-hc-text-3 uppercase tracking-wide font-medium">ID del documento</p>
+            <p class="text-xs text-hc-text-3 uppercase tracking-wide font-medium">{{ 'DOCUMENT_LIST.DOCUMENT_ID' | translate }}</p>
             <p class="text-hc-text-2 font-mono text-xs mt-0.5 break-all">{{ d.id }}</p>
           </div>
           <div>
-            <p class="text-xs text-hc-text-3 uppercase tracking-wide font-medium">ID del paciente</p>
+            <p class="text-xs text-hc-text-3 uppercase tracking-wide font-medium">{{ 'DOCUMENT_LIST.PATIENT_ID' | translate }}</p>
             <p class="text-hc-text-2 font-mono text-xs mt-0.5 break-all">{{ d.patientId }}</p>
           </div>
           @if (d.fileUrl) {
@@ -78,6 +78,7 @@
                 class="text-hc-primary hover:underline text-sm flex items-center gap-1 mt-0.5">
                 <fa-icon [icon]="faBookOpen" />
                 Abrir documento
+                {{ 'DOCUMENT_LIST.OPEN_DOCUMENT' | translate }}                
               </button>
             </div>
           }
@@ -89,7 +90,7 @@
     @if (contentEntries().length > 0) {
       <div class="bg-hc-card rounded-xl border border-hc-border shadow-sm">
         <div class="px-6 py-3 border-b border-hc-border bg-hc-muted/40">
-          <p class="text-sm font-semibold text-hc-text">Contenido clínico</p>
+          <p class="text-sm font-semibold text-hc-text">{{ 'DOCUMENT_LIST.CLINICAL_CONTENT' | translate }}</p>
         </div>
         <div class="divide-y divide-hc-border/50">
           @for (entry of contentEntries(); track entry.key) {

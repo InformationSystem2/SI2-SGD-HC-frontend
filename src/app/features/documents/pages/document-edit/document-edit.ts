@@ -7,10 +7,11 @@ import {
 } from '@fortawesome/free-solid-svg-icons';
 import { DocumentService } from '../../services/document.service';
 import { Document, DocumentStatus } from '../../models/document.model';
+import { TranslatePipe } from '@ngx-translate/core';
 
 @Component({
   selector: 'app-document-edit',
-  imports: [ReactiveFormsModule, FontAwesomeModule],
+  imports: [ReactiveFormsModule, FontAwesomeModule, TranslatePipe],
   templateUrl: './document-edit.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })

@@ -9,10 +9,11 @@ import { DocumentService } from '../../services/document.service';
 import { OcrService, OcrResult } from '../../services/ocr.service';
 import { Document } from '../../models/document.model';
 import { environment } from '../../../../../environments/environment';
+import { TranslatePipe } from '@ngx-translate/core';
 
 @Component({
   selector: 'app-document-detail',
-  imports: [FontAwesomeModule],
+  imports: [FontAwesomeModule, TranslatePipe],
   templateUrl: './document-detail.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })

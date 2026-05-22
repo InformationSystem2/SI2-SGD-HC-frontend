@@ -4,7 +4,7 @@ import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import {
   faFileAlt, faFileMedical, faSpinner, faPencil, faTrash, faPlus,
 } from '@fortawesome/free-solid-svg-icons';
-import { TranslatePipe } from '@ngx-translate/core';
+import { TranslatePipe, TranslateService } from '@ngx-translate/core';
 import { DocumentTemplateService } from '../../services/document-template.service';
 
 @Component({
@@ -17,6 +17,7 @@ export class TemplateList implements OnInit {
 
   readonly templateService = inject(DocumentTemplateService);
   private router = inject(Router);
+  private translate = inject(TranslateService);  
 
   readonly faFileAlt    = faFileAlt;
   readonly faFileMedical = faFileMedical;
@@ -42,7 +43,8 @@ export class TemplateList implements OnInit {
   }
 
   delete(id: string): void {
-    if (!confirm('¿Desactivar esta plantilla?')) return;
+    const msg = this.translate.instant('TEMPLATES.CONFIRM_DEACTIVATE');
+    if (!confirm(msg)) return;
     this.templateService.delete(id).subscribe();
   }
 }

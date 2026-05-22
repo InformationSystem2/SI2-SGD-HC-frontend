@@ -4,7 +4,7 @@ import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import {
   faFileLines, faSpinner, faUpload, faEye, faEdit, faTrash, faBookOpen,
 } from '@fortawesome/free-solid-svg-icons';
-import { TranslatePipe } from '@ngx-translate/core';
+import { TranslatePipe, TranslateService } from '@ngx-translate/core';
 import { DocumentService } from '../../services/document.service';
 
 @Component({
@@ -17,6 +17,7 @@ export class DocumentList implements OnInit {
 
   readonly documentService = inject(DocumentService);
   private router = inject(Router);
+  private translate = inject(TranslateService);  
 
   readonly faFileLines = faFileLines;
   readonly faSpinner   = faSpinner;
@@ -75,7 +76,8 @@ export class DocumentList implements OnInit {
   }
 
   delete(id: string): void {
-    if (!confirm('¿Eliminar este documento? Esta acción no se puede deshacer.')) return;
+    const msg = this.translate.instant('DOCUMENT_LIST.CONFIRM_DELETE');
+    if (!confirm(msg)) return;
     this.deletingId.set(id);
     this.documentService.delete(id).subscribe({
       complete: () => this.deletingId.set(null),
@@ -93,9 +95,9 @@ export class DocumentList implements OnInit {
 
   statusLabel(status: string): string {
     return {
-      DRAFT:             'Borrador',
-      PENDING_SIGNATURE: 'Pend. firma',
-      COMPLETED:         'Completado',
+      DRAFT:             this.translate.instant('DOCUMENT_LIST.STATUS_DRAFT'),
+      PENDING_SIGNATURE: this.translate.instant('DOCUMENT_LIST.STATUS_PENDING'),
+      COMPLETED:         this.translate.instant('DOCUMENT_LIST.STATUS_COMPLETED'),
     }[status] ?? status;
   }
 }

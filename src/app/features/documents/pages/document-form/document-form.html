@@ -12,7 +12,7 @@
     </button>
     <div class="flex items-center gap-2">
       <fa-icon [icon]="faFileSignature" class="text-hc-primary text-xl" />
-      <h2 class="text-xl font-semibold text-hc-text">
+      <h2 class="hc-h2 text-hc-text">
         {{ 'DOCUMENTS.NEW_TITLE' | translate }}
       </h2>
     </div>
@@ -67,7 +67,7 @@
             <select
               id="patientId"
               formControlName="patientId"
-              class="rounded-lg border border-hc-border bg-hc-surface px-3 py-2
+              class="rounded-lg border border-hc-border bg-hc-input px-3 py-2
                      text-sm text-hc-text
                      focus:outline-none focus:ring-2 focus:ring-hc-primary/50"
               [class.border-hc-error]="headerForm.get('patientId')?.invalid && headerForm.get('patientId')?.touched"
@@ -92,7 +92,7 @@
             id="issueDate"
             formControlName="issueDate"
             type="date"
-            class="rounded-lg border border-hc-border bg-hc-surface px-3 py-2
+            class="rounded-lg border border-hc-border bg-hc-input px-3 py-2
                    text-sm text-hc-text
                    focus:outline-none focus:ring-2 focus:ring-hc-primary/50"
             [class.border-hc-error]="headerForm.get('issueDate')?.invalid && headerForm.get('issueDate')?.touched"

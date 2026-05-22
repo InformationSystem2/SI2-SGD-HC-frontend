@@ -4,7 +4,7 @@ import {
   faEye, faPencil, faSpinner, faTrash, faUserPlus, faUsers, faMagnifyingGlass, faXmark,
 } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
-import { TranslatePipe } from '@ngx-translate/core';
+import { TranslatePipe, TranslateService } from '@ngx-translate/core';
 import { PatientService } from '../../services/patient.service';
 
 @Component({
@@ -17,6 +17,7 @@ export class PatientList implements OnInit {
 
   readonly patientService = inject(PatientService);
   private router = inject(Router);
+  private translate = inject(TranslateService);  
 
   readonly faUserPlus         = faUserPlus;
   readonly faSpinner          = faSpinner;
@@ -75,7 +76,8 @@ export class PatientList implements OnInit {
   }
 
   delete(id: string): void {
-    if (!confirm('¿Eliminar este paciente?')) return;
+    const msg = this.translate.instant('COMMON.CONFIRM_DELETE');
+    if (!confirm(msg)) return;
     this.patientService.deletePatient(id).subscribe();
   }
 }

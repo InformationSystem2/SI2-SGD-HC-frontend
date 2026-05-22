@@ -7,7 +7,7 @@
       <p class="text-white/70 text-sm font-medium uppercase tracking-widest mb-1">
         {{ 'DASHBOARD.WELCOME' | translate }}
       </p>
-      <h1 class="text-2xl font-bold">{{ auth.username() }}</h1>
+      <h1 class="hc-h1 text-hc-text">{{ auth.username() }}</h1>
       <p class="text-white/70 text-sm mt-1 capitalize">{{ today }}</p>
     </div>
     <div class="flex items-center gap-2 self-start sm:self-center">
@@ -30,7 +30,7 @@
         @if (patientService.loading()) {
           <div class="h-7 w-12 bg-hc-muted rounded animate-pulse mt-1"></div>
         } @else {
-          <p class="text-2xl font-bold text-hc-text mt-0.5">{{ totalPatients() }}</p>
+          <p class="hc-h3 text-hc-text mt-0.5">{{ totalPatients() }}</p>
         }
       </div>
     </div>
@@ -45,7 +45,7 @@
         @if (documentService.loading()) {
           <div class="h-7 w-12 bg-hc-muted rounded animate-pulse mt-1"></div>
         } @else {
-          <p class="text-2xl font-bold text-hc-text mt-0.5">{{ totalDocs() }}</p>
+          <p class="hc-h3 text-hc-text mt-0.5">{{ totalDocs() }}</p>
         }
       </div>
     </div>
@@ -60,7 +60,7 @@
         @if (documentService.loading()) {
           <div class="h-7 w-12 bg-hc-muted rounded animate-pulse mt-1"></div>
         } @else {
-          <p class="text-2xl font-bold text-hc-text mt-0.5">{{ completedDocs() }}</p>
+          <p class="hc-h3 text-hc-text mt-0.5">{{ completedDocs() }}</p>
         }
       </div>
     </div>
@@ -75,7 +75,7 @@
         @if (documentService.loading()) {
           <div class="h-7 w-12 bg-hc-muted rounded animate-pulse mt-1"></div>
         } @else {
-          <p class="text-2xl font-bold text-hc-text mt-0.5">{{ pendingDocs() }}</p>
+          <p class="hc-h3 text-hc-text mt-0.5">{{ pendingDocs() }}</p>
         }
       </div>
     </div>
@@ -157,20 +157,20 @@
             @for (doc of recentDocs(); track doc.id) {
               <tr class="cursor-pointer" (click)="goTo('/documentos/detail/' + doc.id)">
                 <td class="font-medium text-hc-text max-w-[180px] truncate">
-                  {{ doc.templateName || 'Sin título' }}
+                  {{ doc.templateName || ('DOCUMENT_LIST.NO_TITLE' | translate) }}
                 </td>
                 <td class="text-hc-text-2 max-w-[140px] truncate">{{ doc.patientName }}</td>
                 <td class="text-hc-text-2 whitespace-nowrap">{{ doc.issueDate }}</td>
                 <td>
                   @switch (doc.status) {
                     @case ('COMPLETED') {
-                      <span class="hc-badge-success">Completado</span>
+                      <span class="hc-badge-success">{{ 'DOCUMENT_LIST.STATUS_COMPLETED' | translate }}</span>
                     }
                     @case ('PENDING_SIGNATURE') {
-                      <span class="hc-badge-warning">Pend. firma</span>
+                      <span class="hc-badge-warning">{{ 'DOCUMENT_LIST.STATUS_PENDING' | translate }}</span>
                     }
                     @default {
-                      <span class="hc-badge-muted">Borrador</span>
+                      <span class="hc-badge-muted">{{ 'DOCUMENT_LIST.STATUS_DRAFT' | translate }}</span>
                     }
                   }
                 </td>
