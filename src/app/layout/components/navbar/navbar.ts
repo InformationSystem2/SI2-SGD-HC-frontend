@@ -1,10 +1,13 @@
 import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
+import { Router } from '@angular/router';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { faBars, faRightFromBracket, faMoon, faSun, faLanguage } from '@fortawesome/free-solid-svg-icons';
 import { AuthService } from '../../../core/auth/services/auth.service';
 import { ThemeService } from '../../../core/services/theme.service';
 import { LanguageService } from '../../../core/services/language.service';
 import { SidebarService } from '../sidebar/services/sidebar.service';
+import { BrandingService } from '../../../core/services/branding.service';
+import { SubscriptionStatusService } from '../../../core/services/subscription-status.service';
 import { TranslatePipe } from '@ngx-translate/core';
 
 @Component({
@@ -18,6 +21,9 @@ export class Navbar {
   readonly themeService   = inject(ThemeService);
   readonly langService    = inject(LanguageService);
   readonly sidebarService = inject(SidebarService);
+  readonly brandingService = inject(BrandingService);
+  readonly subStatus      = inject(SubscriptionStatusService);
+  readonly router         = inject(Router);
 
   readonly faLogout   = faRightFromBracket;
   readonly faMoon     = faMoon;

@@ -1,7 +1,5 @@
 <aside
-  class="flex flex-col h-screen bg-hc-sidebar border-r border-[var(--hc-border-sidebar)] shadow-sm shrink-0
-         fixed inset-y-0 left-0 z-40 transition-all duration-300
-         md:sticky md:top-0 md:translate-x-0"
+  class="flex flex-col h-screen bg-hc-sidebar border-r border-[var(--hc-border-sidebar)] shadow-sm shrink-0 fixed inset-y-0 left-0 z-40 transition-all duration-300 md:sticky md:top-0 md:translate-x-0"
   [class.-translate-x-full]="!sidebarService.mobileOpen()"
   [class.w-64]="sidebarService.expanded() || sidebarService.mobileOpen()"
   [class.w-16]="!sidebarService.expanded() && !sidebarService.mobileOpen()"
@@ -11,13 +9,19 @@
     <!-- Brand + toggle -->
     <div class="p-3 flex items-center justify-between shrink-0">
       @if (sidebarService.expanded() || sidebarService.mobileOpen()) {
-        <div class="flex items-center gap-2 overflow-hidden pl-1">
-          <img src="iconSGDpng.png" alt="DOCUSALUD" class="w-8 h-8 rounded-lg object-cover shrink-0" />
-          <div class="overflow-hidden whitespace-nowrap">
-            <p class="text-hc-primary font-bold text-sm leading-tight tracking-wide">DOCUSALUD</p>
-            <p class="text-hc-text-3 text-xs leading-tight">Historias Clínicas</p>
-          </div>
+      <div class="flex items-center gap-2 overflow-hidden pl-1">
+        <img
+          src="iconSGDpng.png"
+          alt="{{ 'APP_NAME' | translate }}"
+          class="w-8 h-8 rounded-lg object-cover shrink-0"
+        />
+        <div class="overflow-hidden whitespace-nowrap">
+          <p class="text-hc-primary font-bold hc-h4 leading-tight tracking-wide">
+            {{ "DOCUSALUD" }}
+          </p>
+          <p class="text-hc-text-3 text-xs leading-tight">{{ 'NAV.APP_TAGLINE' | translate }}</p>
         </div>
+      </div>
       }
       <button
         (click)="sidebarService.toggle()"
@@ -50,7 +54,7 @@
         [class.ml-2.5]="sidebarService.expanded() || sidebarService.mobileOpen()"
       >
         <div class="leading-4 min-w-0">
-          <h4 class="font-semibold text-hc-text text-sm truncate">
+          <h4 class="font-semibold text-hc-text hc-h4 truncate">
             {{ authService.username() ?? '—' }}
           </h4>
           @if (firstRole()) {

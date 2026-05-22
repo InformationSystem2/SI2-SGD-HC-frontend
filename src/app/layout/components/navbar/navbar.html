@@ -11,14 +11,19 @@
     </button>
 
     <div class="flex items-center gap-2">
+      @if (brandingService.clinicLogo()) {
+      <img [src]="brandingService.clinicLogo()" class="h-7 w-auto object-contain" />
+      } @else {
       <img src="iconSGDpng.png" alt="DOCUSALUD" class="w-7 h-7 rounded-md object-cover shrink-0" />
-      <span class="hidden sm:block text-hc-primary font-bold text-sm tracking-wide">DOCUSALUD</span>
+      }
+      <span class="hidden sm:block text-hc-primary font-bold text-base md:text-lg truncate max-w-[120px] md:max-w-[200px]"
+        >{{ brandingService.clinicName() }}</span
+      >
     </div>
 
     <!-- Divider + tenant/clinic indicator -->
     <div class="hidden md:flex items-center gap-2 pl-2 border-l border-hc-border">
-      <span class="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-md
-                   bg-hc-primary/8 text-hc-primary text-xs font-medium">
+      <span class="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-md bg-hc-primary/8 text-hc-primary text-xs font-medium">
         <span class="w-1.5 h-1.5 rounded-full bg-hc-success inline-block"></span>
         {{ 'NAVBAR.SYSTEM_ONLINE' | translate }}
       </span>
@@ -44,9 +49,7 @@
     <!-- Language toggle -->
     <button
       (click)="langService.toggle()"
-      class="hidden sm:flex items-center gap-1.5 px-2.5 py-1.5 rounded-md text-xs font-semibold
-             text-hc-text-2 hover:text-hc-text hover:bg-hc-hover border border-hc-border
-             transition-colors"
+      class="hidden sm:flex items-center gap-1.5 px-2.5 py-1.5 rounded-md text-xs font-semibold text-hc-text-2 hover:text-hc-text hover:bg-hc-hover border border-hc-border transition-colors"
     >
       <fa-icon [icon]="faLanguage" class="text-sm" />
       {{ 'NAVBAR.TOGGLE_LANG' | translate }}
@@ -70,13 +73,29 @@
     <!-- Logout -->
     <button
       (click)="authService.logout()"
-      class="flex items-center gap-2 px-2.5 py-1.5 rounded-md
-             bg-hc-muted hover:bg-hc-error hover:text-white
-             text-hc-text-2 text-sm transition-colors border border-hc-border hover:border-hc-error"
-    >
+      class="flex items-center gap-2 px-2.5 py-1.5 rounded-md bg-hc-muted hover:bg-hc-error hover:text-white text-hc-text-2 text-sm transition-colors border border-hc-border hover:border-hc-error">
       <fa-icon [icon]="faLogout" />
       <span class="hidden sm:inline">{{ 'NAVBAR.LOGOUT' | translate }}</span>
     </button>
 
   </div>
 </header>
+
+@if (subStatus.warning(); as w) {
+  <div class="w-full px-4 py-2 text-xs font-medium flex items-center justify-center gap-2 shrink-0"
+       [class.bg-red-50]="w.severity === 'critical'"
+       [class.text-red-700]="w.severity === 'critical'"
+       [class.border-b]="w.severity === 'critical'"
+       [class.border-red-200]="w.severity === 'critical'"
+       [class.bg-yellow-50]="w.severity === 'warning'"
+       [class.text-yellow-700]="w.severity === 'warning'"
+       [class.border-b]="w.severity === 'warning'"
+       [class.border-yellow-200]="w.severity === 'warning'">
+    <i class="fas fa-exclamation-triangle"></i>
+    <span>{{ w.message }}</span>
+    <button (click)="router.navigate(['/dashboard/tenant/subscription'])"
+            class="underline font-bold hover:opacity-80 transition-opacity">
+      {{ 'SUBSCRIPTION.RENEW_NOW' | translate }}
+    </button>
+  </div>
+}

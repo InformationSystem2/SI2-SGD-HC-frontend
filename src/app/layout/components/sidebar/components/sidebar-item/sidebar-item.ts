@@ -20,6 +20,7 @@ import {
   faCircle,
   faHeartPulse,
   faChevronDown,
+  faBuilding,
   type IconDefinition,
 } from '@fortawesome/free-solid-svg-icons';
 
@@ -31,6 +32,7 @@ const ICON_MAP: Record<string, IconDefinition> = {
   'settings':         faGear,
   'shield':           faShieldHalved,
   'heart-pulse':      faHeartPulse,
+  'building':         faBuilding,
 };
 
 @Component({
