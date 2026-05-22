@@ -6,19 +6,20 @@
 /*
   Medical / Clinical Records — Design System
   Primary: Teal (trust, health, clinical)
-  Neutrals: Slate (professional, clean)
+  NOTE: All color tokens reference runtime CSS vars set by BrandingService.
+  Fallback values provide the default Teal Clinical theme.
 */
 @theme {
-  /* Brand — Teal */
-  --color-hc-primary:       #0D9488;
-  --color-hc-primary-dark:  #0F766E;
-  --color-hc-primary-light: #2DD4BF;
-  --color-hc-primary-50:    #F0FDFA;
-  --color-hc-primary-100:   #CCFBF1;
+  /* Brand — Teal — references runtime CSS vars with static fallbacks */
+  --color-hc-primary:       var(--hc-primary, #0D9488);
+  --color-hc-primary-dark:  var(--hc-primary-dark, #0F766E);
+  --color-hc-primary-light: var(--hc-primary-light, #2DD4BF);
+  --color-hc-primary-50:    var(--hc-primary-50, #F0FDFA);
+  --color-hc-primary-100:   var(--hc-primary-100, #CCFBF1);
 
   /* Accent — Teal-400 (coherente con primary, reemplaza sky-blue) */
-  --color-hc-accent:        #2DD4BF;
-  --color-hc-accent-dark:   #0D9488;
+  --color-hc-accent:        var(--hc-primary, #2DD4BF);
+  --color-hc-accent-dark:   var(--hc-primary-dark, #0D9488);
 
   /* Semantic surfaces — override via CSS vars below */
   --color-hc-app:          var(--hc-bg-app);
@@ -38,17 +39,24 @@
   --color-hc-text:         var(--hc-text-primary);
   --color-hc-text-2:       var(--hc-text-secondary);
   --color-hc-text-3:       var(--hc-text-muted);
-  --color-hc-on-primary:   #FFFFFF;
+  --color-hc-on-primary:   var(--hc-on-primary, #FFFFFF);
 
   /* Status */
-  --color-hc-success:      #10B981;
-  --color-hc-success-bg:   #ECFDF5;
-  --color-hc-error:        #EF4444;
-  --color-hc-error-bg:     #FEF2F2;
-  --color-hc-warning:      #F59E0B;
-  --color-hc-warning-bg:   #FFFBEB;
-  --color-hc-info:         #3B82F6;
-  --color-hc-info-bg:      #EFF6FF;
+  --color-hc-success:      var(--hc-success, #10B981);
+  --color-hc-success-bg:   var(--hc-success-bg, #ECFDF5);
+  --color-hc-error:        var(--hc-error, #EF4444);
+  --color-hc-error-bg:     var(--hc-error-bg, #FEF2F2);
+  --color-hc-warning:      var(--hc-warning, #F59E0B);
+  --color-hc-warning-bg:   var(--hc-warning-bg, #FFFBEB);
+  --color-hc-info:         var(--hc-info, #3B82F6);
+  --color-hc-info-bg:      var(--hc-info-bg, #EFF6FF);
+
+  /* Border radius — dynamic via BrandingService */
+  --radius-sm: var(--hc-radius-sm, 4px);
+  --radius-md: var(--hc-radius-md, 8px);
+  --radius-lg: var(--hc-radius-lg, 12px);
+  --radius-xl: var(--hc-radius-xl, 16px);
+  --radius-2xl: var(--hc-radius-2xl, 24px);
 }
 
 /* ─── Light Theme ────────────────────────────────────── */
@@ -58,20 +66,54 @@
   sidebar con tinte teal para distinguir navegación
 */
 :root {
-  --hc-bg-app:        #F8FAFC;   /* slate-50: neutro, no azulado */
+  /* Background surfaces */
+  --hc-bg-app:        #F8FAFC;
   --hc-bg-surface:    #FFFFFF;
-  --hc-bg-sidebar:    #F0FDFA;   /* teal-50: distingue la nav del contenido */
+  --hc-bg-sidebar:    #F0FDFA;
   --hc-bg-navbar:     #FFFFFF;
   --hc-bg-card:       #FFFFFF;
-  --hc-bg-muted:      #F1F5F9;   /* slate-100: más visible que antes */
-  --hc-bg-hover:      #CCFBF1;   /* teal-100: hover más expresivo */
+  --hc-bg-muted:      #F1F5F9;
+  --hc-bg-hover:      #CCFBF1;
   --hc-bg-input:      #FFFFFF;
-  --hc-border:        #E2E8F0;   /* slate-200 */
-  --hc-border-input:  #94A3B8;   /* slate-400: borde de input más visible */
-  --hc-border-sidebar:#B2E0DA;   /* teal-200: borde sidebar → contenido */
-  --hc-text-primary:  #0F172A;   /* slate-900 */
-  --hc-text-secondary:#334155;   /* slate-700: más contraste que antes */
-  --hc-text-muted:    #64748B;   /* slate-500 */
+
+  /* Borders */
+  --hc-border:        #E2E8F0;
+  --hc-border-input:  #94A3B8;
+  --hc-border-sidebar:#B2E0DA;
+
+  /* Text */
+  --hc-text-primary:  #0F172A;
+  --hc-text-secondary:#334155;
+  --hc-text-muted:    #64748B;
+
+  /* Dynamic border-radius — set by BrandingService */
+  --hc-radius-sm: 4px;
+  --hc-radius-md: 8px;
+  --hc-radius-lg: 12px;
+  --hc-radius-xl: 16px;
+
+  /* Typography scale — set by BrandingService */
+  --hc-font-family: 'Inter', sans-serif;
+  --hc-base-font-size: 16px;
+  --hc-h1-size: 2.5rem;
+  --hc-h2-size: 2rem;
+  --hc-h3-size: 1.5rem;
+  --hc-h4-size: 1.25rem;
+  --hc-h5-size: 1rem;
+  --hc-h6-size: 0.875rem;
+  --hc-heading-weight: 700;
+  --hc-line-height: 1.5;
+  --hc-letter-spacing: 0px;
+
+  /* Alias: identity keys → CSS semantic vars */
+  --hc-background:  var(--hc-bg-app);
+  --hc-surface:     var(--hc-bg-surface);
+  --hc-muted:       var(--hc-bg-muted);
+  --hc-primary-50:  #F0FDFA;
+  --hc-primary-100: #CCFBF1;
+  --hc-success-bg: #ECFDF5;
+  --hc-warning-bg: #FFFBEB;
+  --hc-error-bg:    #FEF2F2;
 }
 
 /* ─── Dark Theme ─────────────────────────────────────── */
@@ -80,20 +122,30 @@
   Cada capa tiene al menos 6-8 puntos de diferencia en luminosidad
 */
 .dark {
-  --hc-bg-app:        #0B1220;   /* azul-pizarra más frío que navy puro */
+  --hc-bg-app:        #0B1220;
   --hc-bg-surface:    #0D1829;
-  --hc-bg-sidebar:    #0F1A2E;   /* sidebar ligeramente distinto de app */
+  --hc-bg-sidebar:    #0F1A2E;
   --hc-bg-navbar:     #0F1A2E;
-  --hc-bg-card:       #131F35;   /* más claro que app — jerarquía clara */
-  --hc-bg-muted:      #1A2D47;   /* mayor contraste con card */
-  --hc-bg-hover:      #1E3455;   /* hover visible */
-  --hc-bg-input:      #162540;   /* input distinguible del card */
-  --hc-border:        #1E3352;   /* borde sutil pero presente */
-  --hc-border-sidebar:#1E3352;   /* mismo en dark */
-  --hc-border-input:  #2A4466;   /* borde input más definido */
-  --hc-text-primary:  #E8F0F8;   /* blanco-azulado clínico */
-  --hc-text-secondary:#8BAFC8;   /* azul-gris medio */
-  --hc-text-muted:    #4D6F8A;   /* muted con contraste suficiente */
+  --hc-bg-card:       #131F35;
+  --hc-bg-muted:      #1A2D47;
+  --hc-bg-hover:      #1E3455;
+  --hc-bg-input:      #162540;
+  --hc-border:        #1E3352;
+  --hc-border-sidebar:#1E3352;
+  --hc-border-input:  #2A4466;
+  --hc-text-primary:  #E8F0F8;
+  --hc-text-secondary:#8BAFC8;
+  --hc-text-muted:    #4D6F8A;
+
+  /* Alias: identity keys → CSS semantic vars */
+  --hc-background:  var(--hc-bg-app);
+  --hc-surface:     var(--hc-bg-surface);
+  --hc-muted:       var(--hc-bg-muted);
+  --hc-primary-50:  #0A2D2A;
+  --hc-primary-100: #0D3D38;
+  --hc-success-bg: #052E16;
+  --hc-warning-bg:  #451A03;
+  --hc-error-bg:    #450A0A;
 }
 
 /* ─── Base styles ────────────────────────────────────── */
@@ -104,8 +156,63 @@ html, body {
 body {
   background-color: var(--hc-bg-app);
   color: var(--hc-text-primary);
+  font-family: var(--hc-font-family, 'Inter', sans-serif);
+  font-size: var(--hc-base-font-size, 16px);
+  line-height: var(--hc-line-height, 1.5);
   transition: background-color 0.2s ease, color 0.2s ease;
 }
+
+/* ─── Dynamic Typography Scale ────────────────────────── */
+/* Respect branding typography set by BrandingService */
+.hc-h1 {
+  font-size: var(--hc-h1-size, 2.5rem);
+  font-weight: var(--hc-heading-weight, 700);
+  line-height: var(--hc-line-height, 1.5);
+  letter-spacing: var(--hc-letter-spacing, 0);
+}
+.hc-h2 {
+  font-size: var(--hc-h2-size, 2rem);
+  font-weight: var(--hc-heading-weight, 700);
+  line-height: var(--hc-line-height, 1.5);
+  letter-spacing: var(--hc-letter-spacing, 0);
+}
+.hc-h3 {
+  font-size: var(--hc-h3-size, 1.5rem);
+  font-weight: var(--hc-heading-weight, 700);
+  line-height: var(--hc-line-height, 1.5);
+  letter-spacing: var(--hc-letter-spacing, 0);
+}
+.hc-h4 {
+  font-size: var(--hc-h4-size, 1.25rem);
+  font-weight: var(--hc-heading-weight, 700);
+  line-height: var(--hc-line-height, 1.5);
+  letter-spacing: var(--hc-letter-spacing, 0);
+}
+.hc-h5 {
+  font-size: var(--hc-h5-size, 1rem);
+  font-weight: var(--hc-heading-weight, 700);
+  line-height: var(--hc-line-height, 1.5);
+  letter-spacing: var(--hc-letter-spacing, 0);
+}
+.hc-h6 {
+  font-size: var(--hc-h6-size, 0.875rem);
+  font-weight: var(--hc-heading-weight, 700);
+  line-height: var(--hc-line-height, 1.5);
+  letter-spacing: var(--hc-letter-spacing, 0);
+}
+.hc-display {
+  font-size: var(--hc-h1-size, 2.5rem);
+  font-weight: var(--hc-heading-weight, 700);
+  line-height: 1;
+  letter-spacing: -0.02em;
+}
+
+/* Border-radius utility classes that respect dynamic var */
+.br-radius-sm { border-radius: var(--hc-radius-sm, 4px); }
+.br-radius-md { border-radius: var(--hc-radius-md, 8px); }
+.br-radius-lg { border-radius: var(--hc-radius-lg, 12px); }
+.br-radius-xl { border-radius: var(--hc-radius-xl, 16px); }
+.br-radius-2xl { border-radius: var(--hc-radius-2xl, 24px); }
 
 /* Smooth transitions for theme switching */
 *, *::before, *::after {
@@ -123,7 +230,8 @@ body {
 
   /* Cards */
   .hc-card {
-    @apply bg-hc-card rounded-xl border border-hc-border;
+    @apply bg-hc-card border border-hc-border;
+    border-radius: var(--hc-radius-xl, 16px);
     box-shadow: 0 1px 3px 0 rgb(0 0 0 / 0.06), 0 1px 2px -1px rgb(0 0 0 / 0.04);
   }
   .dark .hc-card {
@@ -132,38 +240,45 @@ body {
 
   /* Buttons */
   .hc-btn-primary {
-    @apply inline-flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium
+    @apply inline-flex items-center gap-2 px-4 py-2 text-sm font-medium
            bg-hc-primary hover:bg-hc-primary-dark text-white shadow-sm transition-colors
            disabled:opacity-50 disabled:cursor-not-allowed;
+    border-radius: var(--hc-radius-md, 8px);
   }
   .hc-btn-secondary {
-    @apply inline-flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium
+    @apply inline-flex items-center gap-2 px-4 py-2 text-sm font-medium
            bg-hc-muted hover:bg-hc-hover text-hc-text-2 border border-hc-border
            transition-colors;
+    border-radius: var(--hc-radius-md, 8px);
   }
   .hc-btn-icon {
-    @apply p-1.5 rounded-md bg-hc-muted hover:bg-hc-hover text-hc-text-2 transition-colors;
+    @apply p-1.5 bg-hc-muted hover:bg-hc-hover text-hc-text-2 transition-colors;
+    border-radius: var(--hc-radius-md, 8px);
   }
   .hc-btn-icon-primary {
-    @apply p-1.5 rounded-md bg-hc-muted hover:bg-hc-primary/10 hover:text-hc-primary
+    @apply p-1.5 bg-hc-muted hover:bg-hc-primary/10 hover:text-hc-primary
            text-hc-text-2 transition-colors;
+    border-radius: var(--hc-radius-md, 8px);
   }
   .hc-btn-icon-danger {
-    @apply p-1.5 rounded-md bg-hc-muted hover:bg-hc-error hover:text-white
+    @apply p-1.5 bg-hc-muted hover:bg-hc-error hover:text-white
            text-hc-text-2 transition-colors;
+    border-radius: var(--hc-radius-md, 8px);
   }
 
   /* Form controls */
   .hc-input {
-    @apply w-full bg-hc-input border border-hc-border-i rounded-lg px-3 py-2 text-sm
+    @apply w-full bg-hc-input border border-hc-border-i px-3 py-2 text-sm
            text-hc-text placeholder:text-hc-text-3
            focus:outline-none focus:ring-2 focus:ring-hc-primary/30 focus:border-hc-primary
            transition-colors;
+    border-radius: var(--hc-radius-md, 8px);
   }
   .hc-select {
-    @apply w-full bg-hc-input border border-hc-border-i rounded-lg px-3 py-2 text-sm
+    @apply w-full bg-hc-input border border-hc-border-i px-3 py-2 text-sm
            text-hc-text focus:outline-none focus:ring-2 focus:ring-hc-primary/30
            focus:border-hc-primary transition-colors;
+    border-radius: var(--hc-radius-md, 8px);
   }
   .hc-label {
     @apply block text-sm font-medium text-hc-text-2 mb-1;
@@ -171,21 +286,26 @@ body {
 
   /* Badges */
   .hc-badge-primary {
-    @apply px-2 py-0.5 rounded-full text-xs font-medium
+    @apply px-2 py-0.5 text-xs font-medium
            bg-hc-primary-100 text-hc-primary-dark border border-hc-primary/20;
+    border-radius: 9999px;
   }
   .hc-badge-success {
-    @apply px-2 py-0.5 rounded-full text-xs font-medium bg-hc-success-bg text-hc-success;
+    @apply px-2 py-0.5 text-xs font-medium bg-hc-success-bg text-hc-success;
+    border-radius: 9999px;
   }
   .hc-badge-error {
-    @apply px-2 py-0.5 rounded-full text-xs font-medium bg-hc-error-bg text-hc-error;
+    @apply px-2 py-0.5 text-xs font-medium bg-hc-error-bg text-hc-error;
+    border-radius: 9999px;
   }
   .hc-badge-warning {
-    @apply px-2 py-0.5 rounded-full text-xs font-medium bg-hc-warning-bg text-hc-warning;
+    @apply px-2 py-0.5 text-xs font-medium bg-hc-warning-bg text-hc-warning;
+    border-radius: 9999px;
   }
   .hc-badge-muted {
-    @apply px-2 py-0.5 rounded-full text-xs font-medium bg-hc-muted text-hc-text-2
+    @apply px-2 py-0.5 text-xs font-medium bg-hc-muted text-hc-text-2
            border border-hc-border;
+    border-radius: 9999px;
   }
 
   /* Page structure */
@@ -193,7 +313,11 @@ body {
     @apply flex items-center justify-between mb-4;
   }
   .hc-page-title {
-    @apply text-xl font-semibold text-hc-text flex items-center gap-2;
+    @apply text-hc-text flex items-center gap-2;
+    font-size: var(--hc-h2-size, 2rem);
+    font-weight: var(--hc-heading-weight, 700);
+    line-height: var(--hc-line-height, 1.5);
+    letter-spacing: var(--hc-letter-spacing, 0);
   }
   .hc-section-label {
     @apply text-xs font-semibold text-hc-text-3 uppercase tracking-wider;
@@ -201,18 +325,22 @@ body {
 
   /* Alerts */
   .hc-alert-error {
-    @apply p-3 rounded-lg bg-hc-error-bg border border-hc-error/30 text-hc-error text-sm;
+    @apply p-3 bg-hc-error-bg border border-hc-error/30 text-hc-error text-sm;
+    border-radius: var(--hc-radius-md, 8px);
   }
   .hc-alert-success {
-    @apply p-3 rounded-lg bg-hc-success-bg border border-hc-success/30 text-hc-success text-sm;
+    @apply p-3 bg-hc-success-bg border border-hc-success/30 text-hc-success text-sm;
+    border-radius: var(--hc-radius-md, 8px);
   }
   .hc-alert-info {
-    @apply p-3 rounded-lg bg-hc-info-bg border border-hc-info/30 text-hc-info text-sm;
+    @apply p-3 bg-hc-info-bg border border-hc-info/30 text-hc-info text-sm;
+    border-radius: var(--hc-radius-md, 8px);
   }
 
   /* Tables */
   .hc-table-wrap {
-    @apply bg-hc-card rounded-xl border border-hc-border shadow-sm overflow-hidden overflow-x-auto;
+    @apply bg-hc-card border border-hc-border shadow-sm overflow-hidden overflow-x-auto;
+    border-radius: var(--hc-radius-xl, 16px);
   }
   .hc-table {
     @apply w-full text-sm;
@@ -236,28 +364,49 @@ body {
   /* Pagination */
   .hc-pagination {
     @apply flex items-center justify-between px-4 py-3 border-t border-hc-border bg-hc-muted/30;
+    border-radius: 0 0 var(--hc-radius-xl, 16px) var(--hc-radius-xl, 16px);
   }
   .hc-page-btn {
-    @apply px-2.5 py-1.5 rounded-md text-xs font-medium bg-hc-muted hover:bg-hc-hover
+    @apply px-2.5 py-1.5 text-xs font-medium bg-hc-muted hover:bg-hc-hover
            text-hc-text-2 disabled:opacity-40 disabled:cursor-not-allowed transition-colors;
+    border-radius: var(--hc-radius-md, 8px);
   }
   .hc-page-btn-active {
-    @apply px-2.5 py-1.5 rounded-md text-xs font-medium bg-hc-primary text-white;
+    @apply px-2.5 py-1.5 text-xs font-medium bg-hc-primary text-white;
+    border-radius: var(--hc-radius-md, 8px);
   }
 
   /* Stat card (dashboard) */
   .hc-stat-card {
-    @apply bg-hc-card rounded-xl border border-hc-border shadow-sm p-5 flex items-start gap-4
+    @apply bg-hc-card border border-hc-border shadow-sm p-5 flex items-start gap-4
            hover:shadow-md transition-shadow;
+    border-radius: var(--hc-radius-xl, 16px);
   }
   .hc-stat-icon {
-    @apply w-11 h-11 rounded-xl flex items-center justify-center shrink-0 text-lg;
+    @apply w-11 h-11 flex items-center justify-center shrink-0 text-lg;
+    border-radius: var(--hc-radius-xl, 16px);
   }
 
   /* Quick action card */
   .hc-action-card {
-    @apply bg-hc-card rounded-xl border border-hc-border shadow-sm p-5
+    @apply bg-hc-card border border-hc-border shadow-sm p-5
            flex flex-col items-center gap-3 cursor-pointer
            hover:border-hc-primary/40 hover:shadow-md transition-all text-center;
+    border-radius: var(--hc-radius-xl, 16px);
   }
+
+  /* Scrollbar hiding */
+  .scrollbar-hide {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+  .scrollbar-hide::-webkit-scrollbar {
+    display: none;
+  }
+}
+
+/* Shimmer animation for progress bars */
+@keyframes shimmer {
+  0% { transform: translateX(-100%); }
+  100% { transform: translateX(100%); }
 }
