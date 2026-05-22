@@ -1,5 +1,4 @@
 import { ChangeDetectionStrategy, Component, inject, OnInit } from '@angular/core';
-import { KeyValuePipe } from '@angular/common';
 import { Router } from '@angular/router';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import {
@@ -10,7 +9,7 @@ import { DocumentTemplateService } from '../../services/document-template.servic
 
 @Component({
   selector: 'app-template-list',
-  imports: [FontAwesomeModule, TranslatePipe, KeyValuePipe],
+  imports: [FontAwesomeModule, TranslatePipe],
   templateUrl: './template-list.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })

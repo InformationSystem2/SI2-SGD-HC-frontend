@@ -39,6 +39,7 @@ const TYPES_WITH_OPTIONS: FieldType[] = [FieldType.SELECT, FieldType.RADIO];
 const SUB_COL_TYPES: FieldType[] = [
   FieldType.TEXT, FieldType.TEXTAREA, FieldType.NUMBER,
   FieldType.DATE, FieldType.TIME, FieldType.EMAIL, FieldType.SELECT,
+  FieldType.CHECKBOX,
 ];
 
 function emptySubCol(): SubColDef {

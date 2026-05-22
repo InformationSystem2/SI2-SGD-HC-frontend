@@ -111,12 +111,22 @@ export class DocumentDetail implements OnInit {
     return typeof t === 'string' && t.trim() ? t : d.templateName;
   }
 
-  contentEntries(): { key: string; value: string }[] {
+  contentEntries(): { key: string; value: any; isArray: boolean }[] {
     const content = this.doc()?.clinicalContent ?? {};
     return Object.entries(content).map(([key, value]) => ({
       key:   key.replace(/_/g, ' '),
-      value: String(value),
+      value: value,
+      isArray: Array.isArray(value),
     }));
+  }
+
+  getArrayHeaders(arr: any[]): string[] {
+    if (!arr || arr.length === 0) return [];
+    return Object.keys(arr[0]);
+  }
+
+  isBoolean(val: any): boolean {
+    return typeof val === 'boolean';
   }
 
   statusLabel(status: string): string {

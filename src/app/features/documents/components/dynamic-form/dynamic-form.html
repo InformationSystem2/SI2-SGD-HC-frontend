@@ -12,7 +12,89 @@
         </label>
       }
 
-      @if (field[1].type === FieldType.TEXTAREA) {
+      @if (field[1].type === FieldType.ARRAY) {
+        <div class="rounded-xl border border-hc-border overflow-hidden bg-hc-surface">
+          <div class="w-full overflow-x-auto">
+            <div class="min-w-max">
+
+              <!-- Cabecera de la tabla -->
+              <div class="grid bg-hc-muted border-b border-hc-border px-3 py-2 gap-2"
+                [style.grid-template-columns]="'repeat(' + getSubCols(field[1]).length + ', minmax(150px, 1fr)) 2.5rem'">
+                @for (col of getSubCols(field[1]); track col[0]) {
+                  <span class="text-xs font-semibold text-hc-text-2 uppercase tracking-wide px-1"
+                        [class.text-center]="col[1].type === FieldType.CHECKBOX">
+                    {{ col[1].label || col[0] }}
+                    @if (col[1].required) { <span class="text-hc-error">*</span> }
+                  </span>
+                }
+                <span></span><!-- columna del botón eliminar -->
+              </div>
+
+              <!-- Filas del FormArray -->
+              <div [formArrayName]="field[0]" class="divide-y divide-hc-border">
+                @for (row of getArrayRows(field[0]); track $index; let ri = $index) {
+                  <div [formGroup]="asFormGroup(getFormArray(field[0]).at(ri))" class="grid items-center px-3 py-2 gap-2"
+                    [style.grid-template-columns]="'repeat(' + getSubCols(field[1]).length + ', minmax(150px, 1fr)) 2.5rem'">
+
+                    @for (col of getSubCols(field[1]); track col[0]) {
+
+                      @if (col[1].type === FieldType.SELECT) {
+                        <select [formControlName]="col[0]" class="w-full rounded-md border border-hc-border bg-hc-surface px-2.5 py-1.5
+                           text-sm text-hc-text
+                           focus:outline-none focus:ring-2 focus:ring-hc-primary/50" 
+                           [class.border-hc-error]="asFormGroup(getFormArray(field[0]).at(ri)).get(col[0])?.invalid
+                                          && asFormGroup(getFormArray(field[0]).at(ri)).get(col[0])?.touched">
+                          <option value="">{{ 'DOCUMENTS.SELECT_OPTION' | translate }}</option>
+                          @for (opt of getOptions(col[1]); track opt[0]) {
+                            <option [value]="opt[0]">{{ opt[1] }}</option>
+                          }
+                        </select>
+                      } @else if (col[1].type === FieldType.CHECKBOX) {
+                        <div class="flex justify-center py-1.5">
+                          <input type="checkbox" [formControlName]="col[0]"
+                            class="w-5 h-5 accent-hc-primary rounded border-hc-border focus:ring-2 focus:ring-hc-primary/50 cursor-pointer"
+                            [class.border-hc-error]="asFormGroup(getFormArray(field[0]).at(ri)).get(col[0])?.invalid
+                                          && asFormGroup(getFormArray(field[0]).at(ri)).get(col[0])?.touched" />
+                        </div>
+                      } @else {
+                        <input [formControlName]="col[0]" [type]="getSubInputType(col[1])" [placeholder]="col[1].label || col[0]"
+                          class="w-full rounded-md border border-hc-border bg-hc-surface px-2.5 py-1.5
+                           text-sm text-hc-text placeholder:text-hc-text-3
+                           focus:outline-none focus:ring-2 focus:ring-hc-primary/50" 
+                           [class.border-hc-error]="asFormGroup(getFormArray(field[0]).at(ri)).get(col[0])?.invalid
+                                          && asFormGroup(getFormArray(field[0]).at(ri)).get(col[0])?.touched" />
+                      }
+
+                    }
+
+                    <!-- Botón eliminar fila -->
+                    <button type="button" (click)="removeRow(field[0], ri)" [disabled]="getFormArray(field[0]).length === 1"
+                      class="p-1.5 rounded-md text-hc-error/60 hover:text-white hover:bg-hc-error
+                                         transition-colors disabled:opacity-30 disabled:cursor-not-allowed"
+                      title="Eliminar fila">
+                      <fa-icon [icon]="faTrash" class="text-[11px]" />
+                    </button>
+
+                  </div>
+                }
+              </div>
+
+            </div>
+          </div>
+
+          <!-- Agregar fila -->
+          <div class="px-3 py-2 border-t border-hc-border bg-hc-muted/50">
+            <button type="button" (click)="addRow(field[0], field[1])" class="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium
+                               text-hc-primary bg-hc-primary/10 hover:bg-hc-primary hover:text-white
+                               border border-hc-primary/20 transition-colors">
+              <fa-icon [icon]="faPlus" class="text-[10px]" />
+              {{ 'DOCUMENTS.ADD_ROW' | translate }}
+            </button>
+          </div>
+
+        </div>
+
+      } @else if (field[1].type === FieldType.TEXTAREA) {
         <textarea
           [id]="field[0]"
           [formControlName]="field[0]"

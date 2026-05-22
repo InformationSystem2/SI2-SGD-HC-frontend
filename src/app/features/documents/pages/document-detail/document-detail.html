@@ -93,11 +93,50 @@
         </div>
         <div class="divide-y divide-hc-border/50">
           @for (entry of contentEntries(); track entry.key) {
-            <div class="px-6 py-3 flex gap-4">
+            <div class="px-6 py-4 flex flex-col md:flex-row gap-4">
               <p class="text-xs text-hc-text-3 uppercase tracking-wide font-medium w-40 shrink-0 capitalize pt-0.5">
                 {{ entry.key }}
               </p>
-              <p class="text-hc-text text-sm">{{ entry.value }}</p>
+              @if (entry.isArray) {
+                <div class="flex-1 overflow-x-auto border border-hc-border rounded-lg bg-hc-surface">
+                  <table class="min-w-full divide-y divide-hc-border text-sm">
+                    <thead class="bg-hc-muted">
+                      <tr>
+                        @for (header of getArrayHeaders(entry.value); track header) {
+                          <th class="px-4 py-2 text-left text-xs font-semibold text-hc-text-2 uppercase tracking-wide capitalize">
+                            {{ header.replace(/_/g, ' ') }}
+                          </th>
+                        }
+                      </tr>
+                    </thead>
+                    <tbody class="divide-y divide-hc-border">
+                      @for (row of entry.value; track $index) {
+                        <tr>
+                          @for (header of getArrayHeaders(entry.value); track header) {
+                            <td class="px-4 py-2 text-hc-text">
+                              @if (isBoolean(row[header])) {
+                                @if (row[header]) {
+                                  <span class="inline-flex items-center text-hc-primary font-semibold">
+                                    ✓ Sí
+                                  </span>
+                                } @else {
+                                  <span class="inline-flex items-center text-hc-text-3">
+                                    ✗ No
+                                  </span>
+                                }
+                              } @else {
+                                {{ row[header] }}
+                              }
+                            </td>
+                          }
+                        </tr>
+                      }
+                    </tbody>
+                  </table>
+                </div>
+              } @else {
+                <p class="text-hc-text text-sm whitespace-pre-line">{{ entry.value }}</p>
+              }
             </div>
           }
         </div>
