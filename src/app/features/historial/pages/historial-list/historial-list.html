@@ -1,0 +1,149 @@
+<!-- src/app/features/historial/pages/historial-list/historial-list.html -->
+
+<div class="p-6">
+  <div class="mb-6 flex flex-wrap items-center justify-between gap-4">
+    <h1 class="text-2xl font-bold text-hc-text">{{ 'HISTORIAL.TITLE' | translate }}</h1>
+  </div>
+
+  <form [formGroup]="searchForm" (ngSubmit)="buscar()"
+    class="mb-6 grid grid-cols-1 gap-4 rounded-lg bg-white p-4 shadow-md dark:bg-gray-800 md:grid-cols-4">
+    <div>
+      <label class="mb-1 block text-sm font-medium text-gray-700 dark:text-gray-300">{{ 'HISTORIAL.PATIENT_NAME' |
+        translate }}</label>
+      <input type="text" formControlName="nombre"
+        class="w-full rounded-md border p-2 dark:bg-gray-700 dark:border-gray-600"
+        [placeholder]="'HISTORIAL.PATIENT_NAME_PLACEHOLDER' | translate">
+    </div>
+    <div>
+      <label class="mb-1 block text-sm font-medium text-gray-700 dark:text-gray-300">{{ 'HISTORIAL.DOC_NUMBER' |
+        translate }}</label>
+      <input type="text" formControlName="nroDoc"
+        class="w-full rounded-md border p-2 dark:bg-gray-700 dark:border-gray-600"
+        [placeholder]="'HISTORIAL.DOC_NUMBER_PLACEHOLDER' | translate">
+    </div>
+    <div>
+      <label class="mb-1 block text-sm font-medium text-gray-700 dark:text-gray-300">{{ 'HISTORIAL.STATUS' | translate
+        }}</label>
+      <select formControlName="estado" class="w-full rounded-md border p-2 dark:bg-gray-700 dark:border-gray-600">
+        <option value="">{{ 'HISTORIAL.STATUS_ALL' | translate }}</option>
+        <option value="DRAFT">{{ 'HISTORIAL.STATUS_DRAFT' | translate }}</option>
+        <option value="PENDING_SIGNATURE">{{ 'HISTORIAL.STATUS_PENDING' | translate }}</option>
+        <option value="COMPLETED">{{ 'HISTORIAL.STATUS_COMPLETED' | translate }}</option>
+      </select>
+    </div>
+    <div>
+      <label class="mb-1 block text-sm font-medium text-gray-700 dark:text-gray-300">{{ 'HISTORIAL.DATE_FROM' |
+        translate }}</label>
+      <input type="date" formControlName="fechaDesde"
+        class="w-full rounded-md border p-2 dark:bg-gray-700 dark:border-gray-600">
+    </div>
+    <div>
+      <label class="mb-1 block text-sm font-medium text-gray-700 dark:text-gray-300">{{ 'HISTORIAL.DATE_TO' | translate
+        }}</label>
+      <input type="date" formControlName="fechaHasta"
+        class="w-full rounded-md border p-2 dark:bg-gray-700 dark:border-gray-600">
+    </div>
+    <div class="flex items-end gap-2 md:col-span-2">
+      <button type="submit"
+        class="flex items-center gap-2 rounded-md bg-blue-600 px-4 py-2 text-white hover:bg-blue-700">
+        <fa-icon [icon]="faSearch"></fa-icon> {{ 'HISTORIAL.SEARCH' | translate }}
+      </button>
+      <button type="button" (click)="clearFilters()"
+        class="rounded-md bg-gray-300 px-4 py-2 text-gray-800 hover:bg-gray-400 dark:bg-gray-700 dark:text-gray-200">
+        {{ 'HISTORIAL.CLEAR' | translate }}
+      </button>
+    </div>
+  </form>
+
+  @if (historialService.loading()) {
+  <div class="flex justify-center py-8">
+    <fa-icon [icon]="faSpinner" class="animate-spin text-2xl text-blue-500"></fa-icon>
+  </div>
+  }
+
+  @if (!historialService.loading() && historialService.result()?.content?.length) {
+  <div class="overflow-x-auto rounded-lg shadow">
+    <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
+      <thead class="bg-gray-50 dark:bg-gray-800">
+        <tr>
+          <th class="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500 dark:text-gray-400">
+            {{ 'HISTORIAL.TABLE_PATIENT' | translate }}</th>
+          <th class="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500 dark:text-gray-400">
+            {{ 'HISTORIAL.TABLE_DOC_NUMBER' | translate }}</th>
+          <th class="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500 dark:text-gray-400">
+            {{ 'HISTORIAL.TABLE_DOC_TYPE' | translate }}</th>
+          <th class="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500 dark:text-gray-400">
+            {{ 'HISTORIAL.TABLE_STATUS' | translate }}</th>
+          <th class="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500 dark:text-gray-400">
+            {{ 'HISTORIAL.TABLE_ISSUE_DATE' | translate }}</th>
+          <th class="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500 dark:text-gray-400">
+            {{ 'HISTORIAL.TABLE_ACTIONS' | translate }}</th>
+        </tr>
+      </thead>
+      <tbody class="divide-y divide-gray-200 bg-white dark:divide-gray-700 dark:bg-gray-900">
+        @for (doc of historialService.result()?.content; track doc.id) {
+        <tr class="hover:bg-gray-50 dark:hover:bg-gray-800">
+          <td class="whitespace-nowrap px-6 py-4 text-sm font-medium text-gray-900 dark:text-gray-200">{{
+            doc.patientName }}</td>
+          <td class="whitespace-nowrap px-6 py-4 text-sm text-gray-500 dark:text-gray-400">{{ doc.patientDocumentNumber
+            || '--' }}</td>
+          <td class="whitespace-nowrap px-6 py-4 text-sm text-gray-500 dark:text-gray-400">{{ doc.templateName }}</td>
+          <td class="whitespace-nowrap px-6 py-4">
+            <span [class]="'inline-flex rounded-full px-2 py-1 text-xs font-semibold ' + statusClass(doc.status)">
+              {{ statusLabel(doc.status) | translate }}
+            </span>
+          </td>
+          <td class="whitespace-nowrap px-6 py-4 text-sm text-gray-500 dark:text-gray-400">{{ doc.issueDate |
+            date:'dd/MM/yyyy' }}</td>
+          <td class="whitespace-nowrap px-6 py-4 text-sm font-medium">
+            <button (click)="viewDocument(doc.id)" class="mr-2 text-blue-600 hover:text-blue-900"
+              title="{{ 'HISTORIAL.TABLE_ACTIONS_VIEW' | translate }}">
+              <fa-icon [icon]="faEye"></fa-icon>
+            </button>
+            <button (click)="editDocument(doc.id)" class="text-green-600 hover:text-green-900"
+              title="{{ 'HISTORIAL.TABLE_ACTIONS_EDIT' | translate }}">
+              <fa-icon [icon]="faEdit"></fa-icon>
+            </button>
+          </td>
+        </tr>
+        }
+      </tbody>
+    </table>
+  </div>
+
+  @if (totalPages() > 1) {
+  <div class="mt-6 flex items-center justify-between">
+    <div class="text-sm text-gray-500">
+      {{ 'HISTORIAL.PAGINATION_INFO' | translate : {
+      start: (page() * size()) + 1,
+      end: (page() + 1) * size() > totalElements() ? totalElements() : (page() + 1) * size(),
+      total: totalElements()
+      } }}
+    </div>
+    <div class="flex gap-2">
+      <button (click)="prevPage()" [disabled]="page() === 0" class="rounded-md border px-3 py-1 disabled:opacity-50">
+        {{ 'HISTORIAL.PAGINATION_PREV' | translate }}
+      </button>
+      <span class="px-3 py-1">{{ 'HISTORIAL.PAGINATION_PAGE' | translate : { current: page() + 1, total: totalPages() }
+        }}</span>
+      <button (click)="nextPage()" [disabled]="page() + 1 >= totalPages()"
+        class="rounded-md border px-3 py-1 disabled:opacity-50">
+        {{ 'HISTORIAL.PAGINATION_NEXT' | translate }}
+      </button>
+    </div>
+  </div>
+  }
+  }
+
+  @if (!historialService.loading() && (!historialService.result()?.content?.length)) {
+  <div class="rounded-lg bg-yellow-50 p-4 text-center text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-200">
+    {{ 'HISTORIAL.NO_RESULTS' | translate }}
+  </div>
+  }
+
+  @if (historialService.error()) {
+  <div class="rounded-lg bg-red-50 p-4 text-red-800 dark:bg-red-900/30 dark:text-red-200">
+    {{ 'HISTORIAL.ERROR_GENERIC' | translate }}
+  </div>
+  }
+</div>

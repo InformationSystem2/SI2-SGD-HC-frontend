@@ -54,6 +54,7 @@
     "PATIENTS": "Pacientes",
     "PATIENT_LIST": "Lista",
     "PATIENT_REGISTER": "Registrar",
+    "HISTORIAL": "Historiales Clínicos",
     "DICOM": "Imágenes DICOM",
     "DICOM_VIEWER": "Visor de imágenes",
     "REPORTS": "Reportes"
@@ -545,5 +546,35 @@
     "LOGIN_FAILED": "Credenciales incorrectas",
     "REGISTRATION_FAILED": "Error al registrar la clínica",
     "PAYMENT_FAILED": "Error al procesar el pago"
+  },
+  "HISTORIAL": {
+    "TITLE": "Búsqueda de Historiales Clínicos",
+    "PATIENT_NAME": "Nombre del paciente",
+    "PATIENT_NAME_PLACEHOLDER": "Ej: Juan",
+    "DOC_NUMBER": "N° Documento",
+    "DOC_NUMBER_PLACEHOLDER": "CI / Pasaporte",
+    "STATUS": "Estado",
+    "STATUS_ALL": "Todos",
+    "STATUS_DRAFT": "Borrador",
+    "STATUS_PENDING": "Pendiente firma",
+    "STATUS_COMPLETED": "Completado",
+    "DATE_FROM": "Fecha desde",
+    "DATE_TO": "Fecha hasta",
+    "SEARCH": "Buscar",
+    "CLEAR": "Limpiar",
+    "TABLE_PATIENT": "Paciente",
+    "TABLE_DOC_NUMBER": "N° Documento",
+    "TABLE_DOC_TYPE": "Tipo documento",
+    "TABLE_STATUS": "Estado",
+    "TABLE_ISSUE_DATE": "Fecha emisión",
+    "TABLE_ACTIONS": "Acciones",
+    "NO_RESULTS": "No se encontraron documentos con los filtros aplicados.",
+    "ERROR_GENERIC": "Error al buscar historiales",
+    "PAGINATION_INFO": "Mostrando {{start}} - {{end}} de {{total}} resultados",
+    "PAGINATION_PREV": "Anterior",
+    "PAGINATION_NEXT": "Siguiente",
+    "PAGINATION_PAGE": "Página {{current}} de {{total}}",
+    "TABLE_ACTIONS_VIEW": "Ver",
+    "TABLE_ACTIONS_EDIT": "Editar"
   }
 }
