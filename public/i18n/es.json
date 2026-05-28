@@ -58,6 +58,8 @@
     "DICOM": "Imágenes DICOM",
     "DICOM_VIEWER": "Visor de imágenes",
     "REPORTS": "Reportes",
+    "REPORTS_DESIGNER": "Diseñador",
+    "REPORTS_TEMPLATES": "Plantillas QBE",
     "CONFIG": "Configuración",
     "ADMIN": "Administración",
     "TENANTS": "Tenants",
