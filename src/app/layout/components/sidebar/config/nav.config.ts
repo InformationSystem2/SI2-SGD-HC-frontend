@@ -63,6 +63,16 @@ export const NAV_ITEMS: NavItem[] = [
     permissions: ['DOCUMENT_READ'],
   },
   {
+    label: 'NAV.REPORTS',
+    path: '/reportes/designer',
+    icon: 'file-text',
+    permissions: ['REPORT_READ'],
+    subItems: [
+      { label: 'NAV.REPORTS_DESIGNER', path: '/reportes/designer' },
+      { label: 'NAV.REPORTS_TEMPLATES', path: '/reportes/templates' }
+    ]
+  },
+  {
     label: 'NAV.CONFIG',
     path: '/dashboard/tenant/info',
     icon: 'settings',

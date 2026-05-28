@@ -1,0 +1,120 @@
+<div class="space-y-6">
+
+  <!-- Header -->
+  <div class="hc-page-header">
+    <h2 class="hc-page-title">
+      <fa-icon [icon]="faBookmark" class="text-hc-primary" />
+      {{ 'NAV.REPORTS_TEMPLATES' | translate }}
+    </h2>
+    <button (click)="goToDesigner()" class="hc-btn-primary text-xs">
+      <fa-icon [icon]="faPlus" />
+      Nuevo Reporte
+    </button>
+  </div>
+
+  <!-- Search & Filter bar -->
+  <div class="flex gap-4 items-center">
+    <div class="relative flex-1">
+      <fa-icon [icon]="faSearch"
+               class="absolute left-3 top-1/2 -translate-y-1/2 text-hc-text-3 text-sm pointer-events-none" />
+      <input
+        type="search"
+        [ngModel]="searchTerm()"
+        (ngModelChange)="searchTerm.set($event)"
+        placeholder="Buscar plantilla por nombre, descripción o departamento..."
+        class="hc-input pl-9"
+      />
+    </div>
+  </div>
+
+  <!-- Error Alert -->
+  @if (error()) {
+    <div class="hc-alert-error">{{ error() }}</div>
+  }
+
+  <!-- Loading State -->
+  @if (loading()) {
+    <div class="flex justify-center py-12">
+      <fa-icon [icon]="faSpinner" class="animate-spin text-2xl text-hc-primary" />
+    </div>
+  }
+
+  <!-- Grid of Templates -->
+  @if (!loading()) {
+    @if (filteredTemplates().length === 0) {
+      <div class="hc-card p-12 text-center text-hc-text-3 max-w-lg mx-auto">
+        <fa-icon [icon]="faFolderOpen" class="text-4xl text-hc-primary/30 mb-2" />
+        <p class="text-sm font-semibold">No se encontraron plantillas</p>
+        <p class="text-xs text-hc-text-3 mt-1">Crea configuraciones personalizadas desde el Diseñador de Reportes y guárdalas.</p>
+      </div>
+    } @else {
+      <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
+        @for (tpl of filteredTemplates(); track tpl.id) {
+          <div class="hc-card p-5 flex flex-col justify-between hover:shadow-md hover:border-hc-primary/30 transition-all">
+            
+            <div class="space-y-3">
+              <!-- Top bar -->
+              <div class="flex justify-between items-start gap-2">
+                <div class="flex items-center gap-1.5 min-w-0">
+                  <fa-icon [icon]="faBookmark" class="text-hc-primary text-sm shrink-0" />
+                  <h4 class="font-semibold text-hc-text text-sm truncate" [title]="tpl.name">{{ tpl.name }}</h4>
+                </div>
+                <button 
+                  (click)="deleteTemplate(tpl, $event)" 
+                  class="text-hc-text-3 hover:text-hc-error p-1 transition-colors shrink-0"
+                  title="Eliminar plantilla"
+                >
+                  <fa-icon [icon]="faTrash" class="text-xs" />
+                </button>
+              </div>
+
+              <!-- Description -->
+              <p class="text-xs text-hc-text-2 line-clamp-3 min-h-[48px]">
+                {{ tpl.description || 'Sin descripción detallada.' }}
+              </p>
+
+              <!-- Tags / Meta Details -->
+              <div class="flex flex-wrap gap-2 pt-1.5">
+                <span class="hc-badge-primary text-[10px]">
+                  Tipo: {{ tpl.reportType }}
+                </span>
+                @if (tpl.department) {
+                  <span class="hc-badge-muted text-[10px] flex items-center gap-1">
+                    <fa-icon [icon]="faBuilding" class="text-[9px]" />
+                    {{ tpl.department }}
+                  </span>
+                }
+                @if (tpl.isShared) {
+                  <span class="hc-badge-success text-[10px] flex items-center gap-1">
+                    <fa-icon [icon]="faShareNodes" class="text-[9px]" />
+                    Compartida
+                  </span>
+                }
+              </div>
+
+              <!-- Query Details (Metrics info) -->
+              <div class="text-[10px] text-hc-text-3 space-y-0.5 bg-hc-muted/20 p-2 rounded-lg border border-hc-border/40">
+                <div><b>Columnas seleccionadas:</b> {{ tpl.selectedFields.length }}</div>
+                <div><b>Filtros activos:</b> {{ tpl.filters.length || 0 }}</div>
+              </div>
+            </div>
+
+            <!-- Footer & Trigger -->
+            <div class="mt-4 pt-3 border-t border-hc-border flex items-center justify-between gap-4">
+              <div class="text-[10px] text-hc-text-3">
+                <div>Por: {{ tpl.ownerName }}</div>
+                <div>Fecha: {{ tpl.updatedAt | date:'yyyy-MM-dd HH:mm' }}</div>
+              </div>
+              <button (click)="useTemplate(tpl)" class="hc-btn-primary text-xs py-1.5 px-3">
+                <fa-icon [icon]="faEye" />
+                Abrir QBE
+              </button>
+            </div>
+
+          </div>
+        }
+      </div>
+    }
+  }
+
+</div>

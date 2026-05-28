@@ -21,6 +21,8 @@ import {
   faHeartPulse,
   faChevronDown,
   faBuilding,
+  faXRay,
+  faNotesMedical,
   type IconDefinition,
 } from '@fortawesome/free-solid-svg-icons';
 
@@ -33,6 +35,8 @@ const ICON_MAP: Record<string, IconDefinition> = {
   'shield':           faShieldHalved,
   'heart-pulse':      faHeartPulse,
   'building':         faBuilding,
+  'scan':             faXRay,
+  'search':           faNotesMedical,
 };
 
 @Component({

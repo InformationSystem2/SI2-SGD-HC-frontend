@@ -57,6 +57,8 @@
     "DICOM": "DICOM Images",
     "DICOM_VIEWER": "Image viewer",
     "REPORTS": "Reports",
+    "REPORTS_DESIGNER": "Designer",
+    "REPORTS_TEMPLATES": "Saved Templates",
     "HISTORIAL": "Medical Records",
     "CONFIG": "Configuration",
     "ADMIN": "Administration",
