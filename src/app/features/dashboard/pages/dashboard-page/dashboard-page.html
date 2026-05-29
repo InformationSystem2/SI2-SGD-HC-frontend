@@ -17,169 +17,445 @@
     </div>
   </div>
 
-  <!-- ── Stat cards ───────────────────────────────────────────────────── -->
-  <div class="grid grid-cols-2 lg:grid-cols-4 gap-4">
+  <!-- ════════════════════════════════════════════════════════════════════
+       SUPER ADMIN VIEW
+  ═══════════════════════════════════════════════════════════════════════ -->
+  @if (isSuperAdmin()) {
 
-    <!-- Pacientes -->
-    <div class="hc-stat-card cursor-pointer" (click)="goTo('/pacientes')">
-      <div class="hc-stat-icon bg-hc-primary/10">
-        <fa-icon [icon]="faUserInjured" class="text-hc-primary" />
+    <!-- Loading spinner -->
+    @if (analyticsLoading()) {
+      <div class="hc-card p-10 flex items-center justify-center gap-3 text-hc-text-2">
+        <div class="w-6 h-6 border-2 border-hc-primary border-t-transparent rounded-full animate-spin"></div>
+        <span class="text-sm">{{ 'COMMON.LOADING' | translate }}</span>
       </div>
-      <div class="min-w-0">
-        <p class="hc-section-label">{{ 'DASHBOARD.STAT_PATIENTS' | translate }}</p>
-        @if (patientService.loading()) {
-          <div class="h-7 w-12 bg-hc-muted rounded animate-pulse mt-1"></div>
-        } @else {
-          <p class="hc-h3 text-hc-text mt-0.5">{{ totalPatients() }}</p>
+    }
+
+    <!-- Error -->
+    @if (analyticsError()) {
+      <div class="hc-card p-4 border-l-4 border-hc-error bg-hc-error/5 text-hc-error text-sm">
+        {{ analyticsError()! | translate }}
+      </div>
+    }
+
+    <!-- Charts grid -->
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-5">
+
+      <!-- 1. Financial Health – Pie chart -->
+      <div class="hc-card p-5 flex flex-col gap-3">
+        <h2 class="hc-section-label">{{ 'DASHBOARD.SUBSCRIPTIONS_TITLE' | translate }}</h2>
+        @if (subscriptionsData()) {
+          <div class="relative h-64">
+            <canvas baseChart
+              [data]="subscriptionsData()!"
+              [options]="pieOptions"
+              type="pie">
+            </canvas>
+          </div>
+          <!-- Legend pills -->
+          <div class="flex flex-wrap gap-2 mt-1">
+            <span class="px-2 py-0.5 rounded-full text-xs font-medium bg-[#22c55e]/20 text-[#22c55e]">{{ 'DASHBOARD.STATUS_ACTIVE' | translate }}</span>
+            <span class="px-2 py-0.5 rounded-full text-xs font-medium bg-[#f59e0b]/20 text-[#f59e0b]">{{ 'DASHBOARD.STATUS_PAST_DUE' | translate }}</span>
+            <span class="px-2 py-0.5 rounded-full text-xs font-medium bg-[#ef4444]/20 text-[#ef4444]">{{ 'DASHBOARD.STATUS_CANCELED' | translate }}</span>
+            <span class="px-2 py-0.5 rounded-full text-xs font-medium bg-[#a855f7]/20 text-[#a855f7]">{{ 'DASHBOARD.STATUS_SUSPENDED' | translate }}</span>
+          </div>
+        } @else if (!analyticsLoading()) {
+          <div class="h-64 flex items-center justify-center text-hc-text-3 text-sm">
+            {{ 'COMMON.NO_RESULTS' | translate }}
+          </div>
         }
       </div>
-    </div>
 
-    <!-- Documentos -->
-    <div class="hc-stat-card cursor-pointer" (click)="goTo('/documentos')">
-      <div class="hc-stat-icon bg-hc-accent/10">
-        <fa-icon [icon]="faFileWaveform" class="text-hc-accent" />
-      </div>
-      <div class="min-w-0">
-        <p class="hc-section-label">{{ 'DASHBOARD.STAT_DOCS' | translate }}</p>
-        @if (documentService.loading()) {
-          <div class="h-7 w-12 bg-hc-muted rounded animate-pulse mt-1"></div>
-        } @else {
-          <p class="hc-h3 text-hc-text mt-0.5">{{ totalDocs() }}</p>
+      <!-- 2. Commercial Distribution – Bar chart -->
+      <div class="hc-card p-5 flex flex-col gap-3">
+        <h2 class="hc-section-label">{{ 'DASHBOARD.PLANS_TITLE' | translate }}</h2>
+        @if (commercialData()) {
+          <div class="relative h-64">
+            <canvas baseChart
+              [data]="commercialData()!"
+              [options]="barOptions"
+              type="bar">
+            </canvas>
+          </div>
+          <div class="flex flex-wrap gap-2 mt-1">
+            <span class="px-2 py-0.5 rounded-full text-xs font-medium bg-[#38bdf8]/20 text-[#38bdf8]">{{ 'DASHBOARD.PLAN_BASIC' | translate }}</span>
+            <span class="px-2 py-0.5 rounded-full text-xs font-medium bg-[#818cf8]/20 text-[#818cf8]">{{ 'DASHBOARD.PLAN_PRO' | translate }}</span>
+            <span class="px-2 py-0.5 rounded-full text-xs font-medium bg-[#fb923c]/20 text-[#fb923c]">{{ 'DASHBOARD.PLAN_ENTERPRISE' | translate }}</span>
+          </div>
+        } @else if (!analyticsLoading()) {
+          <div class="h-64 flex items-center justify-center text-hc-text-3 text-sm">
+            {{ 'COMMON.NO_RESULTS' | translate }}
+          </div>
         }
       </div>
-    </div>
 
-    <!-- Completados -->
-    <div class="hc-stat-card cursor-pointer" (click)="goTo('/documentos')">
-      <div class="hc-stat-icon bg-hc-success-bg">
-        <fa-icon [icon]="faFileCircleCheck" class="text-hc-success" />
-      </div>
-      <div class="min-w-0">
-        <p class="hc-section-label">{{ 'DASHBOARD.STAT_COMPLETED' | translate }}</p>
-        @if (documentService.loading()) {
-          <div class="h-7 w-12 bg-hc-muted rounded animate-pulse mt-1"></div>
-        } @else {
-          <p class="hc-h3 text-hc-text mt-0.5">{{ completedDocs() }}</p>
+      <!-- 3. Storage Consumption – Line chart -->
+      <div class="hc-card p-5 flex flex-col gap-3">
+        <h2 class="hc-section-label">{{ 'DASHBOARD.STORAGE_TITLE' | translate }}</h2>
+        @if (storageData()) {
+          <div class="relative h-64">
+            <canvas baseChart
+              [data]="storageData()!"
+              [options]="lineOptions"
+              type="line">
+            </canvas>
+          </div>
+        } @else if (!analyticsLoading()) {
+          <div class="h-64 flex items-center justify-center text-hc-text-3 text-sm">
+            {{ 'COMMON.NO_RESULTS' | translate }}
+          </div>
         }
       </div>
-    </div>
 
-    <!-- Pendientes -->
-    <div class="hc-stat-card cursor-pointer" (click)="goTo('/documentos')">
-      <div class="hc-stat-icon bg-hc-warning-bg">
-        <fa-icon [icon]="faFilePen" class="text-hc-warning" />
+    </div><!-- /charts grid -->
+
+  <!-- ════════════════════════════════════════════════════════════════════
+       CLINIC ADMIN VIEW
+  ═══════════════════════════════════════════════════════════════════════ -->
+  } @else if (isAdmin()) {
+
+    <!-- Loading -->
+    @if (analyticsLoading()) {
+      <div class="hc-card p-10 flex items-center justify-center gap-3 text-hc-text-2">
+        <div class="w-6 h-6 border-2 border-hc-primary border-t-transparent rounded-full animate-spin"></div>
+        <span class="text-sm">{{ 'COMMON.LOADING' | translate }}</span>
       </div>
-      <div class="min-w-0">
-        <p class="hc-section-label">{{ 'DASHBOARD.STAT_PENDING' | translate }}</p>
-        @if (documentService.loading()) {
-          <div class="h-7 w-12 bg-hc-muted rounded animate-pulse mt-1"></div>
-        } @else {
-          <p class="hc-h3 text-hc-text mt-0.5">{{ pendingDocs() }}</p>
+    }
+
+    <!-- Error -->
+    @if (analyticsError()) {
+      <div class="hc-card p-4 border-l-4 border-hc-error bg-hc-error/5 text-hc-error text-sm">
+        {{ analyticsError()! | translate }}
+      </div>
+    }
+
+    <!-- Top row: Doughnut + Medical Studies card -->
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-5">
+
+      <!-- 4. Workflow Funnel – Doughnut -->
+      <div class="hc-card p-5 flex flex-col gap-3 lg:col-span-2">
+        <h2 class="hc-section-label">{{ 'DASHBOARD.WORKFLOW_TITLE' | translate }}</h2>
+        @if (workflowData()) {
+          <div class="relative h-64">
+            <canvas baseChart
+              [data]="workflowData()!"
+              [options]="doughnutOptions"
+              type="doughnut">
+            </canvas>
+          </div>
+          <div class="flex flex-wrap gap-2 mt-1">
+            <span class="px-2 py-0.5 rounded-full text-xs font-medium bg-[#94a3b8]/20 text-[#94a3b8]">{{ 'DASHBOARD.STATUS_DRAFT' | translate }}</span>
+            <span class="px-2 py-0.5 rounded-full text-xs font-medium bg-[#fbbf24]/20 text-[#fbbf24]">{{ 'DASHBOARD.STATUS_PENDING_REVIEW' | translate }}</span>
+            <span class="px-2 py-0.5 rounded-full text-xs font-medium bg-[#f87171]/20 text-[#f87171]">{{ 'DASHBOARD.STATUS_REJECTED' | translate }}</span>
+            <span class="px-2 py-0.5 rounded-full text-xs font-medium bg-[#34d399]/20 text-[#34d399]">{{ 'DASHBOARD.STATUS_FINALIZED' | translate }}</span>
+          </div>
+        } @else if (!analyticsLoading()) {
+          <div class="h-64 flex items-center justify-center text-hc-text-3 text-sm">
+            {{ 'COMMON.NO_RESULTS' | translate }}
+          </div>
         }
       </div>
-    </div>
 
-  </div>
-
-  <!-- ── Quick actions ─────────────────────────────────────────────────── -->
-  <div>
-    <h2 class="hc-section-label mb-3">{{ 'DASHBOARD.QUICK_ACTIONS' | translate }}</h2>
-    <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
-
-      <button class="hc-action-card" (click)="goTo('/pacientes/register')">
-        <div class="w-12 h-12 rounded-xl bg-hc-primary/10 flex items-center justify-center">
-          <fa-icon [icon]="faUserPlus" class="text-xl text-hc-primary" />
-        </div>
-        <div>
-          <p class="font-semibold text-hc-text text-sm">{{ 'DASHBOARD.ACTION_NEW_PATIENT' | translate }}</p>
-          <p class="text-xs text-hc-text-3 mt-0.5">{{ 'DASHBOARD.ACTION_NEW_PATIENT_DESC' | translate }}</p>
-        </div>
-      </button>
-
-      <button class="hc-action-card" (click)="goTo('/documentos/upload')">
-        <div class="w-12 h-12 rounded-xl bg-hc-accent/10 flex items-center justify-center">
-          <fa-icon [icon]="faCloudArrowUp" class="text-xl text-hc-accent" />
-        </div>
-        <div>
-          <p class="font-semibold text-hc-text text-sm">{{ 'DASHBOARD.ACTION_UPLOAD_DOC' | translate }}</p>
-          <p class="text-xs text-hc-text-3 mt-0.5">{{ 'DASHBOARD.ACTION_UPLOAD_DOC_DESC' | translate }}</p>
-        </div>
-      </button>
-
-      <button class="hc-action-card" (click)="goTo('/documentos/templates')">
-        <div class="w-12 h-12 rounded-xl bg-hc-success-bg flex items-center justify-center">
-          <fa-icon [icon]="faClipboardList" class="text-xl text-hc-success" />
-        </div>
-        <div>
-          <p class="font-semibold text-hc-text text-sm">{{ 'DASHBOARD.ACTION_TEMPLATES' | translate }}</p>
-          <p class="text-xs text-hc-text-3 mt-0.5">{{ 'DASHBOARD.ACTION_TEMPLATES_DESC' | translate }}</p>
-        </div>
-      </button>
-
-    </div>
-  </div>
-
-  <!-- ── Recent documents ───────────────────────────────────────────────── -->
-  <div>
-    <div class="flex items-center justify-between mb-3">
-      <h2 class="hc-section-label">{{ 'DASHBOARD.RECENT_DOCS' | translate }}</h2>
-      <button class="flex items-center gap-1 text-xs text-hc-primary hover:underline"
-              (click)="goTo('/documentos')">
-        {{ 'DASHBOARD.VIEW_ALL' | translate }}
-        <fa-icon [icon]="faArrowRight" class="text-xs" />
-      </button>
-    </div>
-
-    <div class="hc-card overflow-hidden">
-      @if (documentService.loading()) {
-        <div class="p-6 space-y-3">
-          @for (_ of [1,2,3]; track $index) {
-            <div class="h-4 bg-hc-muted rounded animate-pulse w-full"></div>
+      <!-- 5. Medical Studies Volume – Numeric card -->
+      <div class="hc-card p-5 flex flex-col justify-between gap-4">
+        <h2 class="hc-section-label">{{ 'DASHBOARD.MEDICAL_STUDIES' | translate }}</h2>
+        <div class="flex flex-col items-center justify-center flex-1 gap-3 py-4">
+          <div class="w-16 h-16 rounded-2xl bg-hc-primary/10 flex items-center justify-center">
+            <fa-icon [icon]="faMicroscope" class="text-3xl text-hc-primary" />
+          </div>
+          @if (medicalStudies() !== null) {
+            <p class="text-5xl font-extrabold text-hc-text">{{ medicalStudies() }}</p>
+            <p class="text-xs text-hc-text-3 uppercase tracking-widest">
+              {{ 'DASHBOARD.DOCUMENTS_ISSUED' | translate }}
+            </p>
+          } @else if (!analyticsLoading()) {
+            <p class="text-hc-text-3 text-sm">—</p>
+          } @else {
+            <div class="h-12 w-24 bg-hc-muted rounded-xl animate-pulse"></div>
           }
         </div>
-      } @else if (recentDocs().length === 0) {
-        <div class="py-10 text-center">
-          <fa-icon [icon]="faFileWaveform" class="text-3xl text-hc-text-3 mb-2 block" />
-          <p class="text-sm text-hc-text-3">{{ 'DASHBOARD.NO_DOCS' | translate }}</p>
+        <!-- Quick stat cards (existing) -->
+        <div class="grid grid-cols-2 gap-2">
+          <div class="hc-stat-card !p-3 cursor-pointer" (click)="goTo('/pacientes')">
+            <div class="hc-stat-icon bg-hc-primary/10 !w-8 !h-8">
+              <fa-icon [icon]="faUserInjured" class="text-sm text-hc-primary" />
+            </div>
+            <div class="min-w-0">
+              <p class="hc-section-label !text-[10px]">{{ 'DASHBOARD.STAT_PATIENTS' | translate }}</p>
+              @if (patientService.loading()) {
+                <div class="h-5 w-8 bg-hc-muted rounded animate-pulse mt-0.5"></div>
+              } @else {
+                <p class="text-sm font-bold text-hc-text">{{ totalPatients() }}</p>
+              }
+            </div>
+          </div>
+          <div class="hc-stat-card !p-3 cursor-pointer" (click)="goTo('/documentos')">
+            <div class="hc-stat-icon bg-hc-accent/10 !w-8 !h-8">
+              <fa-icon [icon]="faFileWaveform" class="text-sm text-hc-accent" />
+            </div>
+            <div class="min-w-0">
+              <p class="hc-section-label !text-[10px]">{{ 'DASHBOARD.STAT_DOCS' | translate }}</p>
+              @if (documentService.loading()) {
+                <div class="h-5 w-8 bg-hc-muted rounded animate-pulse mt-0.5"></div>
+              } @else {
+                <p class="text-sm font-bold text-hc-text">{{ totalDocs() }}</p>
+              }
+            </div>
+          </div>
         </div>
-      } @else {
-        <table class="hc-table min-w-[480px]">
-          <thead>
-            <tr>
-              <th>{{ 'DOCUMENTS.COL_NAME' | translate }}</th>
-              <th>{{ 'PATIENTS.COL_NAME' | translate }}</th>
-              <th>{{ 'DOCUMENTS.COL_DATE' | translate }}</th>
-              <th>{{ 'DOCUMENTS.COL_STATUS' | translate }}</th>
-            </tr>
-          </thead>
-          <tbody>
-            @for (doc of recentDocs(); track doc.id) {
-              <tr class="cursor-pointer" (click)="goTo('/documentos/detail/' + doc.id)">
-                <td class="font-medium text-hc-text max-w-[180px] truncate">
-                  {{ doc.templateName || ('DOCUMENT_LIST.NO_TITLE' | translate) }}
-                </td>
-                <td class="text-hc-text-2 max-w-[140px] truncate">{{ doc.patientName }}</td>
-                <td class="text-hc-text-2 whitespace-nowrap">{{ doc.issueDate }}</td>
-                <td>
-                  @switch (doc.status) {
-                    @case ('COMPLETED') {
-                      <span class="hc-badge-success">{{ 'DOCUMENT_LIST.STATUS_COMPLETED' | translate }}</span>
-                    }
-                    @case ('PENDING_SIGNATURE') {
-                      <span class="hc-badge-warning">{{ 'DOCUMENT_LIST.STATUS_PENDING' | translate }}</span>
-                    }
-                    @default {
-                      <span class="hc-badge-muted">{{ 'DOCUMENT_LIST.STATUS_DRAFT' | translate }}</span>
-                    }
-                  }
-                </td>
+      </div>
+
+    </div><!-- /top row -->
+
+    <!-- 6. Critical Alerts – Table -->
+    <div>
+      <div class="flex items-center gap-2 mb-3">
+        <fa-icon [icon]="faBell" class="text-hc-warning" />
+        <h2 class="hc-section-label">{{ 'DASHBOARD.CRITICAL_ALERTS' | translate }}</h2>
+      </div>
+
+      <div class="hc-card overflow-hidden">
+        @if (criticalAlerts().length === 0 && !analyticsLoading()) {
+          <div class="py-10 text-center">
+            <fa-icon [icon]="faFileCircleCheck" class="text-3xl text-hc-success mb-2 block" />
+            <p class="text-sm text-hc-text-3">{{ 'DASHBOARD.NO_ALERTS' | translate }}</p>
+          </div>
+        } @else if (criticalAlerts().length > 0) {
+          <table class="hc-table min-w-[480px]">
+            <thead>
+              <tr>
+                <th>{{ 'DASHBOARD.COL_DOC_ID' | translate }}</th>
+                <th>{{ 'DASHBOARD.COL_STATUS' | translate }}</th>
+                <th>{{ 'DASHBOARD.COL_ISSUE_DATE' | translate }}</th>
+                <th>{{ 'DASHBOARD.COL_EXPIRY_DATE' | translate }}</th>
               </tr>
-            }
-          </tbody>
-        </table>
-      }
+            </thead>
+            <tbody>
+              @for (alert of criticalAlerts(); track alert.id) {
+                <tr>
+                  <td class="font-mono text-xs text-hc-text-2 max-w-[160px] truncate">{{ alert.id }}</td>
+                  <td>
+                    <span [class]="alertBadgeClass(alert.status)">
+                      @if (alert.status === 'EXPIRED') {
+                        {{ 'DASHBOARD.STATUS_EXPIRED' | translate }}
+                      } @else {
+                        {{ 'DASHBOARD.STATUS_EXPIRING_SOON' | translate }}
+                      }
+                    </span>
+                  </td>
+                  <td class="text-hc-text-2 whitespace-nowrap text-sm">{{ alert.issue_date }}</td>
+                  <td class="text-hc-text-2 whitespace-nowrap text-sm">{{ alert.expiry_date }}</td>
+                </tr>
+              }
+            </tbody>
+          </table>
+        }
+      </div>
+    </div><!-- /critical alerts -->
+
+    <!-- Quick actions -->
+    <div>
+      <h2 class="hc-section-label mb-3">{{ 'DASHBOARD.QUICK_ACTIONS' | translate }}</h2>
+      <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+        <button class="hc-action-card" (click)="goTo('/pacientes/register')">
+          <div class="w-12 h-12 rounded-xl bg-hc-primary/10 flex items-center justify-center">
+            <fa-icon [icon]="faUserPlus" class="text-xl text-hc-primary" />
+          </div>
+          <div>
+            <p class="font-semibold text-hc-text text-sm">{{ 'DASHBOARD.ACTION_NEW_PATIENT' | translate }}</p>
+            <p class="text-xs text-hc-text-3 mt-0.5">{{ 'DASHBOARD.ACTION_NEW_PATIENT_DESC' | translate }}</p>
+          </div>
+        </button>
+        <button class="hc-action-card" (click)="goTo('/documentos/upload')">
+          <div class="w-12 h-12 rounded-xl bg-hc-accent/10 flex items-center justify-center">
+            <fa-icon [icon]="faCloudArrowUp" class="text-xl text-hc-accent" />
+          </div>
+          <div>
+            <p class="font-semibold text-hc-text text-sm">{{ 'DASHBOARD.ACTION_UPLOAD_DOC' | translate }}</p>
+            <p class="text-xs text-hc-text-3 mt-0.5">{{ 'DASHBOARD.ACTION_UPLOAD_DOC_DESC' | translate }}</p>
+          </div>
+        </button>
+        <button class="hc-action-card" (click)="goTo('/documentos/templates')">
+          <div class="w-12 h-12 rounded-xl bg-hc-success-bg flex items-center justify-center">
+            <fa-icon [icon]="faClipboardList" class="text-xl text-hc-success" />
+          </div>
+          <div>
+            <p class="font-semibold text-hc-text text-sm">{{ 'DASHBOARD.ACTION_TEMPLATES' | translate }}</p>
+            <p class="text-xs text-hc-text-3 mt-0.5">{{ 'DASHBOARD.ACTION_TEMPLATES_DESC' | translate }}</p>
+          </div>
+        </button>
+      </div>
     </div>
-  </div>
+
+  <!-- ════════════════════════════════════════════════════════════════════
+       DEFAULT VIEW (any other role – original dashboard)
+  ═══════════════════════════════════════════════════════════════════════ -->
+  } @else {
+
+    <!-- ── Stat cards ───────────────────────────────────────────────────── -->
+    <div class="grid grid-cols-2 lg:grid-cols-4 gap-4">
+
+      <!-- Pacientes -->
+      <div class="hc-stat-card cursor-pointer" (click)="goTo('/pacientes')">
+        <div class="hc-stat-icon bg-hc-primary/10">
+          <fa-icon [icon]="faUserInjured" class="text-hc-primary" />
+        </div>
+        <div class="min-w-0">
+          <p class="hc-section-label">{{ 'DASHBOARD.STAT_PATIENTS' | translate }}</p>
+          @if (patientService.loading()) {
+            <div class="h-7 w-12 bg-hc-muted rounded animate-pulse mt-1"></div>
+          } @else {
+            <p class="hc-h3 text-hc-text mt-0.5">{{ totalPatients() }}</p>
+          }
+        </div>
+      </div>
+
+      <!-- Documentos -->
+      <div class="hc-stat-card cursor-pointer" (click)="goTo('/documentos')">
+        <div class="hc-stat-icon bg-hc-accent/10">
+          <fa-icon [icon]="faFileWaveform" class="text-hc-accent" />
+        </div>
+        <div class="min-w-0">
+          <p class="hc-section-label">{{ 'DASHBOARD.STAT_DOCS' | translate }}</p>
+          @if (documentService.loading()) {
+            <div class="h-7 w-12 bg-hc-muted rounded animate-pulse mt-1"></div>
+          } @else {
+            <p class="hc-h3 text-hc-text mt-0.5">{{ totalDocs() }}</p>
+          }
+        </div>
+      </div>
+
+      <!-- Completados -->
+      <div class="hc-stat-card cursor-pointer" (click)="goTo('/documentos')">
+        <div class="hc-stat-icon bg-hc-success-bg">
+          <fa-icon [icon]="faFileCircleCheck" class="text-hc-success" />
+        </div>
+        <div class="min-w-0">
+          <p class="hc-section-label">{{ 'DASHBOARD.STAT_COMPLETED' | translate }}</p>
+          @if (documentService.loading()) {
+            <div class="h-7 w-12 bg-hc-muted rounded animate-pulse mt-1"></div>
+          } @else {
+            <p class="hc-h3 text-hc-text mt-0.5">{{ completedDocs() }}</p>
+          }
+        </div>
+      </div>
+
+      <!-- Pendientes -->
+      <div class="hc-stat-card cursor-pointer" (click)="goTo('/documentos')">
+        <div class="hc-stat-icon bg-hc-warning-bg">
+          <fa-icon [icon]="faFilePen" class="text-hc-warning" />
+        </div>
+        <div class="min-w-0">
+          <p class="hc-section-label">{{ 'DASHBOARD.STAT_PENDING' | translate }}</p>
+          @if (documentService.loading()) {
+            <div class="h-7 w-12 bg-hc-muted rounded animate-pulse mt-1"></div>
+          } @else {
+            <p class="hc-h3 text-hc-text mt-0.5">{{ pendingDocs() }}</p>
+          }
+        </div>
+      </div>
+
+    </div>
+
+    <!-- ── Quick actions ─────────────────────────────────────────────────── -->
+    <div>
+      <h2 class="hc-section-label mb-3">{{ 'DASHBOARD.QUICK_ACTIONS' | translate }}</h2>
+      <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+
+        <button class="hc-action-card" (click)="goTo('/pacientes/register')">
+          <div class="w-12 h-12 rounded-xl bg-hc-primary/10 flex items-center justify-center">
+            <fa-icon [icon]="faUserPlus" class="text-xl text-hc-primary" />
+          </div>
+          <div>
+            <p class="font-semibold text-hc-text text-sm">{{ 'DASHBOARD.ACTION_NEW_PATIENT' | translate }}</p>
+            <p class="text-xs text-hc-text-3 mt-0.5">{{ 'DASHBOARD.ACTION_NEW_PATIENT_DESC' | translate }}</p>
+          </div>
+        </button>
+
+        <button class="hc-action-card" (click)="goTo('/documentos/upload')">
+          <div class="w-12 h-12 rounded-xl bg-hc-accent/10 flex items-center justify-center">
+            <fa-icon [icon]="faCloudArrowUp" class="text-xl text-hc-accent" />
+          </div>
+          <div>
+            <p class="font-semibold text-hc-text text-sm">{{ 'DASHBOARD.ACTION_UPLOAD_DOC' | translate }}</p>
+            <p class="text-xs text-hc-text-3 mt-0.5">{{ 'DASHBOARD.ACTION_UPLOAD_DOC_DESC' | translate }}</p>
+          </div>
+        </button>
+
+        <button class="hc-action-card" (click)="goTo('/documentos/templates')">
+          <div class="w-12 h-12 rounded-xl bg-hc-success-bg flex items-center justify-center">
+            <fa-icon [icon]="faClipboardList" class="text-xl text-hc-success" />
+          </div>
+          <div>
+            <p class="font-semibold text-hc-text text-sm">{{ 'DASHBOARD.ACTION_TEMPLATES' | translate }}</p>
+            <p class="text-xs text-hc-text-3 mt-0.5">{{ 'DASHBOARD.ACTION_TEMPLATES_DESC' | translate }}</p>
+          </div>
+        </button>
+
+      </div>
+    </div>
+
+    <!-- ── Recent documents ───────────────────────────────────────────────── -->
+    <div>
+      <div class="flex items-center justify-between mb-3">
+        <h2 class="hc-section-label">{{ 'DASHBOARD.RECENT_DOCS' | translate }}</h2>
+        <button class="flex items-center gap-1 text-xs text-hc-primary hover:underline"
+                (click)="goTo('/documentos')">
+          {{ 'DASHBOARD.VIEW_ALL' | translate }}
+          <fa-icon [icon]="faArrowRight" class="text-xs" />
+        </button>
+      </div>
+
+      <div class="hc-card overflow-hidden">
+        @if (documentService.loading()) {
+          <div class="p-6 space-y-3">
+            @for (_ of [1,2,3]; track $index) {
+              <div class="h-4 bg-hc-muted rounded animate-pulse w-full"></div>
+            }
+          </div>
+        } @else if (recentDocs().length === 0) {
+          <div class="py-10 text-center">
+            <fa-icon [icon]="faFileWaveform" class="text-3xl text-hc-text-3 mb-2 block" />
+            <p class="text-sm text-hc-text-3">{{ 'DASHBOARD.NO_DOCS' | translate }}</p>
+          </div>
+        } @else {
+          <table class="hc-table min-w-[480px]">
+            <thead>
+              <tr>
+                <th>{{ 'DOCUMENTS.COL_NAME' | translate }}</th>
+                <th>{{ 'PATIENTS.COL_NAME' | translate }}</th>
+                <th>{{ 'DOCUMENTS.COL_DATE' | translate }}</th>
+                <th>{{ 'DOCUMENTS.COL_STATUS' | translate }}</th>
+              </tr>
+            </thead>
+            <tbody>
+              @for (doc of recentDocs(); track doc.id) {
+                <tr class="cursor-pointer" (click)="goTo('/documentos/detail/' + doc.id)">
+                  <td class="font-medium text-hc-text max-w-[180px] truncate">
+                    {{ doc.templateName || ('DOCUMENT_LIST.NO_TITLE' | translate) }}
+                  </td>
+                  <td class="text-hc-text-2 max-w-[140px] truncate">{{ doc.patientName }}</td>
+                  <td class="text-hc-text-2 whitespace-nowrap">{{ doc.issueDate }}</td>
+                  <td>
+                    @switch (doc.status) {
+                      @case ('COMPLETED') {
+                        <span class="hc-badge-success">{{ 'DOCUMENT_LIST.STATUS_COMPLETED' | translate }}</span>
+                      }
+                      @case ('PENDING_SIGNATURE') {
+                        <span class="hc-badge-warning">{{ 'DOCUMENT_LIST.STATUS_PENDING' | translate }}</span>
+                      }
+                      @default {
+                        <span class="hc-badge-muted">{{ 'DOCUMENT_LIST.STATUS_DRAFT' | translate }}</span>
+                      }
+                    }
+                  </td>
+                </tr>
+              }
+            </tbody>
+          </table>
+        }
+      </div>
+    </div>
+
+  }<!-- /role switch -->
 
 </div>

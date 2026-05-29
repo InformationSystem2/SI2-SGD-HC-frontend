@@ -15,6 +15,7 @@ export interface AuthState {
   username: string | null;
   roles: string[] | null;
   expiresAt: number | null;  // Date.now() + expiresIn, para saber si venció
+  tenantId: string | null; 
   loading: boolean;
   error: string | null;
 }

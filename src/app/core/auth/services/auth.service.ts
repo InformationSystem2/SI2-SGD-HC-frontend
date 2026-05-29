@@ -19,14 +19,16 @@ export class AuthService {
     const expiresAt   = Number(localStorage.getItem('expiresAt')) || null;
     let username: string | null = null;
     let roles: string[] | null  = null;
+    let tenantId: string | null = null;
     if (accessToken) {
       try {
         const payload = JSON.parse(atob(accessToken.split('.')[1]));
         username = payload.sub   ?? null;
         roles    = payload.roles ?? null;
+        tenantId = payload.tenantId ?? null;
       } catch { /* token malformado */ }
     }
-    return { accessToken, username, roles, expiresAt, loading: false, error: null };
+    return { accessToken, username, roles, tenantId, expiresAt, loading: false, error: null };
   })());
 
   readonly accessToken     = computed(() => this._state().accessToken);
@@ -35,6 +37,7 @@ export class AuthService {
   readonly error           = computed(() => this._state().error);
   readonly username        = computed(() => this._state().username);
   readonly roles           = computed(() => this._state().roles ?? []);
+  readonly tenantId        = computed(() => this._state().tenantId);
 
   readonly isTokenExpired = computed(() => {
     const exp = this._state().expiresAt;
@@ -67,6 +70,7 @@ export class AuthService {
           username: payload.sub ?? null,
           roles: payload.roles ?? [],
           expiresAt: Date.now() + response.expiresIn,
+          tenantId: payload.tenantId ?? null,
           loading: false,
           error: null,
         });
@@ -94,6 +98,7 @@ export class AuthService {
       username: null,
       roles: null,
       expiresAt: null,
+      tenantId: null,
       loading: false,
       error: null,
     });
