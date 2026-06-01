@@ -1,18 +1,18 @@
-// src/app/layout/components/sidebar/config/nav.config.ts
-
 import type { NavItem } from '../models/nav-item.model';
+import { ROLES } from '../../../../core/auth/services/role-policy.service';
 
 export const NAV_ITEMS: NavItem[] = [
   {
     label: 'NAV.DASHBOARD',
     path: '/dashboard/dashboard',
     icon: 'layout-dashboard',
+    roles: [ROLES.SUPERUSER, ROLES.ADMIN, ROLES.DIRECTOR, ROLES.MEDICO, ROLES.ARCHIVO],
   },
   {
     label: 'NAV.DOCUMENTS',
     path: '/documentos/list',
     icon: 'file-text',
-    permissions: ['DOCUMENT_READ'],
+    roles: [ROLES.SUPERUSER, ROLES.ADMIN, ROLES.MEDICO, ROLES.ARCHIVO],
     subItems: [
       { label: 'NAV.DOCUMENT_LIST', path: '/documentos/list' },
       { label: 'NAV.DOCUMENT_UPLOAD', path: '/documentos/upload' },
@@ -24,13 +24,13 @@ export const NAV_ITEMS: NavItem[] = [
     label: 'NAV.ROLES',
     path: '/roles/list',
     icon: 'shield',
-    permissions: ['ROLE_READ'],
+    roles: [ROLES.SUPERUSER, ROLES.ADMIN, ROLES.DIRECTOR],
   },
   {
     label: 'NAV.USERS',
     path: '/usuarios/list',
     icon: 'users',
-    permissions: ['USER_READ'],
+    roles: [ROLES.SUPERUSER, ROLES.ADMIN, ROLES.DIRECTOR],
     subItems: [
       { label: 'NAV.USER_LIST', path: '/usuarios/list' },
       { label: 'NAV.USER_REGISTER', path: '/usuarios/register' },
@@ -40,7 +40,7 @@ export const NAV_ITEMS: NavItem[] = [
     label: 'NAV.PATIENTS',
     path: '/pacientes/list',
     icon: 'heart-pulse',
-    permissions: ['PATIENT_READ'],
+    roles: [ROLES.SUPERUSER, ROLES.ADMIN, ROLES.DIRECTOR, ROLES.MEDICO, ROLES.ARCHIVO],
     subItems: [
       { label: 'NAV.PATIENT_LIST', path: '/pacientes/list' },
       { label: 'NAV.PATIENT_REGISTER', path: '/pacientes/register' },
@@ -50,23 +50,23 @@ export const NAV_ITEMS: NavItem[] = [
     label: 'NAV.DICOM',
     path: '/dicom/viewer',
     icon: 'scan',
-    permissions: ['DOCUMENT_READ'],
+    roles: [ROLES.SUPERUSER, ROLES.ADMIN, ROLES.MEDICO],
     subItems: [
       { label: 'NAV.DICOM_VIEWER', path: '/dicom/viewer' },
     ],
 
   },
   {
-    label: 'NAV.HISTORIAL',    // ← usar clave de traducción
+    label: 'NAV.HISTORIAL',
     path: '/historiales',
     icon: 'search',
-    permissions: ['DOCUMENT_READ'],
+    roles: [ROLES.SUPERUSER, ROLES.ADMIN, ROLES.DIRECTOR, ROLES.MEDICO],
   },
   {
     label: 'NAV.REPORTS',
     path: '/reportes/designer',
     icon: 'file-text',
-    permissions: ['REPORT_READ'],
+    roles: [ROLES.SUPERUSER, ROLES.ADMIN, ROLES.DIRECTOR],
     subItems: [
       { label: 'NAV.REPORTS_DESIGNER', path: '/reportes/designer' },
       { label: 'NAV.REPORTS_TEMPLATES', path: '/reportes/templates' }
@@ -76,7 +76,7 @@ export const NAV_ITEMS: NavItem[] = [
     label: 'NAV.CONFIG',
     path: '/dashboard/tenant/info',
     icon: 'settings',
-    permissions: ['ROLE_ADMIN', 'ROLE_SUPERUSER'],
+    roles: [ROLES.SUPERUSER, ROLES.ADMIN, ROLES.DIRECTOR],
     subItems: [
       { label: 'NAV.INFO',          path: '/dashboard/tenant/info' },
       { label: 'NAV.APPEARANCE',    path: '/dashboard/tenant/appearance' },
@@ -88,7 +88,7 @@ export const NAV_ITEMS: NavItem[] = [
     label: 'NAV.ADMIN',
     path: '/dashboard/admin/tenants',
     icon: 'building',
-    permissions: ['ROLE_SUPERUSER'],
+    roles: [ROLES.SUPERUSER],
     subItems: [
       { label: 'NAV.TENANTS', path: '/dashboard/admin/tenants' },
     ],

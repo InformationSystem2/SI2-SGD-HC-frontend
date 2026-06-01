@@ -33,7 +33,7 @@
           </tr>
         </thead>
         <tbody>
-          @for (role of rolesService.roles(); track role.id) {
+          @for (role of visibleRoles(); track role.id) {
             <tr>
               <td class="font-medium text-hc-text">{{ role.name }}</td>
               <td class="text-hc-text-2 max-w-[240px] truncate">{{ role.description }}</td>
@@ -46,16 +46,18 @@
               </td>
               <td>
                 <div class="flex items-center justify-end gap-1.5">
-                  <button (click)="goToEdit(role.id)"
-                          class="p-1.5 rounded-md bg-hc-muted hover:bg-hc-primary hover:text-white text-hc-text-2 transition-colors"
-                          [title]="'ROLES.COL_ACTIONS' | translate">
-                    <fa-icon [icon]="faPencil" />
-                  </button>
-                  <button (click)="delete(role.id)"
-                          class="hc-btn-icon-danger"
-                          [title]="'ROLES.CONFIRM_DELETE' | translate">
-                    <fa-icon [icon]="faTrash" />
-                  </button>
+                  @if (canManageRole(role.name)) {
+                    <button (click)="goToEdit(role.id)"
+                            class="p-1.5 rounded-md bg-hc-muted hover:bg-hc-primary hover:text-white text-hc-text-2 transition-colors"
+                            [title]="'ROLES.COL_ACTIONS' | translate">
+                      <fa-icon [icon]="faPencil" />
+                    </button>
+                    <button (click)="delete(role.id)"
+                            class="hc-btn-icon-danger"
+                            [title]="'ROLES.CONFIRM_DELETE' | translate">
+                      <fa-icon [icon]="faTrash" />
+                    </button>
+                  }
                 </div>
               </td>
             </tr>

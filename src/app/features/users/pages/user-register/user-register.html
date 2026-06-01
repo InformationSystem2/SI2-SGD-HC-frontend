@@ -131,24 +131,43 @@
       </div>
     </div>
 
+    <!-- ── Sección: Estado (Activación Inmediata) ────── -->
+    @if (canActivateUser()) {
+      <div class="px-6 py-5 border-t border-hc-border">
+        <label class="flex items-center gap-3 cursor-pointer w-fit">
+          <input formControlName="isActive" type="checkbox"
+                 class="w-4 h-4 accent-hc-primary cursor-pointer" />
+          <span class="text-sm text-hc-text-2">Activar usuario inmediatamente (requiere rol permitido)</span>
+        </label>
+      </div>
+    }
+
     <!-- ── Sección: Roles ────────────────────────────── -->
     <div class="px-6 py-3 bg-hc-muted border-t border-b border-hc-border">
       <p class="hc-section-label">{{ 'USERS.FIELD_ROLES' | translate }} <span class="text-hc-error">*</span></p>
     </div>
     <div class="px-6 py-5">
-      <div class="flex flex-wrap gap-2">
-        @if (rolesService.loading()) {
-          <span class="text-hc-text-3 text-sm">{{ 'USERS.LOADING_ROLES' | translate }}</span>
-        }
-        @for (role of rolesService.roles(); track role.id) {
-          <button type="button" (click)="toggleRole(role.id)"
-            [class]="'px-3 py-1.5 rounded-lg text-sm font-medium border transition-colors ' +
-                     (isRoleSelected(role.id)
-                       ? 'bg-hc-primary border-hc-primary text-white shadow-sm'
-                       : 'bg-hc-muted border-hc-border text-hc-text-2 hover:border-hc-primary hover:text-hc-primary')"
-          >{{ role.name }}</button>
-        }
-      </div>
+      @if (rolesService.loading()) {
+        <div class="flex items-center gap-2 text-hc-text-3 text-sm">
+          <fa-icon [icon]="faSpinner" class="animate-spin" />
+          <span>Cargando roles disponibles...</span>
+        </div>
+      } @else if (rolesService.roles().length === 0) {
+        <div class="rounded-xl border border-yellow-400/40 bg-yellow-400/10 px-4 py-3 text-sm text-yellow-300">
+          ⚠️ No se encontraron roles activos en el sistema. Contacte al administrador.
+        </div>
+      } @else {
+        <div class="flex flex-wrap gap-2">
+          @for (role of availableRoles(); track role.id) {
+            <button type="button" (click)="toggleRole(role.id)"
+              [class]="'px-3 py-1.5 rounded-lg text-sm font-medium border transition-colors ' +
+                       (isRoleSelected(role.id)
+                         ? 'bg-hc-primary border-hc-primary text-white shadow-sm'
+                         : 'bg-hc-muted border-hc-border text-hc-text-2 hover:border-hc-primary hover:text-hc-primary')"
+            >{{ role.name }}</button>
+          }
+        </div>
+      }
       @if (form.get('rolesIds')?.invalid && form.get('rolesIds')?.touched) {
         <p class="text-hc-error text-xs mt-2">{{ 'USERS.VAL_ROLE' | translate }}</p>
       }

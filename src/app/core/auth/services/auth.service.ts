@@ -17,6 +17,11 @@ export class AuthService {
   private _state = signal<AuthState>((() => {
     const accessToken = localStorage.getItem('accessToken');
     const expiresAt   = Number(localStorage.getItem('expiresAt')) || null;
+    const attributePermissionsStr = localStorage.getItem('attributePermissions');
+    let attributePermissions = {};
+    try {
+      if (attributePermissionsStr) attributePermissions = JSON.parse(attributePermissionsStr);
+    } catch {}
     let username: string | null = null;
     let roles: string[] | null  = null;
     if (accessToken) {
@@ -26,7 +31,7 @@ export class AuthService {
         roles    = payload.roles ?? null;
       } catch { /* token malformado */ }
     }
-    return { accessToken, username, roles, expiresAt, loading: false, error: null };
+    return { accessToken, username, roles, attributePermissions, expiresAt, loading: false, error: null } as any;
   })());
 
   readonly accessToken     = computed(() => this._state().accessToken);
@@ -66,13 +71,28 @@ export class AuthService {
           accessToken: response.accessToken,
           username: payload.sub ?? null,
           roles: payload.roles ?? [],
+          attributePermissions: {}, // Inicialmente vacío
           expiresAt: Date.now() + response.expiresIn,
           loading: false,
           error: null,
-        });
+        } as any);
 
-        this.branding.load();        
-        this.router.navigate(['/dashboard']);
+        this.branding.load();
+        
+        // Fetch ABAC rules
+        this.http.get<any[]>(`${environment.apiUrl}/module_users/users/me/abac`).subscribe({
+          next: (rules) => {
+            const map: Record<string, string> = {};
+            for (const rule of rules) {
+              map[`${rule.entityName}.${rule.attributeName}`] = rule.accessLevel;
+            }
+            localStorage.setItem('attributePermissions', JSON.stringify(map));
+            this._state.update(s => ({ ...s, attributePermissions: map } as any));
+          },
+          complete: () => {
+             this.router.navigate(['/dashboard']);
+          }
+        });
       }),
       catchError( err => {
         const message = err.error?.message ?? 'ERRORS.LOGIN_FAILED';
@@ -89,6 +109,7 @@ export class AuthService {
     localStorage.removeItem('accessToken');
     localStorage.removeItem('tenantSlug');
     localStorage.removeItem('expiresAt');
+    localStorage.removeItem('attributePermissions');
     this._state.set({
       accessToken: null,
       username: null,

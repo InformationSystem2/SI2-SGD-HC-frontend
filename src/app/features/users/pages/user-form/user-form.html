@@ -75,11 +75,19 @@
         </div>
       </div>
       <!-- Active toggle -->
-      <label class="flex items-center gap-3 cursor-pointer w-fit">
-        <input formControlName="isActive" type="checkbox" id="isActive"
-               class="w-4 h-4 accent-hc-primary cursor-pointer" />
-        <span class="text-sm text-hc-text-2">{{ 'USERS.FIELD_ACTIVE' | translate }}</span>
-      </label>
+      @if (canActivateUser()) {
+        <label class="flex items-center gap-3 cursor-pointer w-fit">
+          <input formControlName="isActive" type="checkbox" id="isActive"
+                 class="w-4 h-4 accent-hc-primary cursor-pointer" />
+          <span class="text-sm text-hc-text-2">{{ 'USERS.FIELD_ACTIVE' | translate }}</span>
+        </label>
+      } @else {
+        <label class="flex items-center gap-3 w-fit opacity-50 cursor-not-allowed">
+          <input formControlName="isActive" type="checkbox"
+                 class="w-4 h-4 accent-hc-primary cursor-not-allowed" />
+          <span class="text-sm text-hc-text-2">{{ 'USERS.FIELD_ACTIVE' | translate }} (Sin permiso)</span>
+        </label>
+      }
     </div>
 
     <!-- ── Sección: Roles ────────────────────────────── -->
@@ -91,7 +99,7 @@
         @if (rolesService.loading()) {
           <span class="text-hc-text-3 text-sm">{{ 'USERS.LOADING_ROLES' | translate }}</span>
         }
-        @for (role of rolesService.roles(); track role.id) {
+        @for (role of availableRoles(); track role.id) {
           <button type="button" (click)="toggleRole(role.id)"
             [class]="'px-3 py-1.5 rounded-lg text-sm font-medium border transition-colors ' +
                      (isRoleSelected(role.id)

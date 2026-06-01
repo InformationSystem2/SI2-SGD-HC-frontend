@@ -22,6 +22,9 @@ import { faSpinner, faUserPlus } from '@fortawesome/free-solid-svg-icons';
 import { CreateUserRequest } from '../../models/user.model';
 import { RolesService } from '../../../roles/services/roles.service';
 import { TranslatePipe } from '@ngx-translate/core';
+import { RolePolicyService } from '../../../../core/auth/services/role-policy.service';
+import { computed } from '@angular/core';
+import { switchMap, of } from 'rxjs';
 
 @Component({
   selector: 'app-user-register',
@@ -35,6 +38,7 @@ export class UserRegister implements OnInit {
   private router  = inject(Router);
   readonly userService  = inject(UserService);
   readonly rolesService = inject(RolesService);
+  readonly rolePolicyService = inject(RolePolicyService);
 
   readonly faUserPlus = faUserPlus;
   readonly faSpinner  = faSpinner;
@@ -44,6 +48,26 @@ export class UserRegister implements OnInit {
     { value: 'MALE',   label: 'Masculino' },
     { value: 'FEMALE', label: 'Femenino'  },
   ];
+
+  readonly availableRoles = computed(() => {
+    const roles = this.rolesService.roles();
+    if (this.rolePolicyService.isSuperuser()) return roles;
+    if (this.rolePolicyService.isAdminDefault()) {
+      const allowedNames = this.rolePolicyService.allowedRolesForAdmin();
+      return roles.filter(r => allowedNames.includes(r.name));
+    }
+    return roles;
+  });
+
+  readonly canActivateUser = computed(() => {
+    if (this.rolePolicyService.isSuperuser()) return true;
+    const selectedIds = this.form.value.rolesIds ?? [];
+    const selectedRoleNames = selectedIds.map(id => {
+      const role = this.rolesService.roles().find(r => r.id === id);
+      return role?.name ?? '';
+    });
+    return this.rolePolicyService.canManageUserWithRoles(selectedRoleNames);
+  });
 
   ngOnInit(): void {
     this.rolesService.loadRoles().subscribe();
@@ -61,6 +85,7 @@ export class UserRegister implements OnInit {
       documentNumber:  ['', Validators.required],
       phone:           [''],
       gender:          ['', Validators.required],
+      isActive:        [false],
       rolesIds:        [[] as string[], Validators.required],
     },
     { validators: passwordsMatchValidator },
@@ -86,7 +111,7 @@ export class UserRegister implements OnInit {
       return;
     }
 
-    const { documentType, documentNumber, phone, gender, confirmPassword, ...required } = this.form.value;
+    const { documentType, documentNumber, phone, gender, confirmPassword, isActive, ...required } = this.form.value;
 
     const payload: CreateUserRequest = {
       ...required,
@@ -101,7 +126,24 @@ export class UserRegister implements OnInit {
       ...(gender         ? { gender }         : {}),
     };
 
-    this.userService.createUser(payload).subscribe(() => {
+    const activateImmediately = isActive && this.canActivateUser();
+
+    this.userService.createUser(payload).pipe(
+      switchMap(user => {
+        if (activateImmediately && user.id) {
+           return this.userService.updateUser(user.id, {
+             firstName: payload.firstName,
+             lastName: payload.lastName,
+             rolesIds: payload.rolesIds,
+             isActive: true,
+             documentType: payload.documentType,
+             documentNumber: payload.documentNumber,
+             phone: payload.phone
+           });
+        }
+        return of(user);
+      })
+    ).subscribe(() => {
       this.form.reset();
       this.router.navigate(['/usuarios/list']);
     });

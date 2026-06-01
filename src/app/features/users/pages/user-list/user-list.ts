@@ -9,6 +9,7 @@ import {
 } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { TranslatePipe, TranslateService } from '@ngx-translate/core';
+import { RolePolicyService } from '../../../../core/auth/services/role-policy.service';
 
 @Component({
   selector: 'app-user-list',
@@ -21,6 +22,7 @@ export class UserList implements OnInit {
   readonly userService  = inject(UserService);
   readonly rolesService = inject(RolesService);
   private authService   = inject(AuthService);
+  readonly rolePolicyService = inject(RolePolicyService);
   private router        = inject(Router);
   private translate    = inject(TranslateService);
 
@@ -37,6 +39,11 @@ export class UserList implements OnInit {
   readonly isSuperuser = computed(() =>
     this.authService.roles().includes('ROLE_SUPERUSER'),
   );
+
+  canManageUser(user: any): boolean {
+    const roleNames = this.getRoleNames(user.rolesIds);
+    return this.rolePolicyService.canManageUserWithRoles(roleNames);
+  }
 
   readonly PAGE_SIZE    = 20;
   readonly page         = signal(0);
