@@ -31,9 +31,11 @@
     "@ngx-translate/http-loader": "^17.0.0",
     "@onlyoffice/document-editor-angular": "^8.5.1",
     "@tailwindcss/postcss": "^4.2.2",
+    "chart.js": "^4.5.1",
     "comlink": "^4.4.1",
     "dicom-parser": "^1.8.21",
     "lucide-angular": "^1.0.0",
+    "ng2-charts": "^10.0.0",
     "postcss": "^8.5.10",
     "rxjs": "~7.8.0",
     "tailwindcss": "^4.2.2",
@@ -48,7 +50,7 @@
     "typescript": "~5.9.2",
     "vitest": "^4.0.8"
   },
-    "browser": {
+  "browser": {
     "fs": "./src/stubs/fs.ts",
     "path": "./src/stubs/path.ts"
   }
