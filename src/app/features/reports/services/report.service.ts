@@ -82,7 +82,7 @@ export interface ReportTemplateRequest {
 @Injectable({ providedIn: 'root' })
 export class ReportService {
   private http = inject(HttpClient);
-  private readonly BASE = environment.reportsApiUrl;
+  private readonly BASE = `${environment.fastApiUrl}/reports`;
 
   getCatalog(): Observable<ReportTypeDefinition[]> {
     return this.http.get<ReportTypeDefinition[]>(`${this.BASE}/catalog`);
