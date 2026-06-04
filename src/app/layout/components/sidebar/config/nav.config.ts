@@ -24,13 +24,13 @@ export const NAV_ITEMS: NavItem[] = [
     label: 'NAV.ROLES',
     path: '/roles/list',
     icon: 'shield',
-    permissions: ['ROLE_READ'],
+    permissions: ['role:read'],
   },
   {
     label: 'NAV.USERS',
     path: '/usuarios/list',
     icon: 'users',
-    permissions: ['USER_READ'],
+    permissions: ['user:read'],
     subItems: [
       { label: 'NAV.USER_LIST', path: '/usuarios/list' },
       { label: 'NAV.USER_REGISTER', path: '/usuarios/register' },
@@ -40,7 +40,7 @@ export const NAV_ITEMS: NavItem[] = [
     label: 'NAV.PATIENTS',
     path: '/pacientes/list',
     icon: 'heart-pulse',
-    permissions: ['PATIENT_READ'],
+    permissions: ['patient:read'],
     subItems: [
       { label: 'NAV.PATIENT_LIST', path: '/pacientes/list' },
       { label: 'NAV.PATIENT_REGISTER', path: '/pacientes/register' },
@@ -50,7 +50,7 @@ export const NAV_ITEMS: NavItem[] = [
     label: 'NAV.DICOM',
     path: '/dicom/viewer',
     icon: 'scan',
-    permissions: ['DOCUMENT_READ'],
+    permissions: ['dicom:read'],
     subItems: [
       { label: 'NAV.DICOM_VIEWER', path: '/dicom/viewer' },
     ],
@@ -60,13 +60,13 @@ export const NAV_ITEMS: NavItem[] = [
     label: 'NAV.HISTORIAL',    // ← usar clave de traducción
     path: '/historiales',
     icon: 'search',
-    permissions: ['DOCUMENT_READ'],
+    permissions: ['document:read'],
   },
   {
     label: 'NAV.REPORTS',
     path: '/reportes/designer',
     icon: 'file-text',
-    permissions: ['REPORT_READ'],
+    permissions: ['report:read'],
     subItems: [
       { label: 'NAV.REPORTS_DESIGNER', path: '/reportes/designer' },
       { label: 'NAV.REPORTS_TEMPLATES', path: '/reportes/templates' }
