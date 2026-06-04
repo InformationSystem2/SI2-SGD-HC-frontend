@@ -7,6 +7,7 @@ import { UserService } from '../../services/user.service';
 import { RolesService } from '../../../roles/services/roles.service';
 import { UpdateUserRequest } from '../../models/user.model';
 import { TranslatePipe } from '@ngx-translate/core';
+import { AuthService } from 'src/app/core/auth/services/auth.service';
 
 @Component({
   selector: 'app-user-form',
@@ -16,6 +17,7 @@ import { TranslatePipe } from '@ngx-translate/core';
 })
 export class UserForm implements OnInit {
 
+  auth = inject(AuthService);
   private fb     = inject(FormBuilder);
   private router = inject(Router);
   private route  = inject(ActivatedRoute);
@@ -86,16 +88,17 @@ export class UserForm implements OnInit {
       return;
     }
 
-    const { firstName, lastName, documentType, documentNumber, phone, isActive, rolesIds } = this.form.value;
+    const { firstName, lastName, documentType, documentNumber, phone, gender, isActive, rolesIds } = this.form.value;
 
     const payload: UpdateUserRequest = {
-      firstName:  firstName!,
-      lastName:   lastName!,
-      isActive:   isActive!,
-      rolesIds:   rolesIds!,
-      ...(documentType   ? { documentType }   : {}),
-      ...(documentNumber ? { documentNumber } : {}),
-      ...(phone          ? { phone }          : {}),
+      firstName:      this.auth.hasPermission('user:update:first_name') ? firstName : null,
+      lastName:       this.auth.hasPermission('user:update:last_name') ? lastName : null,
+      documentType:   this.auth.hasPermission('user:update:document_type') ? documentType : null,
+      documentNumber: this.auth.hasPermission('user:update:document_number') ? documentNumber : null,
+      phone:          this.auth.hasPermission('user:update:phone') ? phone : null,
+      gender:         this.auth.hasPermission('user:update:gender') ? gender : null,
+      isActive:       this.auth.hasPermission('user:update:is_active') ? isActive : null,
+      rolesIds:       this.auth.hasPermission('user:update:roles') ? rolesIds : null,
     };
 
     this.userService.updateUser(this.editId()!, payload).subscribe(() => {

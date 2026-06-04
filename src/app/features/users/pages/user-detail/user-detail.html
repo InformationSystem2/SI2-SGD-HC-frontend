@@ -29,6 +29,7 @@
   @if (user(); as u) {
 
     <!-- Status badge -->
+    @if (auth.hasPermission('user:read:is_active')) {
     <div class="flex justify-end">
       @if (u.isActive) {
         <span class="flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-medium
@@ -44,6 +45,7 @@
         </span>
       }
     </div>
+    }
 
     <!-- Main card -->
     <div class="bg-hc-card rounded-xl border border-hc-border shadow-sm overflow-hidden">
@@ -55,22 +57,30 @@
         </p>
       </div>
       <div class="px-6 py-4 grid grid-cols-1 sm:grid-cols-2 gap-x-8 gap-y-4">
+        @if (auth.hasPermission('user:read:first_name')) {
         <div>
           <p class="text-xs text-hc-text-3 mb-0.5">{{ 'USERS.FIELD_FIRST_NAME' | translate }}</p>
           <p class="text-sm font-medium text-hc-text">{{ u.firstName }}</p>
         </div>
+        }
+        @if (auth.hasPermission('user:read:last_name')) {
         <div>
           <p class="text-xs text-hc-text-3 mb-0.5">{{ 'USERS.FIELD_LAST_NAME' | translate }}</p>
           <p class="text-sm font-medium text-hc-text">{{ u.lastName }}</p>
         </div>
+        }
+        @if (auth.hasPermission('user:read:username')) {
         <div>
           <p class="text-xs text-hc-text-3 mb-0.5">{{ 'USERS.COL_USERNAME' | translate }}</p>
           <p class="text-sm font-mono text-hc-text">{{ u.username }}</p>
         </div>
+        }
+        @if (auth.hasPermission('user:read:gender')) {
         <div>
           <p class="text-xs text-hc-text-3 mb-0.5">{{ 'USERS.FIELD_GENDER' | translate }}</p>
           <p class="text-sm text-hc-text">{{ u.gender || '—' }}</p>
         </div>
+        }
       </div>
 
       <!-- Contact section -->
@@ -80,6 +90,7 @@
         </p>
       </div>
       <div class="px-6 py-4 grid grid-cols-1 sm:grid-cols-2 gap-x-8 gap-y-4">
+        @if (auth.hasPermission('user:read:email')) {
         <div class="flex items-start gap-2">
           <fa-icon [icon]="faEnvelope" class="text-hc-text-3 mt-0.5 text-xs" />
           <div>
@@ -87,6 +98,8 @@
             <p class="text-sm text-hc-text">{{ u.email }}</p>
           </div>
         </div>
+        }
+        @if (auth.hasPermission('user:read:phone')) {
         <div class="flex items-start gap-2">
           <fa-icon [icon]="faPhone" class="text-hc-text-3 mt-0.5 text-xs" />
           <div>
@@ -94,6 +107,7 @@
             <p class="text-sm text-hc-text">{{ u.phone || '—' }}</p>
           </div>
         </div>
+        }
       </div>
 
       <!-- Document section -->
@@ -103,6 +117,7 @@
         </p>
       </div>
       <div class="px-6 py-4 grid grid-cols-1 sm:grid-cols-2 gap-x-8 gap-y-4">
+        @if (auth.hasPermission('user:read:document_type')) {
         <div class="flex items-start gap-2">
           <fa-icon [icon]="faIdCard" class="text-hc-text-3 mt-0.5 text-xs" />
           <div>
@@ -110,13 +125,17 @@
             <p class="text-sm text-hc-text">{{ u.documentType || '—' }}</p>
           </div>
         </div>
+        }
+        @if (auth.hasPermission('user:read:document_number')) {
         <div>
           <p class="text-xs text-hc-text-3 mb-0.5">{{ 'USERS.FIELD_DOC_NUMBER' | translate }}</p>
           <p class="text-sm font-mono text-hc-text">{{ u.documentNumber || '—' }}</p>
         </div>
+        }
       </div>
 
       <!-- Roles section -->
+      @if (auth.hasPermission('user:read:roles')) {
       <div class="px-6 py-4 border-t border-b border-hc-border bg-hc-muted">
         <p class="text-xs font-semibold uppercase tracking-wide text-hc-text-3">
           {{ 'USERS.COL_ROLES' | translate }}
@@ -135,6 +154,7 @@
           }
         </div>
       </div>
+      }
 
     </div>
 

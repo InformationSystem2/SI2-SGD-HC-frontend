@@ -5,10 +5,12 @@
       <fa-icon [icon]="faUsers" class="text-hc-primary" />
       {{ 'USERS.TITLE' | translate }}
     </h2>
+    @if (auth.hasPermission('user:create')) {
     <button (click)="goToRegister()" class="hc-btn-primary">
       <fa-icon [icon]="faUserPlus" />
       {{ 'USERS.NEW_USER' | translate }}
     </button>
+    }
   </div>
 
   @if (userService.error()) {
@@ -62,26 +64,32 @@
               </td>
               <td>
                 <div class="flex items-center justify-end gap-1.5">
+                  @if (auth.hasPermission('user:read')) {
                   <button (click)="goToDetail(user.id)" class="hc-btn-icon-primary"
                           [title]="'USERS.VIEW' | translate">
                     <fa-icon [icon]="faEye" />
                   </button>
+                  }
+                  @if (auth.hasPermission('user:update')) {
                   <button (click)="goToEdit(user.id)"
                           class="p-1.5 rounded-md bg-hc-muted hover:bg-hc-primary hover:text-white text-hc-text-2 transition-colors"
                           [title]="'USERS.EDIT' | translate">
                     <fa-icon [icon]="faPencil" />
                   </button>
-                  @if (isSuperuser()) {
+                  }
+                  @if (isSuperuser() || auth.hasPermission('user:update:password')) {
                     <button (click)="goToPassword(user.id)"
                             class="p-1.5 rounded-md bg-hc-muted hover:bg-amber-500 hover:text-white text-hc-text-2 transition-colors"
                             [title]="'USERS.CHANGE_PASSWORD' | translate">
                       <fa-icon [icon]="faKey" />
                     </button>
                   }
+                  @if (auth.hasPermission('user:delete')) {
                   <button (click)="delete(user.id)" class="hc-btn-icon-danger"
                           [title]="'USERS.DELETE' | translate">
                     <fa-icon [icon]="faTrash" />
                   </button>
+                  }
                 </div>
               </td>
             </tr>
