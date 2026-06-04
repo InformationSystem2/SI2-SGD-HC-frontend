@@ -15,8 +15,8 @@ export const authInterceptor: HttpInterceptorFn = (req, next) => {
   const auth = inject(AuthService);
   const accessToken = auth.accessToken();
 
-  // No agregar headers en endpoints de autenticación
-  if (req.url.includes('/auth/')) {
+  // No agregar headers en endpoints de login o refresh
+  if (req.url.includes('/auth/login') || req.url.includes('/auth/refresh')) {
     return next(req);
   }
 

@@ -18,4 +18,5 @@ export interface AuthState {
   tenantId: string | null; 
   loading: boolean;
   error: string | null;
+  permissions: string[] | null;
 }
