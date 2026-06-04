@@ -27,8 +27,10 @@ jobs:
       - name: Overwrite production environment
         env:
           API_URL_PROD: ${{ secrets.API_URL_PROD }}
+          FASTAPI_URL_PROD: ${{ secrets.FASTAPI_URL_PROD }}
         run: |
           test -n "$API_URL_PROD"
+          test -n "$FASTAPI_URL_PROD"
 
           mkdir -p src/environments
 
