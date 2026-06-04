@@ -12,7 +12,7 @@ export const NAV_ITEMS: NavItem[] = [
     label: 'NAV.DOCUMENTS',
     path: '/documentos/list',
     icon: 'file-text',
-    permissions: ['DOCUMENT_READ'],
+    permissions: ['document:read'],
     subItems: [
       { label: 'NAV.DOCUMENT_LIST', path: '/documentos/list' },
       { label: 'NAV.DOCUMENT_UPLOAD', path: '/documentos/upload' },
