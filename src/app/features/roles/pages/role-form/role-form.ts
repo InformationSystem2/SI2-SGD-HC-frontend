@@ -80,6 +80,14 @@ export class RoleForm implements OnInit {
     return this.selectedPermissionIds().includes(id);
   }
 
+  getPermissionLabel(perm: Permission): string {
+    const base = perm.name.replace(`${perm.module}:`, '');
+    if (!base.includes(':')) {
+      return `${base} (general)`;
+    }
+    return base;
+  }
+
   onSubmit(): void {
     if (this.form.invalid) {
       this.form.markAllAsTouched();
