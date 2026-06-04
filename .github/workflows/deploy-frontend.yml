@@ -36,6 +36,7 @@ jobs:
           export const environment = {
             production: true,
             apiUrl: '${API_URL_PROD}/api',
+            fastApiUrl: '${FASTAPI_URL_PROD}/api',
           };
           EOF
 

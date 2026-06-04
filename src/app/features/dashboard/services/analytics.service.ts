@@ -65,7 +65,7 @@ export class AnalyticsService {
   private http = inject(HttpClient);
   private auth = inject(AuthService);
 
-  private readonly BASE = environment.micservApiUrl;
+  private readonly BASE = environment.fastApiUrl;
 
   private getHeaders(): HttpHeaders {
     return new HttpHeaders().set('Authorization', `Bearer ${this.auth.accessToken()}`);
