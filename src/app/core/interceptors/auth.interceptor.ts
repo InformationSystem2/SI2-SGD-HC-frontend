@@ -1,6 +1,4 @@
 import { HttpInterceptorFn } from "@angular/common/http";
-import { inject } from "@angular/core";
-import { AuthService } from "../auth/services/auth.service";
 
 function decodeJwt(token: string): any {
   try {
@@ -12,8 +10,7 @@ function decodeJwt(token: string): any {
 }
 
 export const authInterceptor: HttpInterceptorFn = (req, next) => {
-  const auth = inject(AuthService);
-  const accessToken = auth.accessToken();
+  const accessToken = typeof localStorage !== 'undefined' ? localStorage.getItem('accessToken') : null;
 
   // No agregar headers en endpoints de login o refresh
   if (req.url.includes('/auth/login') || req.url.includes('/auth/refresh')) {
