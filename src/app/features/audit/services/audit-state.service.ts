@@ -48,7 +48,7 @@ export class AuditState {
         this.isLoading.set(false);
       },
       error: (err) => {
-        this.error.set(err?.message ?? 'Error al cargar registros de auditoria');
+        this.error.set(err?.error?.message ?? err?.message ?? 'Error al cargar registros de auditoria');
         this.isLoading.set(false);
       },
     });
