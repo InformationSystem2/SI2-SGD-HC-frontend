@@ -163,4 +163,28 @@ export class AuthService {
       return {};
     }
   }
+
+  forgotPassword(request: import('../models/auth.models').ForgotPasswordRequest) {
+    this._state.update(s => ({ ...s, loading: true, error: null }));
+    return this.http.post<{message: string, code?: string}>(`${environment.apiUrl}/auth/public/forgot-password`, request).pipe(
+      tap(() => this._state.update(s => ({ ...s, loading: false }))),
+      catchError(err => {
+        const message = err.error?.message ?? 'ERRORS.FORGOT_PASSWORD_FAILED';
+        this._state.update(s => ({ ...s, loading: false, error: message }));
+        return EMPTY;
+      })
+    );
+  }
+
+  resetPassword(request: import('../models/auth.models').VerifyRecoveryCodeRequest) {
+    this._state.update(s => ({ ...s, loading: true, error: null }));
+    return this.http.post<{message: string}>(`${environment.apiUrl}/auth/public/reset-password`, request).pipe(
+      tap(() => this._state.update(s => ({ ...s, loading: false }))),
+      catchError(err => {
+        const message = err.error?.message ?? 'ERRORS.RESET_PASSWORD_FAILED';
+        this._state.update(s => ({ ...s, loading: false, error: message }));
+        return EMPTY;
+      })
+    );
+  }
 }

@@ -10,6 +10,7 @@ export interface TenantRegisterRequestDto {
   adminDocumentNumber: string;
   adminGender: string;
   selectedPlan?: string;
+  validationCode: string;
 }
 
 export interface TenantRegisterResponseDto {
