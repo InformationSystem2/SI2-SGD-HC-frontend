@@ -91,6 +91,7 @@ export const NAV_ITEMS: NavItem[] = [
     permissions: ['ROLE_SUPERUSER'],
     subItems: [
       { label: 'NAV.TENANTS', path: '/dashboard/admin/tenants' },
+      { label: 'NAV.AUDIT', path: '/audit'},
     ],
   },  
 ];
