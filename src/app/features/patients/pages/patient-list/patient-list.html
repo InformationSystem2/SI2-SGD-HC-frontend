@@ -6,10 +6,12 @@
       <fa-icon [icon]="faUsers" class="text-hc-primary" />
       {{ 'PATIENTS.TITLE' | translate }}
     </h2>
-    <button (click)="goToRegister()" class="hc-btn-primary">
-      <fa-icon [icon]="faUserPlus" />
-      {{ 'PATIENTS.NEW' | translate }}
-    </button>
+    @if (auth.hasPermission('patient:create')) {
+      <button (click)="goToRegister()" class="hc-btn-primary">
+        <fa-icon [icon]="faUserPlus" />
+        {{ 'PATIENTS.NEW' | translate }}
+      </button>
+    }
   </div>
 
   <!-- Search bar -->
@@ -69,21 +71,27 @@
               <td class="text-hc-text-2">{{ patient.phone ?? '—' }}</td>
               <td>
                 <div class="flex items-center justify-end gap-1.5">
-                  <button (click)="goToDetail(patient.id)"
-                          class="hc-btn-icon-primary"
-                          [title]="'PATIENTS.VIEW' | translate">
-                    <fa-icon [icon]="faEye" />
-                  </button>
-                  <button (click)="goToEdit(patient.id)"
-                          class="p-1.5 rounded-md bg-hc-muted hover:bg-hc-primary hover:text-white text-hc-text-2 transition-colors"
-                          [title]="'PATIENTS.EDIT' | translate">
-                    <fa-icon [icon]="faPencil" />
-                  </button>
-                  <button (click)="delete(patient.id)"
-                          class="hc-btn-icon-danger"
-                          [title]="'PATIENTS.DELETE' | translate">
-                    <fa-icon [icon]="faTrash" />
-                  </button>
+                  @if (auth.hasPermission('patient:read')) {
+                    <button (click)="goToDetail(patient.id)"
+                            class="hc-btn-icon-primary"
+                            [title]="'PATIENTS.VIEW' | translate">
+                      <fa-icon [icon]="faEye" />
+                    </button>
+                  }
+                  @if (auth.hasPermission('patient:update')) {
+                    <button (click)="goToEdit(patient.id)"
+                            class="p-1.5 rounded-md bg-hc-muted hover:bg-hc-primary hover:text-white text-hc-text-2 transition-colors"
+                            [title]="'PATIENTS.EDIT' | translate">
+                      <fa-icon [icon]="faPencil" />
+                    </button>
+                  }
+                  @if (auth.hasPermission('patient:delete')) {
+                    <button (click)="delete(patient.id)"
+                            class="hc-btn-icon-danger"
+                            [title]="'PATIENTS.DELETE' | translate">
+                      <fa-icon [icon]="faTrash" />
+                    </button>
+                  }
                 </div>
               </td>
             </tr>

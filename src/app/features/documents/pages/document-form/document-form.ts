@@ -16,6 +16,7 @@ import { DocumentService } from '../../services/document.service';
 import { DynamicFormComponent } from '../../components/dynamic-form/dynamic-form';
 import { PatientService } from '../../../patients/services/patient.service';
 import { Patient } from '../../../patients/models/patient.model';
+import { AuthService } from '../../../../core/auth/services/auth.service';
 
 @Component({
   selector: 'app-document-form',
@@ -31,6 +32,7 @@ export class DocumentForm implements OnInit {
   readonly templateService = inject(DocumentTemplateService);
   readonly documentService = inject(DocumentService);
   readonly patientService  = inject(PatientService);
+  readonly auth            = inject(AuthService);
 
   readonly faArrowLeft      = faArrowLeft;
   readonly faFileSignature  = faFileSignature;
@@ -69,6 +71,17 @@ export class DocumentForm implements OnInit {
     this.patientService.getPatients().subscribe({
       next: list => this.patients.set(list),
     });
+
+    if (!this.auth.hasPermission('document:create:patient')) {
+      this.headerForm.get('patientId')?.disable();
+      this.headerForm.get('patientId')?.clearValidators();
+      this.headerForm.get('patientId')?.updateValueAndValidity();
+    }
+    if (!this.auth.hasPermission('document:create:issue_date')) {
+      this.headerForm.get('issueDate')?.disable();
+      this.headerForm.get('issueDate')?.clearValidators();
+      this.headerForm.get('issueDate')?.updateValueAndValidity();
+    }
   }
 
   patientLabel(p: Patient): string {
@@ -83,15 +96,15 @@ export class DocumentForm implements OnInit {
       return;
     }
 
-    const h = this.headerForm.value;
+    const h = this.headerForm.getRawValue();
     const t = this.template();
     if (!t) return;
 
     this.documentService.create({
-      patientId:      h.patientId!,
+      patientId:      this.auth.hasPermission('document:create:patient') ? (h.patientId || '') : '',
       templateId:     t.id,
-      clinicalContent,
-      issueDate:      h.issueDate!,
+      clinicalContent: this.auth.hasPermission('document:create:clinical_content') ? clinicalContent : {},
+      issueDate:      this.auth.hasPermission('document:create:issue_date') ? (h.issueDate || '') : '',
     }).subscribe(() => {
       this.router.navigate(['/documentos/templates']);
     });

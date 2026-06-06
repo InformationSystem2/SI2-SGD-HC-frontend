@@ -7,6 +7,7 @@ import { faFloppyDisk, faShieldHalved, faSpinner } from '@fortawesome/free-solid
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { TranslatePipe } from '@ngx-translate/core';
 import { Permission } from '../../../permissions/models/permission.model';
+import { AuthService } from '../../../../core/auth/services/auth.service';
 
 @Component({
   selector: 'app-role-form',
@@ -22,6 +23,7 @@ export class RoleForm implements OnInit {
 
   readonly rolesService       = inject(RolesService);
   readonly permissionsService = inject(PermissionsService);
+  readonly auth               = inject(AuthService);
 
   readonly faShieldHalved = faShieldHalved;
   readonly faSpinner      = faSpinner;
@@ -64,11 +66,41 @@ export class RoleForm implements OnInit {
           isActive:    role.isActive,
         });
         this.selectedPermissionIds.set(role.permissionsIds ?? []);
+
+        if (!this.auth.hasPermission('role:update:name')) {
+          this.form.get('name')?.disable();
+          this.form.get('name')?.clearValidators();
+          this.form.get('name')?.updateValueAndValidity();
+        }
+        if (!this.auth.hasPermission('role:update:description')) {
+          this.form.get('description')?.disable();
+          this.form.get('description')?.clearValidators();
+          this.form.get('description')?.updateValueAndValidity();
+        }
+        if (!this.auth.hasPermission('role:update:is_active')) {
+          this.form.get('isActive')?.disable();
+        }
       });
+    } else {
+      if (!this.auth.hasPermission('role:create:name')) {
+        this.form.get('name')?.disable();
+        this.form.get('name')?.clearValidators();
+        this.form.get('name')?.updateValueAndValidity();
+      }
+      if (!this.auth.hasPermission('role:create:description')) {
+        this.form.get('description')?.disable();
+        this.form.get('description')?.clearValidators();
+        this.form.get('description')?.updateValueAndValidity();
+      }
     }
   }
 
   togglePermission(id: string): void {
+    const allowed = this.isEdit()
+      ? this.auth.hasPermission('role:update:permissions')
+      : this.auth.hasPermission('role:create:permissions');
+    if (!allowed) return;
+
     this.selectedPermissionIds.update(current =>
       current.includes(id)
         ? current.filter(p => p !== id)
@@ -94,25 +126,25 @@ export class RoleForm implements OnInit {
       return;
     }
 
-    const { name, description, isActive } = this.form.value;
+    const v = this.form.getRawValue();
     const permissionsIds = this.selectedPermissionIds();
 
     if (this.isEdit()) {
-      this.rolesService
-        .updateRole(this.editId()!, {
-          name:        name!,
-          description: description!,
-          isActive:    isActive!,
-          permissionsIds,
-        })
+      const payload = {
+        name:        this.auth.hasPermission('role:update:name') ? (v.name || '') : (v.name || ''),
+        description: this.auth.hasPermission('role:update:description') ? (v.description || '') : (v.description || ''),
+        isActive:    this.auth.hasPermission('role:update:is_active') ? !!v.isActive : !!v.isActive,
+        permissionsIds: this.auth.hasPermission('role:update:permissions') ? permissionsIds : permissionsIds,
+      };
+      this.rolesService.updateRole(this.editId()!, payload)
         .subscribe(() => this.router.navigate(['/roles/list']));
     } else {
-      this.rolesService
-        .createRole({
-          name:        name!,
-          description: description!,
-          permissionsIds,
-        })
+      const payload = {
+        name:        this.auth.hasPermission('role:create:name') ? (v.name || '') : (v.name || ''),
+        description: this.auth.hasPermission('role:create:description') ? (v.description || '') : (v.description || ''),
+        permissionsIds: this.auth.hasPermission('role:create:permissions') ? permissionsIds : permissionsIds,
+      };
+      this.rolesService.createRole(payload)
         .subscribe(() => this.router.navigate(['/roles/list']));
     }
   }

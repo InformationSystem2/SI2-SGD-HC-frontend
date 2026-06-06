@@ -10,6 +10,7 @@ import {
 } from '@fortawesome/free-solid-svg-icons';
 import { RolesService } from '../../services/roles.service';
 import { TranslatePipe, TranslateService } from '@ngx-translate/core';
+import { AuthService } from '../../../../core/auth/services/auth.service';
 
 
 @Component({
@@ -21,6 +22,7 @@ import { TranslatePipe, TranslateService } from '@ngx-translate/core';
 export class RoleList implements OnInit{
 
   readonly rolesService = inject(RolesService);
+  readonly auth = inject(AuthService);
   private router = inject(Router);
   private translate = inject(TranslateService);  
 

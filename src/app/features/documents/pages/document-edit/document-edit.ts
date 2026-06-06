@@ -8,6 +8,7 @@ import {
 import { DocumentService } from '../../services/document.service';
 import { Document, DocumentStatus } from '../../models/document.model';
 import { TranslatePipe } from '@ngx-translate/core';
+import { AuthService } from '../../../../core/auth/services/auth.service';
 
 @Component({
   selector: 'app-document-edit',
@@ -21,6 +22,7 @@ export class DocumentEdit implements OnInit {
   private router = inject(Router);
   private fb     = inject(FormBuilder);
   private docSvc = inject(DocumentService);
+  readonly auth = inject(AuthService);
 
   readonly faArrowLeft   = faArrowLeft;
   readonly faEdit        = faEdit;
@@ -58,6 +60,17 @@ export class DocumentEdit implements OnInit {
           expiryDate: d.expiryDate ?? '',
           status:     d.status,
         });
+
+        if (!this.auth.hasPermission('document:update:issue_date')) {
+          this.form.get('issueDate')?.disable();
+        }
+        if (!this.auth.hasPermission('document:update:expiry_date')) {
+          this.form.get('expiryDate')?.disable();
+        }
+        if (!this.auth.hasPermission('document:update:status')) {
+          this.form.get('status')?.disable();
+        }
+
         this.loading.set(false);
       },
       error: e => {
@@ -76,15 +89,15 @@ export class DocumentEdit implements OnInit {
 
   save(): void {
     if (this.form.invalid) { this.form.markAllAsTouched(); return; }
-    const v = this.form.value;
+    const v = this.form.getRawValue();
     this.saving.set(true);
     this.error.set(null);
     this.saved.set(false);
 
     this.docSvc.update(this.docId, {
-      issueDate:  v.issueDate!,
-      expiryDate: v.expiryDate || undefined,
-      status:     v.status as DocumentStatus || undefined,
+      issueDate:  this.auth.hasPermission('document:update:issue_date') ? v.issueDate! : (this.doc()?.issueDate || ''),
+      expiryDate: this.auth.hasPermission('document:update:expiry_date') ? (v.expiryDate || undefined) : undefined,
+      status:     this.auth.hasPermission('document:update:status') ? (v.status as DocumentStatus || undefined) : undefined,
     }).subscribe({
       next: () => { this.saving.set(false); this.saved.set(true); },
       error: e => { this.saving.set(false); this.error.set(e.error?.message ?? 'Error al guardar'); },

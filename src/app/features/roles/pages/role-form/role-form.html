@@ -21,6 +21,8 @@
       <div>
         <label class="hc-label">{{ 'ROLES.FIELD_NAME' | translate }} <span class="text-hc-error">*</span></label>
         <input formControlName="name" type="text" class="hc-input"
+               [readonly]="isEdit() ? !auth.hasPermission('role:update:name') : !auth.hasPermission('role:create:name')"
+               [class.opacity-50]="isEdit() ? !auth.hasPermission('role:update:name') : !auth.hasPermission('role:create:name')"
                [placeholder]="'ROLES.PH_NAME' | translate" />
         @if (form.get('name')?.invalid && form.get('name')?.touched) {
           <p class="text-hc-error text-xs mt-1">{{ 'ROLES.VAL_REQUIRED' | translate }}</p>
@@ -29,13 +31,16 @@
       <div>
         <label class="hc-label">{{ 'ROLES.FIELD_DESCRIPTION' | translate }} <span class="text-hc-error">*</span></label>
         <textarea formControlName="description" rows="3" class="hc-input resize-none"
+                  [readonly]="isEdit() ? !auth.hasPermission('role:update:description') : !auth.hasPermission('role:create:description')"
+                  [class.opacity-50]="isEdit() ? !auth.hasPermission('role:update:description') : !auth.hasPermission('role:create:description')"
                   [placeholder]="'ROLES.PH_DESCRIPTION' | translate"></textarea>
         @if (form.get('description')?.invalid && form.get('description')?.touched) {
           <p class="text-hc-error text-xs mt-1">{{ 'ROLES.VAL_REQUIRED' | translate }}</p>
         }
       </div>
       @if (isEdit()) {
-        <label class="flex items-center gap-3 cursor-pointer w-fit">
+        <label class="flex items-center gap-3 cursor-pointer w-fit"
+               [class.opacity-50]="!auth.hasPermission('role:update:is_active')">
           <input formControlName="isActive" type="checkbox" id="isActive"
                  class="w-4 h-4 accent-hc-primary cursor-pointer" />
           <span class="text-sm text-hc-text-2">{{ 'ROLES.FIELD_ACTIVE' | translate }}</span>
@@ -66,10 +71,12 @@
               <div class="flex flex-wrap gap-2 px-4 py-3">
                 @for (perm of permissionsByModule()[mod]; track perm.id) {
                   <button type="button" (click)="togglePermission(perm.id)" [title]="perm.description"
+                    [disabled]="isEdit() ? !auth.hasPermission('role:update:permissions') : !auth.hasPermission('role:create:permissions')"
                     [class]="'px-2.5 py-1 rounded text-xs font-medium border transition-colors ' +
                              (isPermissionSelected(perm.id)
                                ? 'bg-hc-primary border-hc-primary text-white shadow-sm'
                                : 'bg-hc-muted border-hc-border text-hc-text-2 hover:border-hc-primary hover:text-hc-primary')"
+                    [class.opacity-50]="isEdit() ? !auth.hasPermission('role:update:permissions') : !auth.hasPermission('role:create:permissions')"
                   >{{ getPermissionLabel(perm) }}</button>
                 }
               </div>

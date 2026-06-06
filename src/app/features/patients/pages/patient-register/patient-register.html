@@ -40,62 +40,76 @@
         </div>
       </div>
       <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-        <div>
-          <label class="hc-label">{{ 'PATIENTS.FIELD_BIRTH_DATE' | translate }}
-            <span class="text-hc-error">*</span></label>
-          <input formControlName="birthDate" type="date" class="hc-input"/>
-          @if (form.get('birthDate')?.invalid && form.get('birthDate')?.touched) {
-            <p class="text-hc-error text-xs mt-1">{{ 'PATIENTS.VAL_REQUIRED' | translate }}</p>
-          }
-        </div>
-        <div>
-          <label class="hc-label">{{ 'PATIENTS.FIELD_GENDER' | translate }}</label>
-          <select formControlName="gender" class="hc-select">
-            <option value="">— Seleccionar —</option>
-            @for (g of genders; track g.value) {
-              <option [value]="g.value">{{ g.label }}</option>
+        @if (auth.hasPermission('patient:create:birth_date')) {
+          <div>
+            <label class="hc-label">{{ 'PATIENTS.FIELD_BIRTH_DATE' | translate }}
+              <span class="text-hc-error">*</span></label>
+            <input formControlName="birthDate" type="date" class="hc-input"/>
+            @if (form.get('birthDate')?.invalid && form.get('birthDate')?.touched) {
+              <p class="text-hc-error text-xs mt-1">{{ 'PATIENTS.VAL_REQUIRED' | translate }}</p>
             }
-          </select>
-          @if (form.get('gender')?.invalid && form.get('gender')?.touched) {
-            <p class="text-hc-error text-xs mt-1">{{ 'PATIENTS.VAL_REQUIRED' | translate }}</p>
-          }
-        </div>
+          </div>
+        }
+        @if (auth.hasPermission('patient:create:gender')) {
+          <div>
+            <label class="hc-label">{{ 'PATIENTS.FIELD_GENDER' | translate }}</label>
+            <select formControlName="gender" class="hc-select">
+              <option value="">— Seleccionar —</option>
+              @for (g of genders; track g.value) {
+                <option [value]="g.value">{{ g.label }}</option>
+              }
+            </select>
+            @if (form.get('gender')?.invalid && form.get('gender')?.touched) {
+              <p class="text-hc-error text-xs mt-1">{{ 'PATIENTS.VAL_REQUIRED' | translate }}</p>
+            }
+          </div>
+        }
       </div>
       <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-        <div>
-          <label class="hc-label">{{ 'PATIENTS.FIELD_PHONE' | translate }}</label>
-          <input formControlName="phone" type="tel" class="hc-input" placeholder="+591 7xxxxxxx"/>
-        </div>
-        <div>
-          <label class="hc-label">{{ 'PATIENTS.FIELD_ADDRESS' | translate }}</label>
-          <input formControlName="address" type="text" class="hc-input"
-                 [placeholder]="'PATIENTS.PH_ADDRESS' | translate"/>
-        </div>
+        @if (auth.hasPermission('patient:create:phone')) {
+          <div>
+            <label class="hc-label">{{ 'PATIENTS.FIELD_PHONE' | translate }}</label>
+            <input formControlName="phone" type="tel" class="hc-input" placeholder="+591 7xxxxxxx"/>
+          </div>
+        }
+        @if (auth.hasPermission('patient:create:address')) {
+          <div>
+            <label class="hc-label">{{ 'PATIENTS.FIELD_ADDRESS' | translate }}</label>
+            <input formControlName="address" type="text" class="hc-input"
+                   [placeholder]="'PATIENTS.PH_ADDRESS' | translate"/>
+          </div>
+        }
       </div>
     </div>
 
     <!-- ── Sección: Documento ─────────────────────── -->
-    <div class="px-6 py-3 bg-hc-muted border-t border-b border-hc-border">
-      <p class="hc-section-label">{{ 'PATIENTS.SECTION_DOCUMENT' | translate }}</p>
-    </div>
-    <div class="px-6 py-5">
-      <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-        <div>
-          <label class="hc-label">{{ 'PATIENTS.FIELD_DOC_TYPE' | translate }}</label>
-          <select formControlName="documentType" class="hc-select">
-            <option value="">— Seleccionar —</option>
-            @for (dt of documentTypes; track dt) {
-              <option [value]="dt">{{ dt }}</option>
-            }
-          </select>
-        </div>
-        <div>
-          <label class="hc-label">{{ 'PATIENTS.FIELD_DOC_NUMBER' | translate }}</label>
-          <input formControlName="documentNumber" type="text" class="hc-input"
-                 placeholder="Número de documento"/>
+    @if (auth.hasPermission('patient:create:document_type') || auth.hasPermission('patient:create:document_number')) {
+      <div class="px-6 py-3 bg-hc-muted border-t border-b border-hc-border">
+        <p class="hc-section-label">{{ 'PATIENTS.SECTION_DOCUMENT' | translate }}</p>
+      </div>
+      <div class="px-6 py-5">
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          @if (auth.hasPermission('patient:create:document_type')) {
+            <div>
+              <label class="hc-label">{{ 'PATIENTS.FIELD_DOC_TYPE' | translate }}</label>
+              <select formControlName="documentType" class="hc-select">
+                <option value="">— Seleccionar —</option>
+                @for (dt of documentTypes; track dt) {
+                  <option [value]="dt">{{ dt }}</option>
+                }
+              </select>
+            </div>
+          }
+          @if (auth.hasPermission('patient:create:document_number')) {
+            <div>
+              <label class="hc-label">{{ 'PATIENTS.FIELD_DOC_NUMBER' | translate }}</label>
+              <input formControlName="documentNumber" type="text" class="hc-input"
+                     placeholder="Número de documento"/>
+            </div>
+          }
         </div>
       </div>
-    </div>
+    }
 
     <!-- ── Acciones ───────────────────────────────── -->
     <div class="px-6 py-4 border-t border-hc-border bg-hc-muted/40 flex gap-3">

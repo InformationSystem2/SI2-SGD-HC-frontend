@@ -26,8 +26,16 @@
         <fa-icon [icon]="faUser" class="text-2xl text-hc-primary" />
       </div>
       <div>
-        <h2 class="text-xl font-semibold text-hc-text">{{ p.firstName }} {{ p.lastName }}</h2>
-        <p class="text-sm text-hc-text-3">{{ p.documentType }} {{ p.documentNumber }}</p>
+        <h2 class="text-xl font-semibold text-hc-text">
+          @if (auth.hasPermission('patient:read:first_name')) { {{ p.firstName }} }
+          @if (auth.hasPermission('patient:read:last_name')) { {{ p.lastName }} }
+        </h2>
+        @if (auth.hasPermission('patient:read:document_type') || auth.hasPermission('patient:read:document_number')) {
+          <p class="text-sm text-hc-text-3">
+            @if (auth.hasPermission('patient:read:document_type')) { {{ p.documentType }} }
+            @if (auth.hasPermission('patient:read:document_number')) { {{ p.documentNumber }} }
+          </p>
+        }
       </div>
     </div>
 
@@ -38,39 +46,53 @@
         {{ 'PATIENTS.SECTION_IDENTITY' | translate }}
       </h3>
       <dl class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-        <div>
-          <dt class="text-xs text-hc-text-3">{{ 'PATIENTS.FIELD_BIRTH_DATE' | translate }}</dt>
-          <dd class="text-sm text-hc-text mt-0.5">{{ p.birthDate ?? '—' }}</dd>
-        </div>
-        <div>
-          <dt class="text-xs text-hc-text-3">{{ 'PATIENTS.FIELD_ADDRESS' | translate }}</dt>
-          <dd class="text-sm text-hc-text mt-0.5">{{ p.address ?? '—' }}</dd>
-        </div>
-        <div>
-          <dt class="text-xs text-hc-text-3">{{ 'PATIENTS.FIELD_GENDER' | translate }}</dt>
-          <dd class="text-sm text-hc-text mt-0.5">{{ p.gender ?? '—' }}</dd>
-        </div>
-        <div>
-          <dt class="text-xs text-hc-text-3">{{ 'PATIENTS.FIELD_PHONE' | translate }}</dt>
-          <dd class="text-sm text-hc-text mt-0.5">{{ p.phone ?? '—' }}</dd>
-        </div>
+        @if (auth.hasPermission('patient:read:birth_date')) {
+          <div>
+            <dt class="text-xs text-hc-text-3">{{ 'PATIENTS.FIELD_BIRTH_DATE' | translate }}</dt>
+            <dd class="text-sm text-hc-text mt-0.5">{{ p.birthDate ?? '—' }}</dd>
+          </div>
+        }
+        @if (auth.hasPermission('patient:read:address')) {
+          <div>
+            <dt class="text-xs text-hc-text-3">{{ 'PATIENTS.FIELD_ADDRESS' | translate }}</dt>
+            <dd class="text-sm text-hc-text mt-0.5">{{ p.address ?? '—' }}</dd>
+          </div>
+        }
+        @if (auth.hasPermission('patient:read:gender')) {
+          <div>
+            <dt class="text-xs text-hc-text-3">{{ 'PATIENTS.FIELD_GENDER' | translate }}</dt>
+            <dd class="text-sm text-hc-text mt-0.5">{{ p.gender ?? '—' }}</dd>
+          </div>
+        }
+        @if (auth.hasPermission('patient:read:phone')) {
+          <div>
+            <dt class="text-xs text-hc-text-3">{{ 'PATIENTS.FIELD_PHONE' | translate }}</dt>
+            <dd class="text-sm text-hc-text mt-0.5">{{ p.phone ?? '—' }}</dd>
+          </div>
+        }
       </dl>
 
-      <hr class="border-hc-border" />
+      @if (auth.hasPermission('patient:read:document_type') || auth.hasPermission('patient:read:document_number')) {
+        <hr class="border-hc-border" />
 
-      <h3 class="text-sm font-semibold text-hc-text-3 uppercase tracking-wide">
-        {{ 'PATIENTS.SECTION_DOCUMENT' | translate }}
-      </h3>
-      <dl class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-        <div>
-          <dt class="text-xs text-hc-text-3">{{ 'PATIENTS.FIELD_DOC_TYPE' | translate }}</dt>
-          <dd class="text-sm text-hc-text mt-0.5">{{ p.documentType ?? '—' }}</dd>
-        </div>
-        <div>
-          <dt class="text-xs text-hc-text-3">{{ 'PATIENTS.FIELD_DOC_NUMBER' | translate }}</dt>
-          <dd class="text-sm text-hc-text mt-0.5">{{ p.documentNumber ?? '—' }}</dd>
-        </div>
-      </dl>
+        <h3 class="text-sm font-semibold text-hc-text-3 uppercase tracking-wide">
+          {{ 'PATIENTS.SECTION_DOCUMENT' | translate }}
+        </h3>
+        <dl class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          @if (auth.hasPermission('patient:read:document_type')) {
+            <div>
+              <dt class="text-xs text-hc-text-3">{{ 'PATIENTS.FIELD_DOC_TYPE' | translate }}</dt>
+              <dd class="text-sm text-hc-text mt-0.5">{{ p.documentType ?? '—' }}</dd>
+            </div>
+          }
+          @if (auth.hasPermission('patient:read:document_number')) {
+            <div>
+              <dt class="text-xs text-hc-text-3">{{ 'PATIENTS.FIELD_DOC_NUMBER' | translate }}</dt>
+              <dd class="text-sm text-hc-text mt-0.5">{{ p.documentNumber ?? '—' }}</dd>
+            </div>
+          }
+        </dl>
+      }
 
     </div>
   }
