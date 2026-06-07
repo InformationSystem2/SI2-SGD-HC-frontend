@@ -40,30 +40,27 @@
         </div>
       </div>
       <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-        @if (auth.hasPermission('patient:create:birth_date')) {
-          <div>
-            <label class="hc-label">{{ 'PATIENTS.FIELD_BIRTH_DATE' | translate }}
-              <span class="text-hc-error">*</span></label>
-            <input formControlName="birthDate" type="date" class="hc-input"/>
-            @if (form.get('birthDate')?.invalid && form.get('birthDate')?.touched) {
-              <p class="text-hc-error text-xs mt-1">{{ 'PATIENTS.VAL_REQUIRED' | translate }}</p>
+        <div>
+          <label class="hc-label">{{ 'PATIENTS.FIELD_BIRTH_DATE' | translate }}
+            <span class="text-hc-error">*</span></label>
+          <input formControlName="birthDate" type="date" class="hc-input"/>
+          @if (form.get('birthDate')?.invalid && form.get('birthDate')?.touched) {
+            <p class="text-hc-error text-xs mt-1">{{ 'PATIENTS.VAL_REQUIRED' | translate }}</p>
+          }
+        </div>
+        <div>
+          <label class="hc-label">{{ 'PATIENTS.FIELD_GENDER' | translate }}
+            <span class="text-hc-error">*</span></label>
+          <select formControlName="gender" class="hc-select">
+            <option value="">— Seleccionar —</option>
+            @for (g of genders; track g.value) {
+              <option [value]="g.value">{{ g.label }}</option>
             }
-          </div>
-        }
-        @if (auth.hasPermission('patient:create:gender')) {
-          <div>
-            <label class="hc-label">{{ 'PATIENTS.FIELD_GENDER' | translate }}</label>
-            <select formControlName="gender" class="hc-select">
-              <option value="">— Seleccionar —</option>
-              @for (g of genders; track g.value) {
-                <option [value]="g.value">{{ g.label }}</option>
-              }
-            </select>
-            @if (form.get('gender')?.invalid && form.get('gender')?.touched) {
-              <p class="text-hc-error text-xs mt-1">{{ 'PATIENTS.VAL_REQUIRED' | translate }}</p>
-            }
-          </div>
-        }
+          </select>
+          @if (form.get('gender')?.invalid && form.get('gender')?.touched) {
+            <p class="text-hc-error text-xs mt-1">{{ 'PATIENTS.VAL_REQUIRED' | translate }}</p>
+          }
+        </div>
       </div>
       <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
         @if (auth.hasPermission('patient:create:phone')) {

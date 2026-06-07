@@ -42,14 +42,6 @@ export class PatientRegister implements OnInit {
   });
 
   ngOnInit(): void {
-    if (!this.auth.hasPermission('patient:create:gender')) {
-      this.form.get('gender')?.clearValidators();
-      this.form.get('gender')?.updateValueAndValidity();
-    }
-    if (!this.auth.hasPermission('patient:create:birth_date')) {
-      this.form.get('birthDate')?.clearValidators();
-      this.form.get('birthDate')?.updateValueAndValidity();
-    }
   }
 
   onSubmit(): void {
@@ -66,8 +58,8 @@ export class PatientRegister implements OnInit {
       documentNumber: this.auth.hasPermission('patient:create:document_number') ? (v.documentNumber || undefined) : undefined,
       phone: this.auth.hasPermission('patient:create:phone') ? (v.phone || undefined) : undefined,
       address: this.auth.hasPermission('patient:create:address') ? (v.address || undefined) : undefined,
-      gender: this.auth.hasPermission('patient:create:gender') ? (v.gender || undefined) : undefined,
-      birthDate: this.auth.hasPermission('patient:create:birth_date') ? (v.birthDate || undefined) : undefined,
+      gender: v.gender!,
+      birthDate: v.birthDate!,
     };
 
     this.patientService.createPatient(payload).subscribe(() => {

@@ -9,6 +9,24 @@ import { TranslatePipe } from '@ngx-translate/core';
 import { Permission } from '../../../permissions/models/permission.model';
 import { AuthService } from '../../../../core/auth/services/auth.service';
 
+export interface AttributePermission {
+  name: string;
+  read: Permission | null;
+  create: Permission | null;
+  update: Permission | null;
+}
+
+export interface StructuredPermissionGroup {
+  module: string;
+  general: {
+    read: Permission | null;
+    create: Permission | null;
+    update: Permission | null;
+    delete: Permission | null;
+  };
+  attributes: AttributePermission[];
+}
+
 @Component({
   selector: 'app-role-form',
   imports: [FontAwesomeModule, ReactiveFormsModule, TranslatePipe],
@@ -34,16 +52,52 @@ export class RoleForm implements OnInit {
 
   readonly selectedPermissionIds = signal<string[]>([]);
 
-  readonly permissionsByModule = computed(() => {
-    const groups: Record<string, Permission[]> = {};
-    for (const p of this.permissionsService.permissions()) {
-      if (!groups[p.module]) groups[p.module] = [];
-      groups[p.module].push(p);
-    }
-    return groups;
-  });
+  readonly structuredPermissions = computed<StructuredPermissionGroup[]>(() => {
+    const permissions = this.permissionsService.permissions();
+    const groupsMap: Record<string, StructuredPermissionGroup> = {};
 
-  readonly moduleNames = computed(() => Object.keys(this.permissionsByModule()));
+    for (const p of permissions) {
+      const mod = p.module;
+      if (!groupsMap[mod]) {
+        groupsMap[mod] = {
+          module: mod,
+          general: { read: null, create: null, update: null, delete: null },
+          attributes: []
+        };
+      }
+
+      const group = groupsMap[mod];
+      const nameParts = p.name.split(':');
+      
+      if (nameParts.length === 2) {
+        const action = nameParts[1];
+        if (action === 'read') group.general.read = p;
+        else if (action === 'create') group.general.create = p;
+        else if (action === 'update') group.general.update = p;
+        else if (action === 'delete') group.general.delete = p;
+      } else if (nameParts.length >= 3) {
+        const action = nameParts[1];
+        const attributeName = nameParts.slice(2).join(':');
+        
+        let attr = group.attributes.find(a => a.name === attributeName);
+        if (!attr) {
+          attr = { name: attributeName, read: null, create: null, update: null };
+          group.attributes.push(attr);
+        }
+        
+        if (action === 'read') attr.read = p;
+        else if (action === 'create') attr.create = p;
+        else if (action === 'update') attr.update = p;
+      }
+    }
+
+    const sortedGroups = Object.values(groupsMap).sort((a, b) => a.module.localeCompare(b.module));
+    for (const g of sortedGroups) {
+      g.attributes.sort((a, b) => a.name.localeCompare(b.name));
+    }
+
+    return sortedGroups;
+  });
 
   form = this.fb.group({
     name:        ['', Validators.required],
@@ -81,17 +135,6 @@ export class RoleForm implements OnInit {
           this.form.get('isActive')?.disable();
         }
       });
-    } else {
-      if (!this.auth.hasPermission('role:create:name')) {
-        this.form.get('name')?.disable();
-        this.form.get('name')?.clearValidators();
-        this.form.get('name')?.updateValueAndValidity();
-      }
-      if (!this.auth.hasPermission('role:create:description')) {
-        this.form.get('description')?.disable();
-        this.form.get('description')?.clearValidators();
-        this.form.get('description')?.updateValueAndValidity();
-      }
     }
   }
 
@@ -140,9 +183,9 @@ export class RoleForm implements OnInit {
         .subscribe(() => this.router.navigate(['/roles/list']));
     } else {
       const payload = {
-        name:        this.auth.hasPermission('role:create:name') ? (v.name || '') : (v.name || ''),
-        description: this.auth.hasPermission('role:create:description') ? (v.description || '') : (v.description || ''),
-        permissionsIds: this.auth.hasPermission('role:create:permissions') ? permissionsIds : permissionsIds,
+        name:        v.name || '',
+        description: v.description || '',
+        permissionsIds: permissionsIds,
       };
       this.rolesService.createRole(payload)
         .subscribe(() => this.router.navigate(['/roles/list']));
