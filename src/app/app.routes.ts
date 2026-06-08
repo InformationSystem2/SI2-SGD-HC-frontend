@@ -69,5 +69,11 @@ export const routes: Routes = [
     component: MainLayout,
     canActivate: [permissionGuard('document:read')],
     loadChildren: () => import('./features/historial/historial.routes').then(m => m.historialRoutes),
+  },
+  {
+    path: 'audit',
+    component: MainLayout,
+    canActivate: [permissionGuard('ROLE_SUPERUSER')],
+    loadChildren: () => import('./features/audit/audit.routes').then(m => m.auditRoutes),
   }
 ];

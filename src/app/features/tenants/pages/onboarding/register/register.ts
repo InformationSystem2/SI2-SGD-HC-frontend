@@ -39,6 +39,7 @@ export class Register implements OnInit {
 
   readonly hidePassword = signal(true);
   readonly hideConfirmPassword = signal(true);
+  readonly codeSent = signal(false);
   readonly documentTypes = ['CI', 'PASAPORTE'];
 
   readonly genders = [
@@ -57,7 +58,8 @@ export class Register implements OnInit {
       adminPhone:      [''],
       adminDocumentType: ['CI', Validators.required],
       adminDocumentNumber: ['', Validators.required],
-      adminGender:     ['MALE', Validators.required]
+      adminGender:     ['MALE', Validators.required],
+      validationCode:  ['', [Validators.required, Validators.pattern('^[0-9]{6}$')]]
     },
     { validators: passwordsMatchValidator },
   );
@@ -83,8 +85,25 @@ export class Register implements OnInit {
     }
   }
 
+  protected requestVerificationCode(): void {
+    const emailControl = this.form.get('adminEmail');
+    if (emailControl?.invalid) {
+      emailControl.markAsTouched();
+      return;
+    }
+
+    this.tenantService.sendVerificationCode(emailControl?.value ?? '').subscribe({
+      next: (res) => {
+        this.codeSent.set(true);
+        if (res?.code) {
+          this.form.patchValue({ validationCode: res.code });
+        }
+      }
+    });
+  }
+
   protected onSubmit(): void {
-    if (this.form.invalid) {
+    if (this.form.invalid || !this.codeSent()) {
       this.form.markAllAsTouched();
       return;
     }
@@ -118,7 +137,8 @@ export class Register implements OnInit {
       adminPhone: v.adminPhone || '',
       adminDocumentType: v.adminDocumentType!,
       adminDocumentNumber: v.adminDocumentNumber!,
-      adminGender: v.adminGender!
+      adminGender: v.adminGender!,
+      validationCode: v.validationCode!
     };
 
     this.tenantService.startRegistration(request).subscribe();

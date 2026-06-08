@@ -76,13 +76,37 @@
             </div>
           </div>
 
-          <div class="relative mb-4">
-            <span class="absolute inset-y-0 left-0 flex items-center pl-4 text-hc-text-3">
-              <i class="fas fa-envelope"></i>
-            </span>
-            <input formControlName="adminEmail" type="email" [placeholder]="'TENANTS.CORP_EMAIL' | translate" 
-              class="w-full pl-11 pr-4 py-3.5 bg-hc-surface border border-hc-border rounded-xl text-sm text-hc-text focus:outline-none focus:ring-2 focus:ring-hc-primary/30 focus:border-hc-primary transition-all placeholder:text-hc-text-3/50" />
+          <div class="grid grid-cols-1 md:grid-cols-[1fr_auto] gap-4 mb-4">
+            <div class="relative">
+              <span class="absolute inset-y-0 left-0 flex items-center pl-4 text-hc-text-3">
+                <i class="fas fa-envelope"></i>
+              </span>
+              <input formControlName="adminEmail" type="email" [placeholder]="'TENANTS.CORP_EMAIL' | translate" 
+                class="w-full pl-11 pr-4 py-3.5 bg-hc-surface border border-hc-border rounded-xl text-sm text-hc-text focus:outline-none focus:ring-2 focus:ring-hc-primary/30 focus:border-hc-primary transition-all placeholder:text-hc-text-3/50" />
+            </div>
+            <button type="button" 
+                    (click)="requestVerificationCode()"
+                    [disabled]="form.controls.adminEmail.invalid || tenantService.loading()"
+                    class="h-[50px] px-6 bg-hc-surface border-2 border-hc-primary text-hc-primary font-bold rounded-xl hover:bg-hc-primary/10 transition-all disabled:opacity-50 flex items-center justify-center gap-2 text-sm whitespace-nowrap">
+              @if (tenantService.loading() && !codeSent()) {
+                <span class="w-4 h-4 border-2 border-hc-primary/30 border-t-hc-primary rounded-full animate-spin"></span>
+              } @else {
+                <i class="fas fa-paper-plane"></i>
+              }
+              {{ codeSent() ? 'Reenviar código' : 'Enviar código' }}
+            </button>
           </div>
+
+          <!-- Code Input -->
+          @if (codeSent()) {
+            <div class="relative mb-4 animate-in fade-in slide-in-from-top-2 duration-300">
+              <span class="absolute inset-y-0 left-0 flex items-center pl-4 text-hc-text-3">
+                <i class="fas fa-shield-alt"></i>
+              </span>
+              <input formControlName="validationCode" type="text" placeholder="Código de 6 dígitos" maxlength="6"
+                class="w-full pl-11 pr-4 py-3.5 bg-hc-surface border border-hc-border rounded-xl text-sm text-hc-text focus:outline-none focus:ring-2 focus:ring-hc-primary/30 focus:border-hc-primary transition-all placeholder:text-hc-text-3/50 font-mono tracking-widest text-center" />
+            </div>
+          }
           
           <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
             <div>

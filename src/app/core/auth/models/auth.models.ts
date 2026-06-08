@@ -20,3 +20,13 @@ export interface AuthState {
   error: string | null;
   permissions: string[] | null;
 }
+
+export interface ForgotPasswordRequest {
+  email: string;
+}
+
+export interface VerifyRecoveryCodeRequest {
+  email: string;
+  code: string;
+  newPassword: string;
+}

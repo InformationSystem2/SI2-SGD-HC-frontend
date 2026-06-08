@@ -1,0 +1,118 @@
+<div class="flex flex-col gap-4 glass-card rounded-2xl p-5 overflow-hidden transition-all duration-300">
+  <div class="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+    <div class="flex items-center gap-3">
+      <div class="h-8 w-1.5 rounded-full bg-hc-primary" [class.bg-gradient-to-b]="true" [class.from-hc-primary]="true" [class.to-hc-primary-dark]="true"></div>
+      <h2 class="text-xl font-bold text-slate-900 dark:text-white tracking-tight">{{ 'AUDIT.MASTER_REGISTRY' | translate }}</h2>
+      @if (auditState.hasActiveFilters()) {
+        <span class="flex items-center gap-1.5 rounded-full bg-hc-primary-100/80 px-3 py-1 text-[10px] font-bold uppercase tracking-widest text-hc-primary-dark dark:bg-hc-primary-900/40 dark:text-hc-primary-light backdrop-blur-sm border border-hc-primary-200/50 dark:border-hc-primary-800/20 animate-pulse">
+          <span class="h-1.5 w-1.5 rounded-full bg-hc-primary-dark animate-ping"></span>
+          {{ 'AUDIT.ACTIVE_FILTERS' | translate }}
+        </span>
+      }
+    </div>
+    
+    <div class="flex flex-wrap items-center gap-2">
+      <button
+        [class]="auditState.showFilters() ? 'hc-btn-primary' : 'hc-btn-secondary'"
+        (click)="auditState.toggleFilters()"
+        class="hover-lift">
+        <lucide-icon [img]="Filter" [size]="18" class="mr-2"></lucide-icon>
+        {{ 'AUDIT.ADVANCED_FILTERS' | translate }}
+      </button>
+
+      @if (auditState.hasActiveFilters() || auditState.showFilters()) {
+        <button
+          class="inline-flex items-center gap-2 px-4 py-2 text-sm font-medium text-slate-500 hover:text-hc-primary-dark dark:text-slate-400 dark:hover:text-hc-primary-light hover:bg-hc-primary-50 dark:hover:bg-hc-primary-900/20 transition-colors rounded-xl"
+          (click)="onClear()">
+          <lucide-icon [img]="X" [size]="18"></lucide-icon>
+          {{ 'AUDIT.CLEAR' | translate }}
+        </button>
+      }
+
+      <button
+        class="hc-btn-secondary hover-lift"
+        [disabled]="exporting()"
+        (click)="onExportCsv()">
+        <lucide-icon [img]="Download" [size]="18" class="mr-2" [class.animate-spin]="exporting()"></lucide-icon>
+        {{ exporting() ? ('AUDIT.EXPORTING' | translate) : 'CSV' }}
+      </button>
+    </div>
+  </div>
+
+  @if (auditState.showFilters()) {
+    <div class="grid grid-cols-1 gap-5 pt-5 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 animate-in fade-in zoom-in-95 duration-300">
+      <div class="space-y-1.5">
+        <label class="text-[10px] font-bold uppercase tracking-widest text-slate-500 dark:text-slate-400 px-1">{{ 'AUDIT.TENANT' | translate }}</label>
+        <div class="relative group">
+          <lucide-icon [img]="Search" class="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-hc-primary transition-colors" [size]="16"></lucide-icon>
+          <input
+            type="text"
+            placeholder="Tenant ID..."
+            [ngModel]="auditState.filters().tenantId ?? ''"
+            (ngModelChange)="onFilterChange({ tenantId: $event || undefined })"
+            class="w-full rounded-xl border border-slate-200 bg-slate-50/50 py-2.5 pl-10 pr-4 text-sm transition-all focus:border-hc-primary focus:bg-white focus:outline-none focus:ring-4 focus:ring-hc-primary-500/10 dark:border-hc-primary-900/30 dark:bg-black/30 dark:text-white dark:focus:border-hc-primary-700 dark:focus:bg-black/50"
+          />
+        </div>
+      </div>
+
+      <div class="space-y-1.5">
+        <label class="text-[10px] font-bold uppercase tracking-widest text-slate-500 dark:text-slate-400 px-1">{{ 'AUDIT.ENTITY' | translate }}</label>
+        <div class="relative group">
+          <lucide-icon [img]="Search" class="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-hc-primary transition-colors" [size]="16"></lucide-icon>
+          <input
+            type="text"
+            placeholder="Ej: DOCUMENTS..."
+            [ngModel]="auditState.filters().resourceType ?? ''"
+            (ngModelChange)="onFilterChange({ resourceType: $event })"
+            class="w-full rounded-xl border border-slate-200 bg-slate-50/50 py-2.5 pl-10 pr-4 text-sm transition-all focus:border-hc-primary focus:bg-white focus:outline-none focus:ring-4 focus:ring-hc-primary-500/10 dark:border-hc-primary-900/30 dark:bg-black/30 dark:text-white dark:focus:border-hc-primary-700 dark:focus:bg-black/50"
+          />
+        </div>
+      </div>
+      
+      <div class="space-y-1.5">
+        <label class="text-[10px] font-bold uppercase tracking-widest text-slate-500 dark:text-slate-400 px-1">{{ 'AUDIT.OPERATION' | translate }}</label>
+        <select
+          [ngModel]="auditState.filters().actionType ?? ''"
+          (ngModelChange)="onFilterChange({ actionType: $event })"
+          class="w-full rounded-xl border border-slate-200 bg-slate-50/50 px-4 py-2.5 text-sm transition-all focus:border-hc-primary focus:bg-white focus:outline-none focus:ring-4 focus:ring-hc-primary-500/10 dark:border-hc-primary-900/30 dark:bg-black/30 dark:text-white dark:focus:border-hc-primary-700 dark:focus:bg-black/50 appearance-none pointer-events-auto"
+        >
+          <option value="" class="bg-white dark:bg-slate-950">{{ 'AUDIT.ALL' | translate }}</option>
+          @for (op of actionTypes; track op) {
+            <option [value]="op" class="bg-white dark:bg-slate-950">{{ op }}</option>
+          }
+        </select>
+      </div>
+
+      <div class="space-y-1.5">
+        <label class="text-[10px] font-bold uppercase tracking-widest text-slate-500 dark:text-slate-400 px-1">{{ 'AUDIT.USER' | translate }}</label>
+        <input
+          type="text"
+          placeholder="Username o Email..."
+          [ngModel]="auditState.filters().userIdentifier ?? ''"
+          (ngModelChange)="onFilterChange({ userIdentifier: $event || undefined })"
+          class="w-full rounded-xl border border-slate-200 bg-slate-50/50 px-4 py-2.5 text-sm transition-all focus:border-hc-primary focus:bg-white focus:outline-none focus:ring-4 focus:ring-hc-primary-500/10 dark:border-hc-primary-900/30 dark:bg-black/30 dark:text-white dark:focus:border-hc-primary-700 dark:focus:bg-black/50"
+        />
+      </div>
+
+      <div class="space-y-1.5">
+        <label class="text-[10px] font-bold uppercase tracking-widest text-slate-500 dark:text-slate-400 px-1">{{ 'AUDIT.FROM' | translate }}</label>
+        <input
+          type="date"
+          [ngModel]="auditState.filters().dateFrom ?? ''"
+          (ngModelChange)="onFilterChange({ dateFrom: $event || undefined })"
+          class="w-full rounded-xl border border-slate-200 bg-slate-50/50 px-4 py-2.5 text-sm transition-all focus:border-hc-primary focus:bg-white focus:outline-none focus:ring-4 focus:ring-hc-primary-500/10 dark:border-hc-primary-900/30 dark:bg-black/30 dark:text-white dark:focus:border-hc-primary-700 dark:focus:bg-black/50"
+        />
+      </div>
+
+      <div class="space-y-1.5">
+        <label class="text-[10px] font-bold uppercase tracking-widest text-slate-500 dark:text-slate-400 px-1">{{ 'AUDIT.TO' | translate }}</label>
+        <input
+          type="date"
+          [ngModel]="auditState.filters().dateTo ?? ''"
+          (ngModelChange)="onFilterChange({ dateTo: $event || undefined })"
+          class="w-full rounded-xl border border-slate-200 bg-slate-50/50 px-4 py-2.5 text-sm transition-all focus:border-hc-primary focus:bg-white focus:outline-none focus:ring-4 focus:ring-hc-primary-500/10 dark:border-hc-primary-900/30 dark:bg-black/30 dark:text-white dark:focus:border-hc-primary-700 dark:focus:bg-black/50"
+        />
+      </div>
+    </div>
+  }
+</div>
