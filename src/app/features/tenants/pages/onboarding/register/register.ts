@@ -56,7 +56,7 @@ export class Register implements OnInit {
       confirmPassword: ['', Validators.required],
       adminPhone:      [''],
       adminDocumentType: ['CI', Validators.required],
-      adminDocumentNumber: ['', Validators.required],
+      adminDocumentNumber: ['55555', Validators.required],
       adminGender:     ['MALE', Validators.required]
     },
     { validators: passwordsMatchValidator },

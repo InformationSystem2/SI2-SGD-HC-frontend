@@ -21,7 +21,7 @@
       </div>
 
       <form [formGroup]="form" (ngSubmit)="onSubmit()" class="space-y-6">
-        
+
         @if (tenantService.error()) {
           <div class="p-4 bg-red-50 border border-red-200 rounded-2xl flex items-center gap-3 animate-in fade-in zoom-in duration-300">
             <i class="fas fa-exclamation-circle text-red-500"></i>
@@ -58,20 +58,20 @@
             <i class="fas fa-user-shield"></i>
             {{ 'TENANTS.MASTER_ADMIN' | translate }}
           </label>
-          
+
           <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
             <div class="relative">
               <span class="absolute inset-y-0 left-0 flex items-center pl-4 text-hc-text-3">
                 <i class="fas fa-user"></i>
               </span>
-              <input formControlName="adminFirstName" [placeholder]="'TENANTS.FIRST_NAME' | translate" 
+              <input formControlName="adminFirstName" [placeholder]="'TENANTS.FIRST_NAME' | translate"
                 class="w-full pl-11 pr-4 py-3.5 bg-hc-surface border border-hc-border rounded-xl text-sm text-hc-text focus:outline-none focus:ring-2 focus:ring-hc-primary/30 focus:border-hc-primary transition-all placeholder:text-hc-text-3/50" />
             </div>
             <div class="relative">
               <span class="absolute inset-y-0 left-0 flex items-center pl-4 text-hc-text-3">
                 <i class="fas fa-user"></i>
               </span>
-              <input formControlName="adminLastName" [placeholder]="'TENANTS.LAST_NAME' | translate" 
+              <input formControlName="adminLastName" [placeholder]="'TENANTS.LAST_NAME' | translate"
                 class="w-full pl-11 pr-4 py-3.5 bg-hc-surface border border-hc-border rounded-xl text-sm text-hc-text focus:outline-none focus:ring-2 focus:ring-hc-primary/30 focus:border-hc-primary transition-all placeholder:text-hc-text-3/50" />
             </div>
           </div>
@@ -80,17 +80,17 @@
             <span class="absolute inset-y-0 left-0 flex items-center pl-4 text-hc-text-3">
               <i class="fas fa-envelope"></i>
             </span>
-            <input formControlName="adminEmail" type="email" [placeholder]="'TENANTS.CORP_EMAIL' | translate" 
+            <input formControlName="adminEmail" type="email" [placeholder]="'TENANTS.CORP_EMAIL' | translate"
               class="w-full pl-11 pr-4 py-3.5 bg-hc-surface border border-hc-border rounded-xl text-sm text-hc-text focus:outline-none focus:ring-2 focus:ring-hc-primary/30 focus:border-hc-primary transition-all placeholder:text-hc-text-3/50" />
           </div>
-          
+
           <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
             <div>
               <div class="relative">
                 <span class="absolute inset-y-0 left-0 flex items-center pl-4 text-hc-text-3">
                   <i class="fas fa-lock"></i>
                 </span>
-                <input [type]="hidePassword() ? 'password' : 'text'" formControlName="adminPassword" [placeholder]="'TENANTS.PASSWORD' | translate" 
+                <input [type]="hidePassword() ? 'password' : 'text'" formControlName="adminPassword" [placeholder]="'TENANTS.PASSWORD' | translate"
                   class="w-full pl-11 pr-12 py-3.5 bg-hc-surface border border-hc-border rounded-xl text-sm text-hc-text focus:outline-none focus:ring-2 focus:ring-hc-primary/30 focus:border-hc-primary transition-all placeholder:text-hc-text-3/50" />
                 <button type="button" (click)="hidePassword.set(!hidePassword())" class="absolute inset-y-0 right-0 flex items-center px-4 text-hc-text-3 hover:text-hc-primary transition-colors">
                   <i class="fas" [class.fa-eye]="hidePassword()" [class.fa-eye-slash]="!hidePassword()"></i>
@@ -109,7 +109,7 @@
                 <span class="absolute inset-y-0 left-0 flex items-center pl-4 text-hc-text-3">
                   <i class="fas fa-lock"></i>
                 </span>
-                <input [type]="hideConfirmPassword() ? 'password' : 'text'" formControlName="confirmPassword" [placeholder]="'TENANTS.CONFIRM_PASSWORD' | translate" 
+                <input [type]="hideConfirmPassword() ? 'password' : 'text'" formControlName="confirmPassword" [placeholder]="'TENANTS.CONFIRM_PASSWORD' | translate"
                   class="w-full pl-11 pr-12 py-3.5 bg-hc-surface border border-hc-border rounded-xl text-sm text-hc-text focus:outline-none focus:ring-2 focus:ring-hc-primary/30 focus:border-hc-primary transition-all placeholder:text-hc-text-3/50" />
                 <button type="button" (click)="hideConfirmPassword.set(!hideConfirmPassword())" class="absolute inset-y-0 right-0 flex items-center px-4 text-hc-text-3 hover:text-hc-primary transition-colors">
                   <i class="fas" [class.fa-eye]="hideConfirmPassword()" [class.fa-eye-slash]="!hideConfirmPassword()"></i>
@@ -122,8 +122,9 @@
           }
 
           <div class="grid grid-cols-2 md:grid-cols-4 gap-3">
-            <div class="relative col-span-1">
-              <select formControlName="adminDocumentType" 
+
+            <!-- <div class="relative col-span-1">
+              <select formControlName="adminDocumentType"
                 class="w-full px-3 py-3.5 bg-hc-surface border border-hc-border rounded-xl text-sm text-hc-text focus:outline-none focus:ring-2 focus:ring-hc-primary/30 focus:border-hc-primary transition-all appearance-none">
                 @for (type of documentTypes; track type) {
                   <option [value]="type">{{ 'TENANTS.DOC_TYPE_' + type | translate }}</option>
@@ -131,23 +132,26 @@
               </select>
             </div>
             <div class="relative col-span-1">
-              <input formControlName="adminDocumentNumber" [placeholder]="'TENANTS.DOC_NUMBER' | translate" 
+              <input formControlName="adminDocumentNumber" [placeholder]="'TENANTS.DOC_NUMBER' | translate"
                 class="w-full px-3 py-3.5 bg-hc-surface border border-hc-border rounded-xl text-sm text-hc-text focus:outline-none focus:ring-2 focus:ring-hc-primary/30 focus:border-hc-primary transition-all placeholder:text-hc-text-3/50" />
-            </div>
-            <div class="relative col-span-1">
-              <select formControlName="adminGender" 
+            </div> -->
+
+            <!-- por el momento solo los comentare -->
+            <!-- <div class="relative col-span-1">
+              <select formControlName="adminGender"
                 class="w-full px-3 py-3.5 bg-hc-surface border border-hc-border rounded-xl text-sm text-hc-text focus:outline-none focus:ring-2 focus:ring-hc-primary/30 focus:border-hc-primary transition-all appearance-none">
                 <option value="MALE">{{ 'TENANTS.GENDER_MALE' | translate }}</option>
                 <option value="FEMALE">{{ 'TENANTS.GENDER_FEMALE' | translate }}</option>
               </select>
-            </div>
-            <div class="relative col-span-1">
+            </div> -->
+            <!-- <div class="relative col-span-1">
               <span class="absolute inset-y-0 left-0 flex items-center pl-3 text-hc-text-3">
                 <i class="fas fa-phone"></i>
               </span>
-              <input formControlName="adminPhone" [placeholder]="'TENANTS.PHONE' | translate" 
+              <input formControlName="adminPhone" [placeholder]="'TENANTS.PHONE' | translate"
                 class="w-full pl-10 pr-3 py-3.5 bg-hc-surface border border-hc-border rounded-xl text-sm text-hc-text focus:outline-none focus:ring-2 focus:ring-hc-primary/30 focus:border-hc-primary transition-all placeholder:text-hc-text-3/50" />
-            </div>
+            </div> -->
+
           </div>
         </div>
 
