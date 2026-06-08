@@ -92,6 +92,7 @@ export const NAV_ITEMS: NavItem[] = [
     subItems: [
       { label: 'NAV.TENANTS', path: '/dashboard/admin/tenants' },
       { label: 'NAV.AUDIT', path: '/audit'},
+      { label: 'Backups', path: '/dashboard/admin/backups' },
     ],
   },  
 ];

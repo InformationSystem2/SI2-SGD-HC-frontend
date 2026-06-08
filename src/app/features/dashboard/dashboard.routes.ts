@@ -47,6 +47,11 @@ export const dashboardRoutes: Routes = [
     canActivate: [superuserGuard()],
   },
   {
+    path: 'admin/backups',
+    loadComponent: () => import('../backups/pages/backup-management/backup-management').then(m => m.BackupManagement),
+    canActivate: [superuserGuard()],
+  },
+  {
     path: '',
     redirectTo: 'dashboard',
     pathMatch: 'full',
