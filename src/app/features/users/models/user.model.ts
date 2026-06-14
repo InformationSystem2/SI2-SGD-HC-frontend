@@ -8,20 +8,21 @@ export interface CreateUserRequest {
   firstName:       string;
   lastName:        string;
   password:        string;
-  phone?:          string;
-  gender?:         string;
-  rolesIds:        string[];
+  phone?:          string | null;
+  gender?:         string | null;
+  rolesIds?:       string[] | null;
 }
 
 export interface UpdateUserRequest {
-  documentType?:   string;
-  documentNumber?: string;
-  firstName:       string;
-  lastName:        string;
-  password?:       string;
-  phone?:          string;
-  isActive:        boolean;
-  rolesIds:        string[];
+  documentType?:   string | null;
+  documentNumber?: string | null;
+  firstName?:      string | null;
+  lastName?:       string | null;
+  password?:       string | null;
+  phone?:          string | null;
+  gender?:         string | null;
+  isActive?:       boolean | null;
+  rolesIds?:       string[] | null;
 }
 
 export interface User {

@@ -21,8 +21,7 @@ export class UserList implements OnInit {
 
   readonly userService  = inject(UserService);
   readonly rolesService = inject(RolesService);
-  private authService   = inject(AuthService);
-  readonly rolePolicyService = inject(RolePolicyService);
+  readonly auth         = inject(AuthService);
   private router        = inject(Router);
   private translate    = inject(TranslateService);
 
@@ -37,7 +36,7 @@ export class UserList implements OnInit {
   readonly faKey         = faKey;
 
   readonly isSuperuser = computed(() =>
-    this.authService.roles().includes('ROLE_SUPERUSER'),
+    this.auth.roles().includes('ROLE_SUPERUSER'),
   );
 
   canManageUser(user: any): boolean {

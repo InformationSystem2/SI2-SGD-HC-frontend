@@ -12,7 +12,7 @@ export const NAV_ITEMS: NavItem[] = [
     label: 'NAV.DOCUMENTS',
     path: '/documentos/list',
     icon: 'file-text',
-    roles: [ROLES.SUPERUSER, ROLES.ADMIN, ROLES.MEDICO, ROLES.ARCHIVO],
+    permissions: ['document:read'],
     subItems: [
       { label: 'NAV.DOCUMENT_LIST', path: '/documentos/list' },
       { label: 'NAV.DOCUMENT_UPLOAD', path: '/documentos/upload' },
@@ -24,13 +24,13 @@ export const NAV_ITEMS: NavItem[] = [
     label: 'NAV.ROLES',
     path: '/roles/list',
     icon: 'shield',
-    roles: [ROLES.SUPERUSER, ROLES.ADMIN, ROLES.DIRECTOR],
+    permissions: ['role:read'],
   },
   {
     label: 'NAV.USERS',
     path: '/usuarios/list',
     icon: 'users',
-    roles: [ROLES.SUPERUSER, ROLES.ADMIN, ROLES.DIRECTOR],
+    permissions: ['user:read'],
     subItems: [
       { label: 'NAV.USER_LIST', path: '/usuarios/list' },
       { label: 'NAV.USER_REGISTER', path: '/usuarios/register' },
@@ -40,7 +40,7 @@ export const NAV_ITEMS: NavItem[] = [
     label: 'NAV.PATIENTS',
     path: '/pacientes/list',
     icon: 'heart-pulse',
-    roles: [ROLES.SUPERUSER, ROLES.ADMIN, ROLES.DIRECTOR, ROLES.MEDICO, ROLES.ARCHIVO],
+    permissions: ['patient:read'],
     subItems: [
       { label: 'NAV.PATIENT_LIST', path: '/pacientes/list' },
       { label: 'NAV.PATIENT_REGISTER', path: '/pacientes/register' },
@@ -50,7 +50,7 @@ export const NAV_ITEMS: NavItem[] = [
     label: 'NAV.DICOM',
     path: '/dicom/viewer',
     icon: 'scan',
-    roles: [ROLES.SUPERUSER, ROLES.ADMIN, ROLES.MEDICO],
+    permissions: ['dicom:read'],
     subItems: [
       { label: 'NAV.DICOM_VIEWER', path: '/dicom/viewer' },
     ],
@@ -60,13 +60,13 @@ export const NAV_ITEMS: NavItem[] = [
     label: 'NAV.HISTORIAL',
     path: '/historiales',
     icon: 'search',
-    roles: [ROLES.SUPERUSER, ROLES.ADMIN, ROLES.DIRECTOR, ROLES.MEDICO],
+    permissions: ['document:read'],
   },
   {
     label: 'NAV.REPORTS',
     path: '/reportes/designer',
     icon: 'file-text',
-    roles: [ROLES.SUPERUSER, ROLES.ADMIN, ROLES.DIRECTOR],
+    permissions: ['report:read'],
     subItems: [
       { label: 'NAV.REPORTS_DESIGNER', path: '/reportes/designer' },
       { label: 'NAV.REPORTS_TEMPLATES', path: '/reportes/templates' }
@@ -91,6 +91,8 @@ export const NAV_ITEMS: NavItem[] = [
     roles: [ROLES.SUPERUSER],
     subItems: [
       { label: 'NAV.TENANTS', path: '/dashboard/admin/tenants' },
+      { label: 'NAV.AUDIT', path: '/audit'},
+      { label: 'Backups', path: '/dashboard/admin/backups' },
     ],
   },  
 ];

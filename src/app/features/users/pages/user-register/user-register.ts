@@ -22,9 +22,7 @@ import { faSpinner, faUserPlus } from '@fortawesome/free-solid-svg-icons';
 import { CreateUserRequest } from '../../models/user.model';
 import { RolesService } from '../../../roles/services/roles.service';
 import { TranslatePipe } from '@ngx-translate/core';
-import { RolePolicyService } from '../../../../core/auth/services/role-policy.service';
-import { computed } from '@angular/core';
-import { switchMap, of } from 'rxjs';
+import { AuthService } from 'src/app/core/auth/services/auth.service';
 
 @Component({
   selector: 'app-user-register',
@@ -34,6 +32,7 @@ import { switchMap, of } from 'rxjs';
 })
 export class UserRegister implements OnInit {
 
+  auth = inject(AuthService);
   private fb      = inject(FormBuilder);
   private router  = inject(Router);
   readonly userService  = inject(UserService);
@@ -85,8 +84,7 @@ export class UserRegister implements OnInit {
       documentNumber:  ['', Validators.required],
       phone:           [''],
       gender:          ['', Validators.required],
-      isActive:        [false],
-      rolesIds:        [[] as string[], Validators.required],
+      rolesIds:        [[] as string[]],
     },
     { validators: passwordsMatchValidator },
   );
@@ -114,16 +112,15 @@ export class UserRegister implements OnInit {
     const { documentType, documentNumber, phone, gender, confirmPassword, isActive, ...required } = this.form.value;
 
     const payload: CreateUserRequest = {
-      ...required,
       firstName:  required.firstName!,
       lastName:   required.lastName!,
       email:      required.email!,
       password:   required.password!,
-      rolesIds:   required.rolesIds!,
+      rolesIds:   this.auth.hasPermission('user:create:roles') ? required.rolesIds! : null,
+      phone:      this.auth.hasPermission('user:create:phone') ? phone : null,
+      gender:     this.auth.hasPermission('user:create:gender') ? gender : null,
       ...(documentType   ? { documentType }   : {}),
       ...(documentNumber ? { documentNumber } : {}),
-      ...(phone          ? { phone }          : {}),
-      ...(gender         ? { gender }         : {}),
     };
 
     const activateImmediately = isActive && this.canActivateUser();

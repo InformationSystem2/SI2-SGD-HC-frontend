@@ -60,9 +60,9 @@ var init_path = __esm({
   }
 });
 
-// node_modules/@cornerstonejs/codec-libjpeg-turbo-8bit/dist/libjpegturbowasm_decode.js
+// node_modules/.pnpm/@cornerstonejs+codec-libjpeg-turbo-8bit@1.2.2/node_modules/@cornerstonejs/codec-libjpeg-turbo-8bit/dist/libjpegturbowasm_decode.js
 var require_libjpegturbowasm_decode = __commonJS({
-  "node_modules/@cornerstonejs/codec-libjpeg-turbo-8bit/dist/libjpegturbowasm_decode.js"(exports, module) {
+  "node_modules/.pnpm/@cornerstonejs+codec-libjpeg-turbo-8bit@1.2.2/node_modules/@cornerstonejs/codec-libjpeg-turbo-8bit/dist/libjpegturbowasm_decode.js"(exports, module) {
     var libjpegturbowasm_decode = (() => {
       var _scriptDir = typeof document !== "undefined" && document.currentScript ? document.currentScript.src : void 0;
       if (typeof __filename !== "undefined") _scriptDir = _scriptDir || __filename;
@@ -2292,7 +2292,7 @@ var require_libjpegturbowasm_decode = __commonJS({
   }
 });
 
-// node_modules/@cornerstonejs/dicom-image-loader/dist/esm/codecs/jpeg.js
+// node_modules/.pnpm/@cornerstonejs+dicom-image-loader@2.19.16_@cornerstonejs+core@2.19.16_@babel+preset-env_f17d6d8da16a944cde345a1ec638df1a/node_modules/@cornerstonejs/dicom-image-loader/dist/esm/codecs/jpeg.js
 var jpeg_exports = {};
 __export(jpeg_exports, {
   default: () => jpeg_default
@@ -2710,7 +2710,7 @@ function clampToUint8(a) {
 }
 var ColorSpace, dctZigZag, dctCos1, dctSin1, dctCos3, dctSin3, dctCos6, dctSin6, dctSqrt2, dctSqrt1d2, JpegImage, jpeg_default;
 var init_jpeg = __esm({
-  "node_modules/@cornerstonejs/dicom-image-loader/dist/esm/codecs/jpeg.js"() {
+  "node_modules/.pnpm/@cornerstonejs+dicom-image-loader@2.19.16_@cornerstonejs+core@2.19.16_@babel+preset-env_f17d6d8da16a944cde345a1ec638df1a/node_modules/@cornerstonejs/dicom-image-loader/dist/esm/codecs/jpeg.js"() {
     ColorSpace = { Unkown: 0, Grayscale: 1, AdobeRGB: 2, RGB: 3, CYMK: 4 };
     dctZigZag = new Int32Array([
       0,
@@ -3199,7 +3199,7 @@ var init_jpeg = __esm({
   }
 });
 
-// node_modules/jpeg-lossless-decoder-js/release/lossless.js
+// node_modules/.pnpm/jpeg-lossless-decoder-js@2.1.2/node_modules/jpeg-lossless-decoder-js/release/lossless.js
 var lossless_exports = {};
 __export(lossless_exports, {
   ComponentSpec: () => ComponentSpec,
@@ -3214,7 +3214,7 @@ __export(lossless_exports, {
 });
 var __defProp2, __export2, ComponentSpec, DataStream, FrameHeader, utils_exports, createArray, makeCRCTable, crcTable, crc32, HuffmanTable, QuantizationTable, ScanComponent, ScanHeader, littleEndian, Decoder;
 var init_lossless = __esm({
-  "node_modules/jpeg-lossless-decoder-js/release/lossless.js"() {
+  "node_modules/.pnpm/jpeg-lossless-decoder-js@2.1.2/node_modules/jpeg-lossless-decoder-js/release/lossless.js"() {
     __defProp2 = Object.defineProperty;
     __export2 = (target, all) => {
       for (var name in all)
@@ -4350,9 +4350,9 @@ var init_lossless = __esm({
   }
 });
 
-// node_modules/@cornerstonejs/codec-charls/dist/charlswasm_decode.js
+// node_modules/.pnpm/@cornerstonejs+codec-charls@1.2.3/node_modules/@cornerstonejs/codec-charls/dist/charlswasm_decode.js
 var require_charlswasm_decode = __commonJS({
-  "node_modules/@cornerstonejs/codec-charls/dist/charlswasm_decode.js"(exports, module) {
+  "node_modules/.pnpm/@cornerstonejs+codec-charls@1.2.3/node_modules/@cornerstonejs/codec-charls/dist/charlswasm_decode.js"(exports, module) {
     var CharLSWASM = (() => {
       var _scriptDir = typeof document !== "undefined" && document.currentScript ? document.currentScript.src : void 0;
       if (typeof __filename !== "undefined") _scriptDir = _scriptDir || __filename;
@@ -6439,9 +6439,9 @@ var require_charlswasm_decode = __commonJS({
   }
 });
 
-// node_modules/@cornerstonejs/codec-openjpeg/dist/openjpegwasm_decode.js
+// node_modules/.pnpm/@cornerstonejs+codec-openjpeg@1.3.0/node_modules/@cornerstonejs/codec-openjpeg/dist/openjpegwasm_decode.js
 var require_openjpegwasm_decode = __commonJS({
-  "node_modules/@cornerstonejs/codec-openjpeg/dist/openjpegwasm_decode.js"(exports, module) {
+  "node_modules/.pnpm/@cornerstonejs+codec-openjpeg@1.3.0/node_modules/@cornerstonejs/codec-openjpeg/dist/openjpegwasm_decode.js"(exports, module) {
     var OpenJPEGWASM = (() => {
       var _scriptName = typeof document != "undefined" ? document.currentScript?.src : void 0;
       if (typeof __filename != "undefined") _scriptName = _scriptName || __filename;
@@ -8416,9 +8416,9 @@ var require_openjpegwasm_decode = __commonJS({
   }
 });
 
-// node_modules/@cornerstonejs/codec-openjph/dist/openjphjs.js
+// node_modules/.pnpm/@cornerstonejs+codec-openjph@2.4.7/node_modules/@cornerstonejs/codec-openjph/dist/openjphjs.js
 var require_openjphjs = __commonJS({
-  "node_modules/@cornerstonejs/codec-openjph/dist/openjphjs.js"(exports, module) {
+  "node_modules/.pnpm/@cornerstonejs+codec-openjph@2.4.7/node_modules/@cornerstonejs/codec-openjph/dist/openjphjs.js"(exports, module) {
     var Module = (() => {
       var _scriptDir = typeof document !== "undefined" && document.currentScript ? document.currentScript.src : void 0;
       if (typeof __filename !== "undefined") _scriptDir = _scriptDir || __filename;
@@ -11056,7 +11056,7 @@ var require_openjphjs = __commonJS({
   }
 });
 
-// node_modules/@cornerstonejs/dicom-image-loader/dist/esm/shared/scaling/bilinear.js
+// node_modules/.pnpm/@cornerstonejs+dicom-image-loader@2.19.16_@cornerstonejs+core@2.19.16_@babel+preset-env_f17d6d8da16a944cde345a1ec638df1a/node_modules/@cornerstonejs/dicom-image-loader/dist/esm/shared/scaling/bilinear.js
 function bilinear(src, dest) {
   const { rows: srcRows, columns: srcColumns, data: srcData } = src;
   const { rows, columns, data } = dest;
@@ -11088,7 +11088,7 @@ function bilinear(src, dest) {
   return data;
 }
 
-// node_modules/@cornerstonejs/dicom-image-loader/dist/esm/shared/scaling/replicate.js
+// node_modules/.pnpm/@cornerstonejs+dicom-image-loader@2.19.16_@cornerstonejs+core@2.19.16_@babel+preset-env_f17d6d8da16a944cde345a1ec638df1a/node_modules/@cornerstonejs/dicom-image-loader/dist/esm/shared/scaling/replicate.js
 function replicate(src, dest) {
   const { rows: srcRows, columns: srcColumns, pixelData: srcData, samplesPerPixel = 1 } = src;
   const { rows, columns, pixelData } = dest;
@@ -11110,7 +11110,7 @@ function replicate(src, dest) {
   return pixelData;
 }
 
-// node_modules/comlink/dist/esm/comlink.mjs
+// node_modules/.pnpm/comlink@4.4.2/node_modules/comlink/dist/esm/comlink.mjs
 var proxyMarker = /* @__PURE__ */ Symbol("Comlink.proxy");
 var createEndpoint = /* @__PURE__ */ Symbol("Comlink.endpoint");
 var releaseProxy = /* @__PURE__ */ Symbol("Comlink.releaseProxy");
@@ -11432,7 +11432,7 @@ function generateUUID() {
   return new Array(4).fill(0).map(() => Math.floor(Math.random() * Number.MAX_SAFE_INTEGER).toString(16)).join("-");
 }
 
-// node_modules/@cornerstonejs/dicom-image-loader/dist/esm/shared/decoders/decodeLittleEndian.js
+// node_modules/.pnpm/@cornerstonejs+dicom-image-loader@2.19.16_@cornerstonejs+core@2.19.16_@babel+preset-env_f17d6d8da16a944cde345a1ec638df1a/node_modules/@cornerstonejs/dicom-image-loader/dist/esm/shared/decoders/decodeLittleEndian.js
 async function decodeLittleEndian(imageFrame, pixelData) {
   let arrayBuffer = pixelData.buffer;
   let offset = pixelData.byteOffset;
@@ -11460,7 +11460,7 @@ async function decodeLittleEndian(imageFrame, pixelData) {
 }
 var decodeLittleEndian_default = decodeLittleEndian;
 
-// node_modules/@cornerstonejs/dicom-image-loader/dist/esm/shared/decoders/decodeBigEndian.js
+// node_modules/.pnpm/@cornerstonejs+dicom-image-loader@2.19.16_@cornerstonejs+core@2.19.16_@babel+preset-env_f17d6d8da16a944cde345a1ec638df1a/node_modules/@cornerstonejs/dicom-image-loader/dist/esm/shared/decoders/decodeBigEndian.js
 function swap16(val) {
   return (val & 255) << 8 | val >> 8 & 255;
 }
@@ -11488,7 +11488,7 @@ async function decodeBigEndian(imageFrame, pixelData) {
 }
 var decodeBigEndian_default = decodeBigEndian;
 
-// node_modules/@cornerstonejs/dicom-image-loader/dist/esm/shared/decoders/decodeRLE.js
+// node_modules/.pnpm/@cornerstonejs+dicom-image-loader@2.19.16_@cornerstonejs+core@2.19.16_@babel+preset-env_f17d6d8da16a944cde345a1ec638df1a/node_modules/@cornerstonejs/dicom-image-loader/dist/esm/shared/decoders/decodeRLE.js
 async function decodeRLE(imageFrame, pixelData) {
   if (imageFrame.bitsAllocated === 8) {
     if (imageFrame.planarConfiguration) {
@@ -11613,7 +11613,7 @@ function decode16(imageFrame, pixelData) {
 }
 var decodeRLE_default = decodeRLE;
 
-// node_modules/@cornerstonejs/dicom-image-loader/dist/esm/shared/decoders/decodeJPEGBaseline8Bit.js
+// node_modules/.pnpm/@cornerstonejs+dicom-image-loader@2.19.16_@cornerstonejs+core@2.19.16_@babel+preset-env_f17d6d8da16a944cde345a1ec638df1a/node_modules/@cornerstonejs/dicom-image-loader/dist/esm/shared/decoders/decodeJPEGBaseline8Bit.js
 var import_decodewasmjs = __toESM(require_libjpegturbowasm_decode());
 var libjpegTurboWasm = new URL("libjpegturbowasm_decode.wasm", import.meta.url);
 var local = {
@@ -11677,7 +11677,7 @@ function getPixelData(frameInfo, decodedBuffer) {
 }
 var decodeJPEGBaseline8Bit_default = decodeAsync;
 
-// node_modules/@cornerstonejs/dicom-image-loader/dist/esm/shared/decoders/decodeJPEGBaseline12Bit-js.js
+// node_modules/.pnpm/@cornerstonejs+dicom-image-loader@2.19.16_@cornerstonejs+core@2.19.16_@babel+preset-env_f17d6d8da16a944cde345a1ec638df1a/node_modules/@cornerstonejs/dicom-image-loader/dist/esm/shared/decoders/decodeJPEGBaseline12Bit-js.js
 var local2 = {
   JpegImage: void 0,
   decodeConfig: {}
@@ -11712,7 +11712,7 @@ async function decodeJPEGBaseline12BitAsync(imageFrame, pixelData) {
 }
 var decodeJPEGBaseline12Bit_js_default = decodeJPEGBaseline12BitAsync;
 
-// node_modules/@cornerstonejs/dicom-image-loader/dist/esm/shared/decoders/decodeJPEGLossless.js
+// node_modules/.pnpm/@cornerstonejs+dicom-image-loader@2.19.16_@cornerstonejs+core@2.19.16_@babel+preset-env_f17d6d8da16a944cde345a1ec638df1a/node_modules/@cornerstonejs/dicom-image-loader/dist/esm/shared/decoders/decodeJPEGLossless.js
 var local3 = {
   jpeg: void 0,
   decodeConfig: {}
@@ -11751,7 +11751,7 @@ async function decodeJPEGLossless(imageFrame, pixelData) {
 }
 var decodeJPEGLossless_default = decodeJPEGLossless;
 
-// node_modules/@cornerstonejs/dicom-image-loader/dist/esm/shared/decoders/decodeJPEGLS.js
+// node_modules/.pnpm/@cornerstonejs+dicom-image-loader@2.19.16_@cornerstonejs+core@2.19.16_@babel+preset-env_f17d6d8da16a944cde345a1ec638df1a/node_modules/@cornerstonejs/dicom-image-loader/dist/esm/shared/decoders/decodeJPEGLS.js
 var import_decodewasmjs2 = __toESM(require_charlswasm_decode());
 var charlsWasm = new URL("charlswasm_decode.wasm", import.meta.url);
 var local4 = {
@@ -11834,7 +11834,7 @@ function getPixelData2(frameInfo, decodedBuffer, signed) {
 }
 var decodeJPEGLS_default = decodeAsync2;
 
-// node_modules/@cornerstonejs/dicom-image-loader/dist/esm/shared/decoders/decodeJPEG2000.js
+// node_modules/.pnpm/@cornerstonejs+dicom-image-loader@2.19.16_@cornerstonejs+core@2.19.16_@babel+preset-env_f17d6d8da16a944cde345a1ec638df1a/node_modules/@cornerstonejs/dicom-image-loader/dist/esm/shared/decoders/decodeJPEG2000.js
 var import_decodewasmjs3 = __toESM(require_openjpegwasm_decode());
 var openjpegWasm = new URL("openjpegwasm_decode.wasm", import.meta.url);
 var local5 = {
@@ -11929,7 +11929,7 @@ function getPixelData3(frameInfo, decodedBuffer) {
 }
 var decodeJPEG2000_default = decodeAsync3;
 
-// node_modules/@cornerstonejs/dicom-image-loader/dist/esm/shared/decoders/decodeHTJ2K.js
+// node_modules/.pnpm/@cornerstonejs+dicom-image-loader@2.19.16_@cornerstonejs+core@2.19.16_@babel+preset-env_f17d6d8da16a944cde345a1ec638df1a/node_modules/@cornerstonejs/dicom-image-loader/dist/esm/shared/decoders/decodeHTJ2K.js
 var import_wasmjs = __toESM(require_openjphjs());
 var openjphWasm = new URL("openjphjs.wasm", import.meta.url);
 var local6 = {
@@ -12040,7 +12040,7 @@ function getPixelData4(frameInfo, decodedBuffer) {
 }
 var decodeHTJ2K_default = decodeAsync4;
 
-// node_modules/@cornerstonejs/dicom-image-loader/dist/esm/shared/scaling/scaleArray.js
+// node_modules/.pnpm/@cornerstonejs+dicom-image-loader@2.19.16_@cornerstonejs+core@2.19.16_@babel+preset-env_f17d6d8da16a944cde345a1ec638df1a/node_modules/@cornerstonejs/dicom-image-loader/dist/esm/shared/scaling/scaleArray.js
 function scaleArray(array, scalingParameters) {
   const arrayLength = array.length;
   const { rescaleSlope, rescaleIntercept, suvbw } = scalingParameters;
@@ -12056,7 +12056,7 @@ function scaleArray(array, scalingParameters) {
   return true;
 }
 
-// node_modules/@cornerstonejs/dicom-image-loader/dist/esm/shared/getMinMax.js
+// node_modules/.pnpm/@cornerstonejs+dicom-image-loader@2.19.16_@cornerstonejs+core@2.19.16_@babel+preset-env_f17d6d8da16a944cde345a1ec638df1a/node_modules/@cornerstonejs/dicom-image-loader/dist/esm/shared/getMinMax.js
 function getMinMax(storedPixelData) {
   let min = storedPixelData[0];
   let max = storedPixelData[0];
@@ -12074,7 +12074,7 @@ function getMinMax(storedPixelData) {
 }
 var getMinMax_default = getMinMax;
 
-// node_modules/@cornerstonejs/dicom-image-loader/dist/esm/shared/getPixelDataTypeFromMinMax.js
+// node_modules/.pnpm/@cornerstonejs+dicom-image-loader@2.19.16_@cornerstonejs+core@2.19.16_@babel+preset-env_f17d6d8da16a944cde345a1ec638df1a/node_modules/@cornerstonejs/dicom-image-loader/dist/esm/shared/getPixelDataTypeFromMinMax.js
 function getPixelDataTypeFromMinMax(min, max) {
   let pixelDataType;
   if (Number.isInteger(min) && Number.isInteger(max)) {
@@ -12099,12 +12099,12 @@ function validatePixelDataType(min, max, type) {
   return pixelDataType === type;
 }
 
-// node_modules/@cornerstonejs/dicom-image-loader/dist/esm/shared/isColorImage.js
+// node_modules/.pnpm/@cornerstonejs+dicom-image-loader@2.19.16_@cornerstonejs+core@2.19.16_@babel+preset-env_f17d6d8da16a944cde345a1ec638df1a/node_modules/@cornerstonejs/dicom-image-loader/dist/esm/shared/isColorImage.js
 function isColorImage_default(photoMetricInterpretation) {
   return photoMetricInterpretation === "RGB" || photoMetricInterpretation === "PALETTE COLOR" || photoMetricInterpretation === "YBR_FULL" || photoMetricInterpretation === "YBR_FULL_422" || photoMetricInterpretation === "YBR_PARTIAL_422" || photoMetricInterpretation === "YBR_PARTIAL_420" || photoMetricInterpretation === "YBR_RCT" || photoMetricInterpretation === "YBR_ICT";
 }
 
-// node_modules/@cornerstonejs/dicom-image-loader/dist/esm/decodeImageFrameWorker.js
+// node_modules/.pnpm/@cornerstonejs+dicom-image-loader@2.19.16_@cornerstonejs+core@2.19.16_@babel+preset-env_f17d6d8da16a944cde345a1ec638df1a/node_modules/@cornerstonejs/dicom-image-loader/dist/esm/decodeImageFrameWorker.js
 var imageUtils = {
   bilinear,
   replicate

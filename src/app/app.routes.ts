@@ -25,38 +25,38 @@ export const routes: Routes = [
   {
     path: 'roles',
     component: MainLayout,
-    canActivate: [moduleRoleGuard([ROLES.SUPERUSER, ROLES.ADMIN, ROLES.DIRECTOR])],
+    canActivate: [permissionGuard('role:read')],
     loadChildren: () =>
       import('./features/roles/roles.routes').then(m => m.rolesRoutes),
   },
   {
     path: 'usuarios',
     component: MainLayout,
-    canActivate: [moduleRoleGuard([ROLES.SUPERUSER, ROLES.ADMIN, ROLES.DIRECTOR])],
+    canActivate: [permissionGuard('user:read')],
     loadChildren: () => import('./features/users/users.routes').then(m => m.usersRoutes),
   },
   {
     path: 'pacientes',
     component: MainLayout,
-    canActivate: [moduleRoleGuard([ROLES.SUPERUSER, ROLES.ADMIN, ROLES.DIRECTOR, ROLES.MEDICO, ROLES.ARCHIVO])],
+    canActivate: [permissionGuard('patient:read')],
     loadChildren: () => import('./features/patients/patients.routes').then(m => m.patientsRoutes),
   },
   {
     path: 'documentos',
     component: MainLayout,
-    canActivate: [moduleRoleGuard([ROLES.SUPERUSER, ROLES.ADMIN, ROLES.MEDICO, ROLES.ARCHIVO])],
+    canActivate: [permissionGuard('document:read')],
     loadChildren: () => import('./features/documents/documents.routes').then(m => m.documentsRoutes),
   },
   {
     // El visor DICOM ocupa toda la pantalla (sin MainLayout)
     path: 'dicom',
-    canActivate: [moduleRoleGuard([ROLES.SUPERUSER, ROLES.ADMIN, ROLES.MEDICO])],
+    canActivate: [permissionGuard('dicom:read')],
     loadChildren: () => import('./features/dicom/dicom.routes').then(m => m.dicomRoutes),
   },
   {
     path: 'reportes',
     component: MainLayout,
-    canActivate: [moduleRoleGuard([ROLES.SUPERUSER, ROLES.ADMIN, ROLES.DIRECTOR])],
+    canActivate: [permissionGuard('report:read')],
     loadChildren: () => import('./features/reports/reports.routes').then(m => m.reportsRoutes),
   },
   {
@@ -68,7 +68,13 @@ export const routes: Routes = [
   {
     path: 'historiales',
     component: MainLayout,
-    canActivate: [moduleRoleGuard([ROLES.SUPERUSER, ROLES.ADMIN, ROLES.DIRECTOR, ROLES.MEDICO])],
+    canActivate: [permissionGuard('document:read')],
     loadChildren: () => import('./features/historial/historial.routes').then(m => m.historialRoutes),
+  },
+  {
+    path: 'audit',
+    component: MainLayout,
+    canActivate: [permissionGuard('ROLE_SUPERUSER')],
+    loadChildren: () => import('./features/audit/audit.routes').then(m => m.auditRoutes),
   }
 ];

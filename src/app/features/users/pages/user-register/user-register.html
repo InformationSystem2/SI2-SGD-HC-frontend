@@ -8,10 +8,10 @@
   </div>
 
   @if (userService.success()) {
-    <div class="hc-alert-success mb-4">{{ 'USERS.SUCCESS' | translate }}</div>
+  <div class="hc-alert-success mb-4">{{ 'USERS.SUCCESS' | translate }}</div>
   }
   @if (userService.error()) {
-    <div class="hc-alert-error mb-4">{{ userService.error() }}</div>
+  <div class="hc-alert-error mb-4">{{ userService.error() }}</div>
   }
 
   <form [formGroup]="form" (ngSubmit)="onSubmit()" class="hc-card overflow-hidden">
@@ -23,37 +23,41 @@
     <div class="px-6 py-5 space-y-4">
       <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
         <div>
-          <label class="hc-label">{{ 'USERS.FIELD_FIRST_NAME' | translate }} <span class="text-hc-error">*</span></label>
-          <input formControlName="firstName" type="text" class="hc-input"
-                 [placeholder]="'USERS.PH_FIRST_NAME' | translate" />
-          @if (form.get('firstName')?.invalid && form.get('firstName')?.touched) {
+            <label class="hc-label">{{ 'USERS.FIELD_FIRST_NAME' | translate }} <span
+                class="text-hc-error">*</span></label>
+            <input formControlName="firstName" type="text" class="hc-input"
+              [placeholder]="'USERS.PH_FIRST_NAME' | translate" />
+            @if (form.get('firstName')?.invalid && form.get('firstName')?.touched) {
             <p class="text-hc-error text-xs mt-1">{{ 'USERS.VAL_REQUIRED' | translate }}</p>
-          }
+            }
         </div>
         <div>
           <label class="hc-label">{{ 'USERS.FIELD_LAST_NAME' | translate }} <span class="text-hc-error">*</span></label>
           <input formControlName="lastName" type="text" class="hc-input"
-                 [placeholder]="'USERS.PH_LAST_NAME' | translate" />
+            [placeholder]="'USERS.PH_LAST_NAME' | translate" />
           @if (form.get('lastName')?.invalid && form.get('lastName')?.touched) {
-            <p class="text-hc-error text-xs mt-1">{{ 'USERS.VAL_REQUIRED' | translate }}</p>
+          <p class="text-hc-error text-xs mt-1">{{ 'USERS.VAL_REQUIRED' | translate }}</p>
           }
         </div>
       </div>
       <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+        @if (auth.hasPermission('user:create:phone')) {
         <div>
           <label class="hc-label">{{ 'USERS.FIELD_PHONE' | translate }}</label>
-          <input formControlName="phone" type="tel" class="hc-input"
-                 [placeholder]="'USERS.PH_PHONE' | translate" />
+          <input formControlName="phone" type="tel" class="hc-input" [placeholder]="'USERS.PH_PHONE' | translate" />
         </div>
+        }
+        @if (auth.hasPermission('user:create:gender')) {
         <div>
           <label class="hc-label">{{ 'USERS.FIELD_GENDER' | translate }}</label>
           <select formControlName="gender" class="hc-select">
             <option value="">{{ 'USERS.PH_SELECT' | translate }}</option>
             @for (g of genders; track g.value) {
-              <option [value]="g.value">{{ g.label }}</option>
+            <option [value]="g.value">{{ g.label }}</option>
             }
           </select>
         </div>
+        }
       </div>
     </div>
 
@@ -64,39 +68,39 @@
     <div class="px-6 py-5 space-y-4">
       <div>
         <label class="hc-label">{{ 'USERS.FIELD_EMAIL' | translate }} <span class="text-hc-error">*</span></label>
-        <input formControlName="email" type="email" class="hc-input"
-               [placeholder]="'USERS.PH_EMAIL' | translate" />
+        <input formControlName="email" type="email" class="hc-input" [placeholder]="'USERS.PH_EMAIL' | translate" />
         @if (form.get('email')?.invalid && form.get('email')?.touched) {
-          <p class="text-hc-error text-xs mt-1">{{ 'USERS.VAL_EMAIL' | translate }}</p>
+        <p class="text-hc-error text-xs mt-1">{{ 'USERS.VAL_EMAIL' | translate }}</p>
         }
       </div>
       <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
         <div>
           <label class="hc-label">{{ 'USERS.FIELD_PASSWORD' | translate }} <span class="text-hc-error">*</span></label>
           <input formControlName="password" type="password" class="hc-input"
-                 [placeholder]="'USERS.PH_PASSWORD' | translate" />
+            [placeholder]="'USERS.PH_PASSWORD' | translate" />
           @if (form.get('password')?.touched) {
-            @if (form.get('password')?.hasError('required')) {
-              <p class="text-hc-error text-xs mt-1">{{ 'USERS.VAL_REQUIRED' | translate }}</p>
-            } @else if (form.get('password')?.hasError('minlength')) {
-              <p class="text-hc-error text-xs mt-1">{{ 'USERS.VAL_MIN_PW' | translate }}</p>
-            } @else if (form.get('password')?.hasError('uppercase')) {
-              <p class="text-hc-error text-xs mt-1">{{ 'USERS.VAL_UPPERCASE' | translate }}</p>
-            } @else if (form.get('password')?.hasError('number')) {
-              <p class="text-hc-error text-xs mt-1">{{ 'USERS.VAL_NUMBER' | translate }}</p>
-            }
+          @if (form.get('password')?.hasError('required')) {
+          <p class="text-hc-error text-xs mt-1">{{ 'USERS.VAL_REQUIRED' | translate }}</p>
+          } @else if (form.get('password')?.hasError('minlength')) {
+          <p class="text-hc-error text-xs mt-1">{{ 'USERS.VAL_MIN_PW' | translate }}</p>
+          } @else if (form.get('password')?.hasError('uppercase')) {
+          <p class="text-hc-error text-xs mt-1">{{ 'USERS.VAL_UPPERCASE' | translate }}</p>
+          } @else if (form.get('password')?.hasError('number')) {
+          <p class="text-hc-error text-xs mt-1">{{ 'USERS.VAL_NUMBER' | translate }}</p>
+          }
           }
         </div>
         <div>
-          <label class="hc-label">{{ 'USERS.FIELD_CONFIRM_PASSWORD' | translate }} <span class="text-hc-error">*</span></label>
+          <label class="hc-label">{{ 'USERS.FIELD_CONFIRM_PASSWORD' | translate }} <span
+              class="text-hc-error">*</span></label>
           <input formControlName="confirmPassword" type="password" class="hc-input"
-                 [placeholder]="'USERS.PH_CONFIRM' | translate" />
+            [placeholder]="'USERS.PH_CONFIRM' | translate" />
           @if (form.get('confirmPassword')?.touched) {
-            @if (form.get('confirmPassword')?.hasError('required')) {
-              <p class="text-hc-error text-xs mt-1">{{ 'USERS.VAL_REQUIRED' | translate }}</p>
-            } @else if (form.hasError('passwordsMismatch')) {
-              <p class="text-hc-error text-xs mt-1">{{ 'USERS.VAL_PW_MISMATCH' | translate }}</p>
-            }
+          @if (form.get('confirmPassword')?.hasError('required')) {
+          <p class="text-hc-error text-xs mt-1">{{ 'USERS.VAL_REQUIRED' | translate }}</p>
+          } @else if (form.hasError('passwordsMismatch')) {
+          <p class="text-hc-error text-xs mt-1">{{ 'USERS.VAL_PW_MISMATCH' | translate }}</p>
+          }
           }
         </div>
       </div>
@@ -113,19 +117,19 @@
           <select formControlName="documentType" class="hc-select">
             <option value="">{{ 'USERS.PH_SELECT' | translate }}</option>
             @for (dt of documentTypes; track dt) {
-              <option [value]="dt">{{ dt }}</option>
+            <option [value]="dt">{{ dt }}</option>
             }
           </select>
           @if (form.get('documentType')?.invalid && form.get('documentType')?.touched) {
-            <p class="text-hc-error text-xs mt-1">{{ 'USERS.VAL_REQUIRED' | translate }}</p>
+          <p class="text-hc-error text-xs mt-1">{{ 'USERS.VAL_REQUIRED' | translate }}</p>
           }
         </div>
         <div>
           <label class="hc-label">{{ 'USERS.FIELD_DOC_NUMBER' | translate }}<span class="text-hc-error">*</span></label>
           <input formControlName="documentNumber" type="text" class="hc-input"
-                 [placeholder]="'USERS.PH_DOC_NUMBER' | translate" />
+            [placeholder]="'USERS.PH_DOC_NUMBER' | translate" />
           @if (form.get('documentNumber')?.invalid && form.get('documentNumber')?.touched) {
-            <p class="text-hc-error text-xs mt-1">{{ 'USERS.VAL_REQUIRED' | translate }}</p>
+          <p class="text-hc-error text-xs mt-1">{{ 'USERS.VAL_REQUIRED' | translate }}</p>
           }
         </div>
       </div>
@@ -143,45 +147,35 @@
     }
 
     <!-- ── Sección: Roles ────────────────────────────── -->
+    @if (auth.hasPermission('user:create:roles')) {
     <div class="px-6 py-3 bg-hc-muted border-t border-b border-hc-border">
-      <p class="hc-section-label">{{ 'USERS.FIELD_ROLES' | translate }} <span class="text-hc-error">*</span></p>
+      <p class="hc-section-label">{{ 'USERS.FIELD_ROLES' | translate }}</p>
     </div>
     <div class="px-6 py-5">
-      @if (rolesService.loading()) {
-        <div class="flex items-center gap-2 text-hc-text-3 text-sm">
-          <fa-icon [icon]="faSpinner" class="animate-spin" />
-          <span>Cargando roles disponibles...</span>
-        </div>
-      } @else if (rolesService.roles().length === 0) {
-        <div class="rounded-xl border border-yellow-400/40 bg-yellow-400/10 px-4 py-3 text-sm text-yellow-300">
-          ⚠️ No se encontraron roles activos en el sistema. Contacte al administrador.
-        </div>
-      } @else {
-        <div class="flex flex-wrap gap-2">
-          @for (role of availableRoles(); track role.id) {
-            <button type="button" (click)="toggleRole(role.id)"
-              [class]="'px-3 py-1.5 rounded-lg text-sm font-medium border transition-colors ' +
-                       (isRoleSelected(role.id)
-                         ? 'bg-hc-primary border-hc-primary text-white shadow-sm'
-                         : 'bg-hc-muted border-hc-border text-hc-text-2 hover:border-hc-primary hover:text-hc-primary')"
-            >{{ role.name }}</button>
-          }
-        </div>
-      }
-      @if (form.get('rolesIds')?.invalid && form.get('rolesIds')?.touched) {
-        <p class="text-hc-error text-xs mt-2">{{ 'USERS.VAL_ROLE' | translate }}</p>
-      }
+      <div class="flex flex-wrap gap-2">
+        @if (rolesService.loading()) {
+        <span class="text-hc-text-3 text-sm">{{ 'USERS.LOADING_ROLES' | translate }}</span>
+        }
+        @for (role of rolesService.roles(); track role.id) {
+        <button type="button" (click)="toggleRole(role.id)"
+          [class]="'px-3 py-1.5 rounded-lg text-sm font-medium border transition-colors ' +
+                     (isRoleSelected(role.id)
+                       ? 'bg-hc-primary border-hc-primary text-white shadow-sm'
+                       : 'bg-hc-muted border-hc-border text-hc-text-2 hover:border-hc-primary hover:text-hc-primary')">{{ role.name }}</button>
+        }
+      </div>
     </div>
+    }
 
     <!-- ── Acciones ───────────────────────────────────── -->
     <div class="px-6 py-4 border-t border-hc-border bg-hc-muted/40 flex gap-3">
       <button type="submit" [disabled]="userService.loading()" class="hc-btn-primary flex-1 justify-center py-2.5">
         @if (userService.loading()) {
-          <fa-icon [icon]="faSpinner" class="animate-spin" />
-          {{ 'USERS.CREATING' | translate }}
+        <fa-icon [icon]="faSpinner" class="animate-spin" />
+        {{ 'USERS.CREATING' | translate }}
         } @else {
-          <fa-icon [icon]="faUserPlus" />
-          {{ 'USERS.CREATE_BTN' | translate }}
+        <fa-icon [icon]="faUserPlus" />
+        {{ 'USERS.CREATE_BTN' | translate }}
         }
       </button>
       <button type="button" (click)="cancel()" class="hc-btn-secondary px-6">

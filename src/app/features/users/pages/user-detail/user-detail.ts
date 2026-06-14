@@ -9,6 +9,7 @@ import { UserService } from '../../services/user.service';
 import { RolesService } from '../../../roles/services/roles.service';
 import { User } from '../../models/user.model';
 import { TranslatePipe } from '@ngx-translate/core';
+import { AuthService } from 'src/app/core/auth/services/auth.service';
 
 @Component({
   selector: 'app-user-detail',
@@ -18,6 +19,7 @@ import { TranslatePipe } from '@ngx-translate/core';
 })
 export class UserDetail implements OnInit {
 
+  auth = inject(AuthService);
   private route  = inject(ActivatedRoute);
   private router = inject(Router);
 

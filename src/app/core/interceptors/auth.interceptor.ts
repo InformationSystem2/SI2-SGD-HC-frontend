@@ -1,6 +1,6 @@
 import { HttpInterceptorFn } from "@angular/common/http";
-import { inject } from "@angular/core";
-import { AuthService } from "../auth/services/auth.service";
+
+const sessionId = crypto.randomUUID();
 
 function decodeJwt(token: string): any {
   try {
@@ -12,16 +12,27 @@ function decodeJwt(token: string): any {
 }
 
 export const authInterceptor: HttpInterceptorFn = (req, next) => {
-  const auth = inject(AuthService);
-  const accessToken = auth.accessToken();
+  const accessToken = typeof localStorage !== 'undefined' ? localStorage.getItem('accessToken') : null;
 
-  // No agregar headers en endpoints de autenticación
-  if (req.url.includes('/auth/')) {
+  // No agregar headers en endpoints de login o refresh
+  if (req.url.includes('/auth/login') || req.url.includes('/auth/refresh')) {
     return next(req);
   }
 
-  let headers: { [name: string]: string } = {};
-
+  let headers: { [name: string]: string } = {
+    'X-Session-ID': sessionId,
+    'X-Client-Time': (() => {
+      const now = new Date();
+      const tzOffsetMs = now.getTimezoneOffset() * -60000;
+      const local = new Date(now.getTime() + tzOffsetMs);
+      const sign = tzOffsetMs >= 0 ? '+' : '-';
+      const absOffset = Math.abs(now.getTimezoneOffset());
+      const hh = String(Math.floor(absOffset / 60)).padStart(2, '0');
+      const mm = String(absOffset % 60).padStart(2, '0');
+      return local.toISOString().slice(0, -1) + `${sign}${hh}:${mm}`;
+    })()
+  };
+  
   if (accessToken) {
     headers['Authorization'] = `Bearer ${accessToken}`;
     const payload = decodeJwt(accessToken);

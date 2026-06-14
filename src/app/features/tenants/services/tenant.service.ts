@@ -144,6 +144,20 @@ export class TenantService {
     );
   }
 
+  sendVerificationCode(email: string) {
+    this.loading.set(true);
+    return this.http.post<{message: string, code?: string}>(`${environment.apiUrl}/tenants/public/send-verification-code`, { email }).pipe(
+      tap((res) => {
+        this.loading.set(false);
+      }),
+      catchError(err => {
+        this.loading.set(false);
+        this.error.set(err.error?.message ?? 'ERRORS.SEND_CODE_FAILED');
+        return EMPTY;
+      })
+    );
+  }
+
   startRegistration(data: TenantRegisterRequestDto) {
     this.loading.set(true);
     const flowData = this.loadFromLocalStorage();

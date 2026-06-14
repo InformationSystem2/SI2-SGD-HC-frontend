@@ -15,6 +15,18 @@ export interface AuthState {
   username: string | null;
   roles: string[] | null;
   expiresAt: number | null;  // Date.now() + expiresIn, para saber si venció
+  tenantId: string | null; 
   loading: boolean;
   error: string | null;
+  permissions: string[] | null;
+}
+
+export interface ForgotPasswordRequest {
+  email: string;
+}
+
+export interface VerifyRecoveryCodeRequest {
+  email: string;
+  code: string;
+  newPassword: string;
 }
