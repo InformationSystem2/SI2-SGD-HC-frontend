@@ -19,6 +19,7 @@ export interface AuthState {
   loading: boolean;
   error: string | null;
   permissions: string[] | null;
+  attributePermissions?: any;
 }
 
 export interface ForgotPasswordRequest {

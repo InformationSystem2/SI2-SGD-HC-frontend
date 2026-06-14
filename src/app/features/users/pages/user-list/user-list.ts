@@ -22,6 +22,7 @@ export class UserList implements OnInit {
   readonly userService  = inject(UserService);
   readonly rolesService = inject(RolesService);
   readonly auth         = inject(AuthService);
+  readonly rolePolicyService = inject(RolePolicyService);
   private router        = inject(Router);
   private translate    = inject(TranslateService);
 

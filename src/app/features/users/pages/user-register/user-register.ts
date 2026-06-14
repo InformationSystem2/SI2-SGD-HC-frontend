@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, inject, OnInit } from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed, inject, OnInit } from '@angular/core';
 import { AbstractControl, FormBuilder, ReactiveFormsModule, ValidationErrors, Validators } from '@angular/forms';
 
 function passwordStrengthValidator(control: AbstractControl): ValidationErrors | null {
@@ -23,6 +23,8 @@ import { CreateUserRequest } from '../../models/user.model';
 import { RolesService } from '../../../roles/services/roles.service';
 import { TranslatePipe } from '@ngx-translate/core';
 import { AuthService } from 'src/app/core/auth/services/auth.service';
+import { RolePolicyService } from '../../../../core/auth/services/role-policy.service';
+import { switchMap, of } from 'rxjs';
 
 @Component({
   selector: 'app-user-register',
@@ -84,6 +86,7 @@ export class UserRegister implements OnInit {
       documentNumber:  ['', Validators.required],
       phone:           [''],
       gender:          ['', Validators.required],
+      isActive:        [true],
       rolesIds:        [[] as string[]],
     },
     { validators: passwordsMatchValidator },

@@ -8,6 +8,7 @@ import { RolesService } from '../../../roles/services/roles.service';
 import { UpdateUserRequest } from '../../models/user.model';
 import { TranslatePipe } from '@ngx-translate/core';
 import { AuthService } from 'src/app/core/auth/services/auth.service';
+import { RolePolicyService } from '../../../../core/auth/services/role-policy.service';
 
 @Component({
   selector: 'app-user-form',
