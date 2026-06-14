@@ -1,12 +1,12 @@
-// src/app/layout/components/sidebar/config/nav.config.ts
-
 import type { NavItem } from '../models/nav-item.model';
+import { ROLES } from '../../../../core/auth/services/role-policy.service';
 
 export const NAV_ITEMS: NavItem[] = [
   {
     label: 'NAV.DASHBOARD',
     path: '/dashboard/dashboard',
     icon: 'layout-dashboard',
+    roles: [ROLES.SUPERUSER, ROLES.ADMIN, ROLES.DIRECTOR, ROLES.MEDICO, ROLES.ARCHIVO],
   },
   {
     label: 'NAV.DOCUMENTS',
@@ -57,7 +57,7 @@ export const NAV_ITEMS: NavItem[] = [
 
   },
   {
-    label: 'NAV.HISTORIAL',    // ← usar clave de traducción
+    label: 'NAV.HISTORIAL',
     path: '/historiales',
     icon: 'search',
     permissions: ['document:read'],
@@ -76,7 +76,7 @@ export const NAV_ITEMS: NavItem[] = [
     label: 'NAV.CONFIG',
     path: '/dashboard/tenant/info',
     icon: 'settings',
-    permissions: ['ROLE_ADMIN', 'ROLE_SUPERUSER'],
+    roles: [ROLES.SUPERUSER, ROLES.ADMIN, ROLES.DIRECTOR],
     subItems: [
       { label: 'NAV.INFO',          path: '/dashboard/tenant/info' },
       { label: 'NAV.APPEARANCE',    path: '/dashboard/tenant/appearance' },
@@ -88,7 +88,7 @@ export const NAV_ITEMS: NavItem[] = [
     label: 'NAV.ADMIN',
     path: '/dashboard/admin/tenants',
     icon: 'building',
-    permissions: ['ROLE_SUPERUSER'],
+    roles: [ROLES.SUPERUSER],
     subItems: [
       { label: 'NAV.TENANTS', path: '/dashboard/admin/tenants' },
       { label: 'NAV.AUDIT', path: '/audit'},

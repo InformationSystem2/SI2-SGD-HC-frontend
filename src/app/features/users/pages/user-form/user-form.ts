@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, inject, OnInit, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed, inject, OnInit, signal } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
@@ -24,6 +24,7 @@ export class UserForm implements OnInit {
 
   readonly userService  = inject(UserService);
   readonly rolesService = inject(RolesService);
+  readonly rolePolicyService = inject(RolePolicyService);
 
   readonly faUsers       = faUsers;
   readonly faSpinner     = faSpinner;
@@ -36,6 +37,26 @@ export class UserForm implements OnInit {
     { value: 'MALE',   label: 'Masculino' },
     { value: 'FEMALE', label: 'Femenino'  },
   ];
+
+  readonly availableRoles = computed(() => {
+    const roles = this.rolesService.roles();
+    if (this.rolePolicyService.isSuperuser()) return roles;
+    if (this.rolePolicyService.isAdminDefault()) {
+      const allowedNames = this.rolePolicyService.allowedRolesForAdmin();
+      return roles.filter(r => allowedNames.includes(r.name));
+    }
+    return roles;
+  });
+
+  readonly canActivateUser = computed(() => {
+    if (this.rolePolicyService.isSuperuser()) return true;
+    const selectedIds = this.form.value.rolesIds ?? [];
+    const selectedRoleNames = selectedIds.map(id => {
+      const role = this.rolesService.roles().find(r => r.id === id);
+      return role?.name ?? '';
+    });
+    return this.rolePolicyService.canManageUserWithRoles(selectedRoleNames);
+  });
 
   form = this.fb.group({
     firstName:      ['', Validators.required],

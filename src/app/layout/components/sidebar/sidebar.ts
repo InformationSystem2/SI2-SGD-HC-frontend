@@ -9,6 +9,7 @@ import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { faBars, faEllipsisVertical } from '@fortawesome/free-solid-svg-icons';
 import { AuthService } from '../../../core/auth/services/auth.service';
 import { BrandingService } from '../../../core/services/branding.service';
+import { RolePolicyService } from '../../../core/auth/services/role-policy.service';
 
 @Component({
   selector: 'app-sidebar',
@@ -20,10 +21,13 @@ export class Sidebar {
   readonly sidebarService = inject(SidebarService);
   readonly authService    = inject(AuthService);
   readonly brandingService = inject(BrandingService);
+  readonly rolePolicyService = inject(RolePolicyService);
   readonly visibleNavItems = computed(() => {
-    return NAV_ITEMS.filter(item =>
-      !item.permissions || item.permissions.some(p => this.authService.hasPermission(p))
-    );
+    return NAV_ITEMS.filter(item => {
+      const hasPermission = !item.permissions || item.permissions.some(p => this.authService.hasPermission(p));
+      const hasRole = !item.roles || this.rolePolicyService.hasAnyRole(item.roles);
+      return hasPermission && hasRole;
+    });
   });
 
   readonly faBars            = faBars;

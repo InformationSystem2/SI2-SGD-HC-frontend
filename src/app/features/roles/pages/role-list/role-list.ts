@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, inject, OnInit } from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed, inject, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import {
@@ -10,7 +10,7 @@ import {
 } from '@fortawesome/free-solid-svg-icons';
 import { RolesService } from '../../services/roles.service';
 import { TranslatePipe, TranslateService } from '@ngx-translate/core';
-
+import { RolePolicyService, ROLES } from '../../../../core/auth/services/role-policy.service';
 
 @Component({
   selector: 'app-role-list',
@@ -21,6 +21,7 @@ import { TranslatePipe, TranslateService } from '@ngx-translate/core';
 export class RoleList implements OnInit{
 
   readonly rolesService = inject(RolesService);
+  readonly rolePolicyService = inject(RolePolicyService);
   private router = inject(Router);
   private translate = inject(TranslateService);  
 
@@ -29,6 +30,16 @@ export class RoleList implements OnInit{
   readonly faTrash         = faTrash;
   readonly faSpinner       = faSpinner;
   readonly faShieldHalved  = faShieldHalved;
+
+  readonly visibleRoles = computed(() => {
+    const roles = this.rolesService.roles();
+    if (this.rolePolicyService.isSuperuser()) return roles;
+    return roles.filter(r => r.name !== ROLES.SUPERUSER && r.name !== ROLES.ADMIN);
+  });
+
+  canManageRole(roleName: string): boolean {
+    return this.rolePolicyService.canManageRole(roleName);
+  }
 
   ngOnInit(): void {
     this.rolesService.loadRoles().subscribe();

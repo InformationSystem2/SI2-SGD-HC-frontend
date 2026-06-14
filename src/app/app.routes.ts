@@ -2,8 +2,9 @@
 
 import { Routes } from '@angular/router';
 import { authGuard } from './core/auth/guards/auth.guard';
-import { permissionGuard } from './core/auth/guards/role.guard';
+import { permissionGuard, moduleRoleGuard } from './core/auth/guards/role.guard';
 import { MainLayout } from './layout/main-layout/main-layout';
+import { ROLES } from './core/auth/services/role-policy.service';
 
 export const routes: Routes = [
 
@@ -18,7 +19,7 @@ export const routes: Routes = [
   {
     path: 'dashboard',
     component: MainLayout,
-    canActivate: [authGuard],
+    canActivate: [authGuard, moduleRoleGuard([ROLES.SUPERUSER, ROLES.ADMIN, ROLES.DIRECTOR, ROLES.MEDICO, ROLES.ARCHIVO])],
     loadChildren: () => import('./features/dashboard/dashboard.routes').then(m => m.dashboardRoutes),
   },
   {

@@ -43,3 +43,18 @@ export function superuserGuard(): CanActivateFn {
       : router.createUrlTree(['/dashboard/dashboard']);
   };
 }
+
+export function moduleRoleGuard(allowedRoles: string[]): CanActivateFn {
+  return () => {
+    const auth   = inject(AuthService);
+    const router = inject(Router);
+
+    if (!auth.isAuthenticated() || auth.isTokenExpired())
+      return router.createUrlTree(['/auth/login']);
+
+    const userRoles = auth.roles();
+    return allowedRoles.some(r => userRoles.includes(r))
+      ? true
+      : router.createUrlTree(['/dashboard/dashboard']);
+  };
+}

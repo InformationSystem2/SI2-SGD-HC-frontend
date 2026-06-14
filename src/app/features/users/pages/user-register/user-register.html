@@ -135,6 +135,17 @@
       </div>
     </div>
 
+    <!-- ── Sección: Estado (Activación Inmediata) ────── -->
+    @if (canActivateUser()) {
+      <div class="px-6 py-5 border-t border-hc-border">
+        <label class="flex items-center gap-3 cursor-pointer w-fit">
+          <input formControlName="isActive" type="checkbox"
+                 class="w-4 h-4 accent-hc-primary cursor-pointer" />
+          <span class="text-sm text-hc-text-2">Activar usuario inmediatamente (requiere rol permitido)</span>
+        </label>
+      </div>
+    }
+
     <!-- ── Sección: Roles ────────────────────────────── -->
     @if (auth.hasPermission('user:create:roles')) {
     <div class="px-6 py-3 bg-hc-muted border-t border-b border-hc-border">
