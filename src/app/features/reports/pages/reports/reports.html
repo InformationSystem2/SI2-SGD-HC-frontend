@@ -1,11 +1,19 @@
 <div class="space-y-6">
 
   <!-- Header -->
-  <div class="hc-page-header">
+  <div class="hc-page-header flex justify-between items-center">
     <h2 class="hc-page-title">
       <fa-icon [icon]="faFileLines" class="text-hc-primary animate-pulse" />
       {{ 'REPORTS.TITLE' | translate }}
     </h2>
+    <button 
+      (click)="isSidebarCollapsed.set(!isSidebarCollapsed())" 
+      class="hc-btn-secondary text-xs flex items-center gap-1.5 px-3 py-1.5 font-semibold"
+      [title]="isSidebarCollapsed() ? 'Mostrar opciones y asistente de IA' : 'Ocultar opciones y asistente de IA'"
+    >
+      <fa-icon [icon]="isSidebarCollapsed() ? faChevronRight : faChevronLeft" />
+      <span>{{ isSidebarCollapsed() ? 'Mostrar panel de opciones' : 'Maximizar área de datos' }}</span>
+    </button>
   </div>
 
   <!-- Errors & Warnings -->
@@ -22,7 +30,81 @@
   <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
 
     <!-- Report Settings Card -->
-    <div class="lg:col-span-1 space-y-6">
+    @if (!isSidebarCollapsed()) {
+      <div class="lg:col-span-1 space-y-6 transition-all duration-300">
+      
+      <!-- AI Report Builder Assistant -->
+      <div class="hc-card p-5 space-y-4 bg-gradient-to-r from-blue-50/20 to-indigo-50/20 border-hc-primary/20">
+        <div class="flex items-center justify-between border-b border-hc-border pb-2">
+          <h3 class="text-sm font-semibold text-hc-text flex items-center gap-1.5">
+            <fa-icon [icon]="faRobot" class="text-hc-primary" />
+            Asistente de IA (Voz y Texto)
+          </h3>
+          @if (isRecording()) {
+            <span class="flex h-2.5 w-2.5 relative">
+              <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-405 opacity-75"></span>
+              <span class="relative inline-flex rounded-full h-2.5 w-2.5 bg-red-500"></span>
+            </span>
+          }
+        </div>
+        
+        <p class="text-[11px] text-hc-text-2 leading-relaxed">
+          Genera reportes por voz o texto. Ejemplo: <i>"Reporte de documentos clínicos con estado FINALIZED ordenado por fecha de creación descendente"</i>.
+        </p>
+
+        <div class="flex items-center gap-2">
+          <div class="relative flex-1">
+            <textarea
+              [ngModel]="promptText()"
+              (ngModelChange)="promptText.set($event)"
+              placeholder="Escribe tu solicitud de reporte aquí..."
+              (keydown.enter)="$event.preventDefault(); runPromptReport()"
+              [disabled]="promptLoading()"
+              rows="3"
+              class="hc-input text-xs w-full pr-8 resize-none"
+            ></textarea>
+            @if (promptText()) {
+              <button 
+                (click)="promptText.set('')"
+                class="absolute right-2 top-2 text-hc-text-3 hover:text-hc-text border-none bg-transparent"
+              >
+                <fa-icon [icon]="faTimes" class="text-xs" />
+              </button>
+            }
+          </div>
+          
+          <button
+            type="button"
+            (click)="toggleRecording()"
+            [disabled]="promptLoading()"
+            [class.bg-red-500]="isRecording()"
+            [class.text-white]="isRecording()"
+            [class.animate-pulse]="isRecording()"
+            [class.bg-hc-muted]="!isRecording()"
+            [class.hover:bg-hc-hover]="!isRecording()"
+            class="p-2.5 rounded-lg border border-hc-border transition relative flex items-center justify-center shrink-0 self-stretch"
+            title="Grabar comando de voz"
+          >
+            <fa-icon [icon]="isRecording() ? faStop : faMicrophone" class="text-sm" />
+          </button>
+        </div>
+
+        <button
+          type="button"
+          (click)="runPromptReport()"
+          [disabled]="promptLoading() || !promptText().trim()"
+          class="hc-btn-primary w-full text-xs font-semibold py-2 flex items-center justify-center gap-1.5"
+        >
+          @if (promptLoading()) {
+            <fa-icon [icon]="faSpinner" class="animate-spin" />
+            Procesando solicitud...
+          } @else {
+            <fa-icon [icon]="faRobot" />
+            Generar reporte
+          }
+        </button>
+      </div>
+
       <div class="hc-card p-5 space-y-5">
         <h3 class="text-sm font-semibold text-hc-text border-b border-hc-border pb-2">
           {{ 'REPORTS.TYPE' | translate }}
@@ -156,17 +238,23 @@
         }
       </div>
     </div>
+  }
 
     <!-- Filters Builder & Preview -->
-    <div class="lg:col-span-2 space-y-6">
+    <div [class.lg:col-span-2]="!isSidebarCollapsed()" [class.lg:col-span-3]="isSidebarCollapsed()" class="space-y-6 transition-all duration-300">
 
       <!-- Query Filter Builder -->
       @if (selectedReport()) {
         <div class="hc-card p-5 space-y-4">
           <div class="flex justify-between items-center border-b border-hc-border pb-2">
-            <h3 class="text-sm font-semibold text-hc-text flex items-center gap-1.5">
+            <h3 
+              (click)="isFiltersCollapsed.set(!isFiltersCollapsed())"
+              class="text-sm font-semibold text-hc-text flex items-center gap-1.5 cursor-pointer select-none"
+            >
               <fa-icon [icon]="faFilter" class="text-hc-primary" />
               {{ 'REPORTS.FILTERS' | translate }}
+              <span class="text-xs font-normal text-hc-text-3 font-mono">({{ filters().length }} activos)</span>
+              <fa-icon [icon]="isFiltersCollapsed() ? faChevronDown : faChevronUp" class="text-xs text-hc-text-3 ml-1" />
             </h3>
             <button 
               (click)="addFilter()" 
@@ -176,185 +264,182 @@
             </button>
           </div>
 
-          <div class="space-y-3">
-            @if (filters().length === 0) {
-              <p class="text-xs text-hc-text-3 italic text-center py-4">{{ 'REPORTS.NO_FILTERS_WARN' | translate }}</p>
-            }
-            @for (flt of filters(); track $index) {
-              <div class="grid grid-cols-1 sm:grid-cols-12 gap-2 items-center bg-hc-muted/20 p-2.5 rounded-lg border border-hc-border">
-                
-                <!-- Field selector -->
-                <div class="sm:col-span-4">
+          @if (!isFiltersCollapsed()) {
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+              @if (filters().length === 0) {
+                <p class="col-span-full text-xs text-hc-text-3 italic text-center py-4">{{ 'REPORTS.NO_FILTERS_WARN' | translate }}</p>
+              }
+              @for (flt of filters(); track $index) {
+                <div class="flex items-center gap-2 bg-hc-muted/20 p-2 rounded-lg border border-hc-border text-xs">
+                  
+                  <!-- Field selector -->
                   <select 
                     [ngModel]="flt.field"
                     (ngModelChange)="onFilterFieldChange($index, $event)"
-                    class="hc-select text-xs"
+                    class="hc-select text-xs flex-1 py-1 px-1.5 h-8 bg-hc-surface border border-hc-border rounded text-hc-text"
                   >
                     @for (field of selectedReport()?.fields; track field.key) {
                       <option [value]="field.key">{{ translateColumn(field.key, field.label) }}</option>
                     }
                   </select>
-                </div>
 
-                <!-- Operator selector -->
-                <div class="sm:col-span-3">
+                  <!-- Operator selector -->
                   <select 
                     [(ngModel)]="flt.operator"
-                    class="hc-select text-xs"
+                    class="hc-select text-xs w-24 py-1 px-1 h-8 bg-hc-surface border border-hc-border rounded text-hc-text"
                   >
                     @for (op of getOperatorsForField(flt.field); track op.key) {
                       <option [value]="op.key">{{ op.label }}</option>
                     }
                   </select>
-                </div>
 
-                <!-- Value input -->
-                <div class="sm:col-span-4">
-                  @if (flt.operator !== 'IS_NULL' && flt.operator !== 'IS_NOT_NULL') {
-                    @if (getFieldOptions(flt.field)) {
-                      <select [(ngModel)]="flt.value" class="hc-select text-xs">
-                        <option value="">-- Seleccionar --</option>
-                        @for (opt of getFieldOptions(flt.field); track opt.value) {
-                          <option [value]="opt.value">{{ opt.label }}</option>
-                        }
-                      </select>
-                    } @else if (getFieldType(flt.field) === 'BOOLEAN') {
-                      <select [(ngModel)]="flt.value" class="hc-select text-xs">
-                        <option value="">-- Seleccionar --</option>
-                        <option value="true">Sí</option>
-                        <option value="false">No</option>
-                      </select>
-                    } @else if (getFieldType(flt.field) === 'DATE') {
-                      <input 
-                        type="date" 
-                        [(ngModel)]="flt.value" 
-                        class="hc-input text-xs" 
-                      />
-                    } @else if (getFieldType(flt.field) === 'NUMBER') {
-                      <input 
-                        type="number" 
-                        [(ngModel)]="flt.value" 
-                        placeholder="Número..."
-                        class="hc-input text-xs" 
-                      />
+                  <!-- Value input -->
+                  <div class="flex-1 min-w-[100px]">
+                    @if (flt.operator !== 'IS_NULL' && flt.operator !== 'IS_NOT_NULL') {
+                      @if (getFieldOptions(flt.field)) {
+                        <select [(ngModel)]="flt.value" class="hc-select text-xs w-full py-1 px-1.5 h-8 bg-hc-surface border border-hc-border rounded text-hc-text">
+                          <option value="">-- Seleccionar --</option>
+                          @for (opt of getFieldOptions(flt.field); track opt.value) {
+                            <option [value]="opt.value">{{ opt.label }}</option>
+                          }
+                        </select>
+                      } @else if (getFieldType(flt.field) === 'BOOLEAN') {
+                        <select [(ngModel)]="flt.value" class="hc-select text-xs w-full py-1 px-1.5 h-8 bg-hc-surface border border-hc-border rounded text-hc-text">
+                          <option value="">-- Seleccionar --</option>
+                          <option value="true">Sí</option>
+                          <option value="false">No</option>
+                        </select>
+                      } @else if (getFieldType(flt.field) === 'DATE') {
+                        <input 
+                          type="date" 
+                          [(ngModel)]="flt.value" 
+                          class="hc-input text-xs w-full py-1 px-1.5 h-8 bg-hc-surface border border-hc-border rounded text-hc-text" 
+                        />
+                      } @else if (getFieldType(flt.field) === 'NUMBER') {
+                        <input 
+                          type="number" 
+                          [(ngModel)]="flt.value" 
+                          placeholder="Número..."
+                          class="hc-input text-xs w-full py-1 px-1.5 h-8 bg-hc-surface border border-hc-border rounded text-hc-text" 
+                        />
+                      } @else {
+                        <input 
+                          type="text" 
+                          [(ngModel)]="flt.value" 
+                          placeholder="Valor..." 
+                          class="hc-input text-xs w-full py-1 px-1.5 h-8 bg-hc-surface border border-hc-border rounded text-hc-text" 
+                        />
+                      }
                     } @else {
-                      <input 
-                        type="text" 
-                        [(ngModel)]="flt.value" 
-                        placeholder="Valor..." 
-                        class="hc-input text-xs" 
-                      />
+                      <span class="text-[10px] text-hc-text-3 font-mono italic px-1 block text-center leading-8">Sin valor</span>
                     }
-                  } @else {
-                    <span class="text-xs text-hc-text-3 font-mono italic px-2">Sin valor</span>
-                  }
-                </div>
+                  </div>
 
-                <!-- Remove button -->
-                <div class="sm:col-span-1 text-center">
+                  <!-- Remove button -->
                   <button 
                     (click)="removeFilter($index)" 
-                    class="text-hc-text-3 hover:text-hc-error transition-colors p-1"
+                    class="text-hc-text-3 hover:text-hc-error transition-colors p-1 shrink-0"
+                    title="Eliminar filtro"
                   >
-                    <fa-icon [icon]="faTrash" />
+                    <fa-icon [icon]="faTrash" class="text-xs" />
+                  </button>
+
+                </div>
+              }
+            </div>
+
+            <!-- Sorting settings & Run & Direct Exporters -->
+            <div class="flex flex-wrap gap-4 items-center justify-between pt-3 border-t border-hc-border">
+              <div class="flex items-center gap-3">
+                <!-- Sort field -->
+                <div class="flex items-center gap-1.5 text-xs text-hc-text-2">
+                  <span>{{ 'REPORTS.SORT' | translate }}:</span>
+                  <select 
+                    [(ngModel)]="sortField" 
+                    class="bg-hc-input border border-hc-border-i text-hc-text rounded px-2 py-1 text-xs focus:ring-hc-primary"
+                  >
+                    <option value="">(sin orden)</option>
+                    @for (field of selectedFields(); track field) {
+                      <option [value]="field">{{ translateColumn(field, selectedReport()?.fields?.find(f => f.key === field)?.label) }}</option>
+                    }
+                  </select>
+                </div>
+
+                <!-- Sort direction -->
+                @if (sortField()) {
+                  <select 
+                    [(ngModel)]="sortOrder"
+                    class="bg-hc-input border border-hc-border-i text-hc-text rounded px-2 py-1 text-xs focus:ring-hc-primary"
+                  >
+                    <option value="asc">Ascendente</option>
+                    <option value="desc">Descendente</option>
+                  </select>
+                }
+              </div>
+
+              <div class="flex items-center gap-2">
+                
+                <!-- Conditional buttons for Save / Update template -->
+                @if (loadedTemplate()) {
+                  <button 
+                    (click)="updateTemplate()" 
+                    class="hc-btn bg-hc-primary/10 hover:bg-hc-primary/20 text-hc-primary text-xs"
+                    [disabled]="savingTemplate() || !selectedFields().length"
+                  >
+                    <fa-icon [icon]="faFloppyDisk" /> Actualizar
+                  </button>
+                }
+                <button 
+                  (click)="openSaveTemplateModal()" 
+                  class="hc-btn-secondary text-xs"
+                  [disabled]="!selectedFields().length"
+                >
+                  <fa-icon [icon]="faFloppyDisk" /> {{ 'REPORTS.SAVE_TEMPLATE' | translate }}
+                </button>
+
+                <!-- Direct Exporters -->
+                <div class="flex gap-1 bg-hc-muted/40 p-1 border border-hc-border rounded-lg">
+                  <button 
+                    (click)="exportReport('pdf')" 
+                    [disabled]="running() || !selectedFields().length" 
+                    class="px-2 py-1.5 border border-hc-border bg-red-50 text-red-700 hover:bg-red-100 disabled:opacity-40 disabled:cursor-not-allowed rounded text-xs transition-colors" 
+                    title="Exportar PDF Directo"
+                  >
+                    <fa-icon [icon]="faFilePdf" />
+                  </button>
+                  <button 
+                    (click)="exportReport('excel')" 
+                    [disabled]="running() || !selectedFields().length" 
+                    class="px-2 py-1.5 border border-hc-border bg-emerald-50 text-emerald-700 hover:bg-emerald-100 disabled:opacity-40 disabled:cursor-not-allowed rounded text-xs transition-colors" 
+                    title="Exportar Excel Directo"
+                  >
+                    <fa-icon [icon]="faFileExcel" />
+                  </button>
+                  <button 
+                    (click)="exportReport('json')" 
+                    [disabled]="running() || !selectedFields().length" 
+                    class="px-2 py-1.5 border border-hc-border bg-sky-50 text-sky-700 hover:bg-sky-100 disabled:opacity-40 disabled:cursor-not-allowed rounded text-xs transition-colors" 
+                    title="Exportar JSON Directo"
+                  >
+                    <fa-icon [icon]="faFileCode" />
                   </button>
                 </div>
 
-              </div>
-            }
-          </div>
-
-          <!-- Sorting settings & Run & Direct Exporters -->
-          <div class="flex flex-wrap gap-4 items-center justify-between pt-3 border-t border-hc-border">
-            <div class="flex items-center gap-3">
-              <!-- Sort field -->
-              <div class="flex items-center gap-1.5 text-xs text-hc-text-2">
-                <span>{{ 'REPORTS.SORT' | translate }}:</span>
-                <select 
-                  [(ngModel)]="sortField" 
-                  class="bg-hc-input border border-hc-border-i text-hc-text rounded px-2 py-1 text-xs focus:ring-hc-primary"
+                <button 
+                  (click)="runReport()" 
+                  class="hc-btn-primary text-xs font-semibold"
+                  [disabled]="running() || !selectedFields().length"
                 >
-                  <option value="">(sin orden)</option>
-                  @for (field of selectedFields(); track field) {
-                    <option [value]="field">{{ translateColumn(field, selectedReport()?.fields?.find(f => f.key === field)?.label) }}</option>
+                  @if (running()) {
+                    <fa-icon [icon]="faSpinner" class="animate-spin" />
+                    Cargando...
+                  } @else {
+                    <fa-icon [icon]="faEye" /> {{ 'REPORTS.RUN' | translate }}
                   }
-                </select>
-              </div>
-
-              <!-- Sort direction -->
-              @if (sortField()) {
-                <select 
-                  [(ngModel)]="sortOrder"
-                  class="bg-hc-input border border-hc-border-i text-hc-text rounded px-2 py-1 text-xs focus:ring-hc-primary"
-                >
-                  <option value="asc">Ascendente</option>
-                  <option value="desc">Descendente</option>
-                </select>
-              }
-            </div>
-
-            <div class="flex items-center gap-2">
-              
-              <!-- Conditional buttons for Save / Update template -->
-              @if (loadedTemplate()) {
-                <button 
-                  (click)="updateTemplate()" 
-                  class="hc-btn bg-hc-primary/10 hover:bg-hc-primary/20 text-hc-primary text-xs"
-                  [disabled]="savingTemplate() || !selectedFields().length"
-                >
-                  <fa-icon [icon]="faFloppyDisk" /> Actualizar
-                </button>
-              }
-              <button 
-                (click)="openSaveTemplateModal()" 
-                class="hc-btn-secondary text-xs"
-                [disabled]="!selectedFields().length"
-              >
-                <fa-icon [icon]="faFloppyDisk" /> {{ 'REPORTS.SAVE_TEMPLATE' | translate }}
-              </button>
-
-              <!-- Direct Exporters -->
-              <div class="flex gap-1 bg-hc-muted/40 p-1 border border-hc-border rounded-lg">
-                <button 
-                  (click)="exportReport('pdf')" 
-                  [disabled]="running() || !selectedFields().length" 
-                  class="px-2 py-1.5 border border-hc-border bg-red-50 text-red-700 hover:bg-red-100 disabled:opacity-40 disabled:cursor-not-allowed rounded text-xs transition-colors" 
-                  title="Exportar PDF Directo"
-                >
-                  <fa-icon [icon]="faFilePdf" />
-                </button>
-                <button 
-                  (click)="exportReport('excel')" 
-                  [disabled]="running() || !selectedFields().length" 
-                  class="px-2 py-1.5 border border-hc-border bg-emerald-50 text-emerald-700 hover:bg-emerald-100 disabled:opacity-40 disabled:cursor-not-allowed rounded text-xs transition-colors" 
-                  title="Exportar Excel Directo"
-                >
-                  <fa-icon [icon]="faFileExcel" />
-                </button>
-                <button 
-                  (click)="exportReport('json')" 
-                  [disabled]="running() || !selectedFields().length" 
-                  class="px-2 py-1.5 border border-hc-border bg-sky-50 text-sky-700 hover:bg-sky-100 disabled:opacity-40 disabled:cursor-not-allowed rounded text-xs transition-colors" 
-                  title="Exportar JSON Directo"
-                >
-                  <fa-icon [icon]="faFileCode" />
                 </button>
               </div>
-
-              <button 
-                (click)="runReport()" 
-                class="hc-btn-primary text-xs font-semibold"
-                [disabled]="running() || !selectedFields().length"
-              >
-                @if (running()) {
-                  <fa-icon [icon]="faSpinner" class="animate-spin" />
-                  Cargando...
-                } @else {
-                  <fa-icon [icon]="faEye" /> {{ 'REPORTS.RUN' | translate }}
-                }
-              </button>
             </div>
-          </div>
+          }
         </div>
       } @else {
         <div class="hc-card p-12 text-center text-hc-text-3">
@@ -413,7 +498,7 @@
           </div>
 
           <!-- Preview Grid -->
-          <div class="hc-table-wrap max-h-[500px]">
+          <div class="hc-table-wrap max-h-[700px]">
             <table class="hc-table min-w-full">
               <thead>
                 <tr>
@@ -442,11 +527,26 @@
           </div>
 
           <!-- Pagination -->
-          <div class="hc-pagination">
-            <div class="text-hc-text-2">
-              Mostrando registros {{ page() * pageSize() + 1 }} al 
-              {{ Math.min((page() + 1) * pageSize(), previewResult()?.total || 0) }} de 
-              {{ previewResult()?.total }}
+          <div class="hc-pagination flex flex-wrap gap-4 items-center justify-between border-t border-hc-border pt-4">
+            <div class="flex items-center gap-4">
+              <div class="text-xs text-hc-text-2">
+                Mostrando registros {{ page() * pageSize() + 1 }} al 
+                {{ Math.min((page() + 1) * pageSize(), previewResult()?.total || 0) }} de 
+                {{ previewResult()?.total }}
+              </div>
+              <div class="flex items-center gap-1.5 text-xs text-hc-text-2">
+                <span>Registros por página:</span>
+                <select 
+                  [ngModel]="pageSize()" 
+                  (ngModelChange)="pageSize.set(+$event); page.set(0); runReport()" 
+                  class="bg-hc-surface border border-hc-border text-hc-text rounded px-2 py-0.5 text-xs focus:ring-hc-primary h-7"
+                >
+                  <option [value]="15">15</option>
+                  <option [value]="30">30</option>
+                  <option [value]="50">50</option>
+                  <option [value]="100">100</option>
+                </select>
+              </div>
             </div>
             <div class="flex gap-1">
               <button 
