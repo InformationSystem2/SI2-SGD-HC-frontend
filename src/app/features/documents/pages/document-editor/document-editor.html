@@ -1,0 +1,390 @@
+<div class="flex flex-col h-full gap-4">
+
+  <!-- Header -->
+  <div class="flex items-center gap-3 shrink-0">
+    <button (click)="back()"
+      class="p-2 rounded-lg bg-hc-muted hover:bg-hc-hover text-hc-text-2 transition-colors">
+      <fa-icon [icon]="faArrowLeft" />
+    </button>
+    <fa-icon [icon]="faFileWord" class="text-hc-primary text-xl" />
+    <h2 class="text-xl font-semibold text-hc-text">
+      @if (mode() === 'view') { Visualizando documento }
+      @else if (mode() === 'edit') { Editando documento }
+      @else { {{ 'DOCUMENTS.EDITOR_TITLE' | translate }} }
+    </h2>
+    @if (mode() === 'view') {
+      <span class="ml-2 px-2.5 py-0.5 rounded-full text-xs bg-hc-muted text-hc-text-3 border border-hc-border">
+        Solo lectura
+      </span>
+    }
+  </div>
+
+  <!-- ── Cargando sesión (edit / view) ─────────────────────────────────────── -->
+  @if ((mode() === 'edit' || mode() === 'view') && opening()) {
+    <div class="flex flex-col items-center justify-center py-24 gap-3 text-hc-text-2">
+      <fa-icon [icon]="faSpinner" class="animate-spin text-3xl text-hc-primary" />
+      <p class="text-sm">{{ mode() === 'view' ? 'Abriendo documento…' : 'Cargando editor…' }}</p>
+    </div>
+  }
+
+  @if ((mode() === 'edit' || mode() === 'view') && openError()) {
+    <div class="flex items-center gap-2 p-4 rounded-lg bg-hc-error-bg border border-hc-error/30 text-hc-error text-sm max-w-lg">
+      <fa-icon [icon]="faTriangleExclamation" />
+      {{ openError() }}
+    </div>
+  }
+
+  <!-- ── Formulario de creación (modo create, antes de abrir el editor) ─────── -->
+  @if (mode() === 'create' && !session()) {
+    <div class="bg-hc-card rounded-xl border border-hc-border shadow-sm max-w-lg mx-auto overflow-hidden">
+
+      <!-- Tabs -->
+      <div class="flex border-b border-hc-border">
+        <button (click)="setTab('new')"
+          class="flex-1 flex items-center justify-center gap-2 px-4 py-3 text-sm font-medium transition-colors"
+          [class]="activeTab() === 'new'
+            ? 'text-hc-primary border-b-2 border-hc-primary bg-hc-primary/5'
+            : 'text-hc-text-2 hover:bg-hc-hover'">
+          <fa-icon [icon]="faPlus" />
+          Nuevo documento
+        </button>
+        <button (click)="setTab('upload')"
+          class="flex-1 flex items-center justify-center gap-2 px-4 py-3 text-sm font-medium transition-colors"
+          [class]="activeTab() === 'upload'
+            ? 'text-hc-primary border-b-2 border-hc-primary bg-hc-primary/5'
+            : 'text-hc-text-2 hover:bg-hc-hover'">
+          <fa-icon [icon]="faUpload" />
+          Subir archivo
+        </button>
+      </div>
+
+      <!-- Tab: Nuevo documento -->
+      @if (activeTab() === 'new') {
+        <form [formGroup]="form" class="p-6 space-y-4" (ngSubmit)="openNew()">
+
+          <p class="text-sm text-hc-text-2">{{ 'DOCUMENTS.EDITOR_HINT' | translate }}</p>
+
+          <!-- Selector de tipo de documento -->
+          <div>
+            <label class="block text-sm font-medium text-hc-text-2 mb-1.5">Tipo de documento</label>
+            <div class="grid grid-cols-4 gap-2">
+              @for (t of docTypes; track t.value) {
+                <button type="button" (click)="setDocType(t.value)"
+                  class="flex flex-col items-center gap-2 px-3 py-3 rounded-xl border text-sm
+                         font-medium transition-all"
+                  [class]="docType() === t.value
+                    ? 'border-hc-primary bg-hc-primary/10 text-hc-primary shadow-sm scale-[1.02]'
+                    : 'border-hc-border bg-hc-surface text-hc-text-2 hover:bg-hc-hover hover:border-hc-primary/40'">
+                  <!-- Icono con fondo corporativo -->
+                  <span class="w-10 h-10 rounded-lg flex items-center justify-center text-white text-base shadow-sm"
+                    [class]="t.value === 'WORD'  ? 'bg-[#2B7CD3]' :
+                             t.value === 'CELL'  ? 'bg-[#217346]' :
+                             t.value === 'SLIDE' ? 'bg-[#C43E1C]' :
+                                                   'bg-[#E02424]'">
+                    @if (t.value === 'WORD')  { <fa-icon [icon]="faFileWord" /> }
+                    @if (t.value === 'CELL')  { <fa-icon [icon]="faFileExcel" /> }
+                    @if (t.value === 'SLIDE') { <fa-icon [icon]="faFilePowerpoint" /> }
+                    @if (t.value === 'PDF')   { <fa-icon [icon]="faFilePdf" /> }
+                  </span>
+                  <span class="text-xs leading-tight text-center">{{ t.label }}</span>
+                </button>
+              }
+            </div>
+          </div>
+
+          <div class="flex flex-col gap-1">
+            <label class="text-sm font-medium text-hc-text-2">
+              {{ 'DOCUMENTS.FIELD_PATIENT' | translate }} <span class="text-hc-error">*</span>
+            </label>
+            @if (patientService.loading()) {
+              <p class="text-xs text-hc-text-3">{{ 'DOCUMENTS.LOADING_PATIENTS' | translate }}</p>
+            } @else {
+              <select formControlName="patientId"
+                class="rounded-lg border border-hc-border bg-hc-surface px-3 py-2
+                       text-sm text-hc-text focus:outline-none focus:ring-2 focus:ring-hc-primary/50"
+                [class.border-hc-error]="form.get('patientId')?.invalid && form.get('patientId')?.touched">
+                <option value="">{{ 'DOCUMENTS.SELECT_PATIENT' | translate }}</option>
+                @for (p of patientService.patients(); track p.id) {
+                  <option [value]="p.id">{{ p.firstName }} {{ p.lastName }}</option>
+                }
+              </select>
+            }
+            @if (form.get('patientId')?.invalid && form.get('patientId')?.touched) {
+              <span class="text-xs text-hc-error">{{ 'DOCUMENTS.VAL_REQUIRED' | translate }}</span>
+            }
+          </div>
+
+          <div class="flex flex-col gap-1">
+            <label class="text-sm font-medium text-hc-text-2">
+              {{ 'DOCUMENTS.FIELD_ISSUE_DATE' | translate }} <span class="text-hc-error">*</span>
+            </label>
+            <input type="date" formControlName="issueDate"
+              class="rounded-lg border border-hc-border bg-hc-surface px-3 py-2
+                     text-sm text-hc-text focus:outline-none focus:ring-2 focus:ring-hc-primary/50"
+              [class.border-hc-error]="form.get('issueDate')?.invalid && form.get('issueDate')?.touched" />
+            @if (form.get('issueDate')?.invalid && form.get('issueDate')?.touched) {
+              <span class="text-xs text-hc-error">{{ 'DOCUMENTS.VAL_REQUIRED' | translate }}</span>
+            }
+          </div>
+
+          <div class="flex flex-col gap-1">
+            <label class="text-sm font-medium text-hc-text-2">{{ 'DOCUMENTS.EDITOR_DOC_TITLE' | translate }}</label>
+            <input type="text" formControlName="title"
+              class="rounded-lg border border-hc-border bg-hc-surface px-3 py-2
+                     text-sm text-hc-text placeholder:text-hc-text-3
+                     focus:outline-none focus:ring-2 focus:ring-hc-primary/50"
+              placeholder="Ej. Historia clínica inicial" />
+          </div>
+
+          @if (openError()) {
+            <div class="flex items-center gap-2 p-3 rounded-lg bg-hc-error-bg border border-hc-error/30 text-hc-error text-sm">
+              <fa-icon [icon]="faTriangleExclamation" />{{ openError() }}
+            </div>
+          }
+
+          <button type="submit" [disabled]="opening()"
+            class="flex items-center gap-2 px-5 py-2 bg-hc-primary hover:bg-hc-primary-dark
+                   text-white text-sm font-medium rounded-lg transition-colors shadow-sm
+                   disabled:opacity-50 disabled:cursor-not-allowed">
+            @if (opening()) {
+              <fa-icon [icon]="faSpinner" class="animate-spin" />
+              {{ 'DOCUMENTS.EDITOR_OPENING' | translate }}
+            } @else {
+              <fa-icon [icon]="faFileWord" />
+              {{ 'DOCUMENTS.EDITOR_OPEN_BTN' | translate }}
+            }
+          </button>
+        </form>
+      }
+
+      <!-- Tab: Subir .docx -->
+      @if (activeTab() === 'upload') {
+        <form [formGroup]="uploadForm" class="p-6 space-y-4" (ngSubmit)="openUploaded()">
+
+          <p class="text-sm text-hc-text-2">
+            Sube un archivo <strong>.docx / .xlsx / .pptx / .pdf</strong> para abrirlo y editarlo en OnlyOffice.
+            El tipo se detecta automáticamente.
+          </p>
+
+          <!-- Selector de archivo -->
+          <div>
+            <label class="block text-sm font-medium text-hc-text-2 mb-1.5">
+              Archivo a subir <span class="text-hc-error">*</span>
+            </label>
+            <label
+              class="flex flex-col items-center justify-center gap-2 w-full h-28
+                     border-2 border-dashed border-hc-border rounded-xl cursor-pointer
+                     hover:border-hc-primary/50 hover:bg-hc-primary/5 transition-colors">
+              @if (selectedFile()) {
+                @if (docType() === 'WORD') { <fa-icon [icon]="faFileWord" class="text-2xl text-[#2B7CD3]" /> }
+                @else if (docType() === 'CELL') { <fa-icon [icon]="faFileExcel" class="text-2xl text-[#217346]" /> }
+                @else if (docType() === 'SLIDE') { <fa-icon [icon]="faFilePowerpoint" class="text-2xl text-[#C43E1C]" /> }
+                @else if (docType() === 'PDF') { <fa-icon [icon]="faFilePdf" class="text-2xl text-[#E02424]" /> }
+                <span class="text-sm text-hc-text font-medium">{{ selectedFile()!.name }}</span>
+                <span class="text-xs text-hc-text-3">
+                  {{ (selectedFile()!.size / 1024).toFixed(0) }} KB — clic para cambiar
+                </span>
+              } @else {
+                <fa-icon [icon]="faUpload" class="text-2xl text-hc-text-3" />
+                <span class="text-sm text-hc-text-2">Arrastra o haz clic para seleccionar</span>
+                <span class="text-xs text-hc-text-3">Formatos soportados: .docx, .xlsx, .pptx, .pdf</span>
+              }
+              <input type="file" [accept]="uploadAccept" class="hidden" (change)="onFileChange($event)" />
+            </label>
+            @if (selectedFile()) {
+              <p class="text-xs text-hc-text-3 mt-1">
+                Tipo detectado:
+                <span class="font-medium text-hc-primary">{{ currentDocType.label }}</span>
+              </p>
+            }
+          </div>
+
+          <div class="flex flex-col gap-1">
+            <label class="text-sm font-medium text-hc-text-2">
+              {{ 'DOCUMENTS.FIELD_PATIENT' | translate }} <span class="text-hc-error">*</span>
+            </label>
+            @if (patientService.loading()) {
+              <p class="text-xs text-hc-text-3">{{ 'DOCUMENTS.LOADING_PATIENTS' | translate }}</p>
+            } @else {
+              <select formControlName="patientId"
+                class="rounded-lg border border-hc-border bg-hc-surface px-3 py-2
+                       text-sm text-hc-text focus:outline-none focus:ring-2 focus:ring-hc-primary/50"
+                [class.border-hc-error]="uploadForm.get('patientId')?.invalid && uploadForm.get('patientId')?.touched">
+                <option value="">{{ 'DOCUMENTS.SELECT_PATIENT' | translate }}</option>
+                @for (p of patientService.patients(); track p.id) {
+                  <option [value]="p.id">{{ p.firstName }} {{ p.lastName }}</option>
+                }
+              </select>
+            }
+            @if (uploadForm.get('patientId')?.invalid && uploadForm.get('patientId')?.touched) {
+              <span class="text-xs text-hc-error">{{ 'DOCUMENTS.VAL_REQUIRED' | translate }}</span>
+            }
+          </div>
+
+          <div class="flex flex-col gap-1">
+            <label class="text-sm font-medium text-hc-text-2">
+              {{ 'DOCUMENTS.FIELD_ISSUE_DATE' | translate }} <span class="text-hc-error">*</span>
+            </label>
+            <input type="date" formControlName="issueDate"
+              class="rounded-lg border border-hc-border bg-hc-surface px-3 py-2
+                     text-sm text-hc-text focus:outline-none focus:ring-2 focus:ring-hc-primary/50"
+              [class.border-hc-error]="uploadForm.get('issueDate')?.invalid && uploadForm.get('issueDate')?.touched" />
+          </div>
+
+          <div class="flex flex-col gap-1">
+            <label class="text-sm font-medium text-hc-text-2">Título del documento</label>
+            <input type="text" formControlName="title"
+              class="rounded-lg border border-hc-border bg-hc-surface px-3 py-2
+                     text-sm text-hc-text placeholder:text-hc-text-3
+                     focus:outline-none focus:ring-2 focus:ring-hc-primary/50"
+              placeholder="Se usa el nombre del archivo si se deja vacío" />
+          </div>
+
+          @if (openError()) {
+            <div class="flex items-center gap-2 p-3 rounded-lg bg-hc-error-bg border border-hc-error/30 text-hc-error text-sm">
+              <fa-icon [icon]="faTriangleExclamation" />{{ openError() }}
+            </div>
+          }
+
+          <button type="submit" [disabled]="uploading() || opening()"
+            class="flex items-center gap-2 px-5 py-2 bg-hc-primary hover:bg-hc-primary-dark
+                   text-white text-sm font-medium rounded-lg transition-colors shadow-sm
+                   disabled:opacity-50 disabled:cursor-not-allowed">
+            @if (uploading() || opening()) {
+              <fa-icon [icon]="faSpinner" class="animate-spin" />
+              {{ uploading() ? 'Subiendo archivo…' : 'Abriendo editor…' }}
+            } @else {
+              <fa-icon [icon]="faUpload" />
+              Subir y editar
+            }
+          </button>
+
+        </form>
+      }
+
+    </div>
+  }
+
+  <!-- ── Editor OnlyOffice ──────────────────────────────────────────────────── -->
+  @if (session() && editorConfig()) {
+
+    <!-- Formulario de Metadatos (Modo Edición / Vista) -->
+    @if (mode() === 'edit' || mode() === 'view') {
+      <form [formGroup]="metadataForm" (ngSubmit)="saveMetadata()"
+            class="bg-hc-card rounded-xl border border-hc-border shadow-sm p-4 flex flex-wrap items-end gap-4 shrink-0">
+        
+        <!-- Fecha de emisión -->
+        <div class="flex flex-col gap-1 min-w-[150px]">
+          <label class="text-xs font-semibold text-hc-text-2">Fecha de Emisión</label>
+          <input type="date" formControlName="issueDate" [readonly]="mode() === 'view'"
+                 class="rounded-lg border border-hc-border bg-hc-input px-3 py-1.5 text-xs text-hc-text focus:outline-none focus:ring-2 focus:ring-hc-primary/30 disabled:opacity-75" />
+        </div>
+
+        <!-- Fecha de vencimiento -->
+        <div class="flex flex-col gap-1 min-w-[150px]">
+          <label class="text-xs font-semibold text-hc-text-2">Fecha de Vencimiento</label>
+          <input type="date" formControlName="expiryDate" [readonly]="mode() === 'view'"
+                 class="rounded-lg border border-hc-border bg-hc-input px-3 py-1.5 text-xs text-hc-text focus:outline-none focus:ring-2 focus:ring-hc-primary/30 disabled:opacity-75" />
+        </div>
+
+        <!-- Estado -->
+        <div class="flex flex-col gap-1 min-w-[150px]">
+          <label class="text-xs font-semibold text-hc-text-2">Estado</label>
+            <select formControlName="status" [disabled]="mode() === 'view'"
+                    class="rounded-lg border border-hc-border bg-hc-input px-3 py-1.5 text-xs text-hc-text focus:outline-none disabled:opacity-75 focus:ring-2 focus:ring-hc-primary/30">
+              @for (s of statuses; track s.value) {
+                <option [value]="s.value">{{ s.label }}</option>
+              }
+            </select>
+        </div>
+
+        <!-- Botón guardar metadatos (solo en edición) -->
+        @if (mode() === 'edit') {
+          <div class="flex items-center gap-2">
+            <button type="submit" [disabled]="savingMetadata()"
+                    class="flex items-center gap-1.5 px-4 py-1.5 bg-hc-primary hover:bg-hc-primary-dark text-white text-xs font-medium rounded-lg transition-colors disabled:opacity-50">
+              @if (savingMetadata()) {
+                <fa-icon [icon]="faSpinner" class="animate-spin" />
+                Guardando...
+              } @else {
+                <fa-icon [icon]="faCircleCheck" />
+                Guardar Metadatos
+              }
+            </button>
+            @if (metadataSaved()) {
+              <span class="text-xs text-green-600 font-medium">¡Guardado!</span>
+            }
+            @if (metadataError()) {
+              <span class="text-xs text-hc-error">{{ metadataError() }}</span>
+            }
+          </div>
+        }
+      </form>
+    }
+
+    <!-- Wrapper: normal o fullscreen -->
+    <div [class]="fullscreen()
+      ? 'fixed inset-0 z-[9999] flex flex-col bg-hc-surface'
+      : 'flex-1 flex flex-col gap-2 min-h-0'">
+
+      <!-- Barra de estado + controles -->
+      <div class="flex items-center justify-between gap-4 shrink-0 px-4 py-2 text-sm"
+           [class]="fullscreen()
+             ? 'bg-hc-navbar border-b border-hc-border shadow-sm'
+             : 'rounded-lg border border-hc-border bg-hc-card'">
+
+        <!-- Izquierda: hint / modo -->
+        <div class="flex items-center gap-3 min-w-0">
+          @if (mode() === 'view') {
+            <span class="hc-badge-muted shrink-0">Solo lectura</span>
+            <span class="text-hc-text-2 text-xs truncate hidden sm:block">
+              Para editar ve a la acción Editar en el listado.
+            </span>
+          } @else {
+            <span class="text-hc-text-2 text-xs truncate hidden sm:block">
+              {{ 'DOCUMENTS.EDITOR_SAVE_HINT' | translate }}
+            </span>
+          }
+          @if (saved()) {
+            <span class="flex items-center gap-1.5 text-hc-success font-medium shrink-0">
+              <fa-icon [icon]="faCircleCheck" />
+              {{ 'DOCUMENTS.EDITOR_SAVED' | translate }}
+            </span>
+          }
+        </div>
+
+        <!-- Derecha: botón pantalla completa -->
+        <button
+          (click)="toggleFullscreen()"
+          [title]="fullscreen() ? 'Salir de pantalla completa (Esc)' : 'Pantalla completa'"
+          class="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium
+                 border border-hc-border bg-hc-muted hover:bg-hc-primary hover:text-white
+                 hover:border-hc-primary text-hc-text-2 transition-colors shrink-0"
+        >
+          @if (fullscreen()) {
+            <fa-icon [icon]="faCompress" />
+            <span class="hidden sm:inline">Salir</span>
+          } @else {
+            <fa-icon [icon]="faExpand" />
+            <span class="hidden sm:inline">Pantalla completa</span>
+          }
+        </button>
+      </div>
+
+      <!-- Editor -->
+      <div class="flex-1 overflow-hidden"
+           [class]="fullscreen() ? '' : 'rounded-xl border border-hc-border shadow-sm min-h-[520px]'">
+        <document-editor
+          id="sgd-doc-editor"
+          [documentServerUrl]="docServerUrl"
+          [config]="editorConfig()!"
+          [events_onDocumentStateChange]="onDocumentStateChange"
+          height="100%"
+          width="100%"
+        ></document-editor>
+      </div>
+
+    </div>
+  }
+
+</div>
