@@ -46,6 +46,7 @@
     "DOCUMENT_TEMPLATE_NEW": "Nueva plantilla",
     "DOCUMENT_WORKFLOW": "Bandeja de revisión",
     "DOCUMENT_EDITOR": "Editor OnlyOffice",
+    "DOCUMENT_VERSIONS": "Historial de versiones",
     "ROLES": "Roles",
     "USERS": "Usuarios",
     "SETTINGS": "Configuración",
@@ -111,6 +112,7 @@
     "SAVE": "Guardar",
     "CANCEL": "Cancelar",
     "FIELDS": {
+      "tenantName": "Tenant / Clínica",
       "documentNumber": "Nro. documento",
       "documentType": "Tipo doc.",
       "firstName": "Nombre",

@@ -46,6 +46,7 @@
     "DOCUMENT_TEMPLATE_NEW": "New template",
     "DOCUMENT_WORKFLOW": "Review inbox",
     "DOCUMENT_EDITOR": "OnlyOffice Editor",
+    "DOCUMENT_VERSIONS": "Version history",
     "ROLES": "Roles",
     "USERS": "Users",
     "SETTINGS": "Settings",
@@ -111,6 +112,7 @@
     "SAVE": "Save",
     "CANCEL": "Cancel",
     "FIELDS": {
+      "tenantName": "Tenant / Clinic",
       "documentNumber": "Document no.",
       "documentType": "Doc. type",
       "firstName": "First name",
