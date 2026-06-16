@@ -72,14 +72,26 @@
             <p class="text-hc-text-2 font-mono text-xs mt-0.5 break-all">{{ d.patientId }}</p>
           </div>
           @if (d.fileUrl) {
-            <div>
-              <p class="text-xs text-hc-text-3 uppercase tracking-wide font-medium">Archivo</p>
-              <button (click)="openInViewer()"
-                class="text-hc-primary hover:underline text-sm flex items-center gap-1 mt-0.5">
-                <fa-icon [icon]="faBookOpen" />
-                Abrir documento
-                {{ 'DOCUMENT_LIST.OPEN_DOCUMENT' | translate }}                
-              </button>
+            <div class="space-y-2">
+              <div>
+                <p class="text-xs text-hc-text-3 uppercase tracking-wide font-medium">Archivo</p>
+                <button (click)="openInViewer()"
+                  class="text-hc-primary hover:underline text-sm flex items-center gap-1 mt-0.5"
+                  title="Abrir documento">
+                  <fa-icon [icon]="faBookOpen" />
+                  {{ 'DOCUMENT_LIST.OPEN_DOCUMENT' | translate }}                
+                </button>
+              </div>
+              @if (d.isExternalSource || d.clinicalContent['origen'] === 'OnlyOffice') {
+                <div>
+                  <button (click)="edit()"
+                    class="text-blue-600 hover:underline text-sm flex items-center gap-1"
+                    title="Editar en OnlyOffice">
+                    <fa-icon [icon]="faEdit" />
+                    Editar en OnlyOffice
+                  </button>
+                </div>
+              }
             </div>
           }
         </div>
@@ -276,13 +288,18 @@
               <pre class="mt-2 text-xs text-hc-text-2 font-mono whitespace-pre-wrap break-words
                           bg-hc-muted/50 rounded-lg p-3 max-h-48 overflow-y-auto">{{ ocr.raw_text }}</pre>
             </details>
-}
-
-          </div>
+          }
         </div>
       </div>
-    }
-    <!-- ── Fin panel OCR ── -->
-
+    </div>
   }
+
+      <!-- Historial de versiones (Solo para OnlyOffice/externos) -->
+      @if (d.isExternalSource || d.clinicalContent['origen'] === 'OnlyOffice') {
+        <div class="mt-6">
+          <app-document-version-history [documentId]="d.id"></app-document-version-history>
+        </div>
+      }
+
+    }
 </div>

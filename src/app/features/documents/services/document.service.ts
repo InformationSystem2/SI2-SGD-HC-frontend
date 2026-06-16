@@ -143,7 +143,7 @@ export class DocumentService {
     );
   }
 
-  createOnlyofficeSession(req: { patientId: string; issueDate: string; title?: string; fileUrl?: string; docType?: 'WORD' | 'CELL' | 'SLIDE' }) {
+  createOnlyofficeSession(req: { patientId: string; issueDate: string; title?: string; fileUrl?: string; docType?: 'WORD' | 'CELL' | 'SLIDE' | 'PDF' }) {
     return this.http.post<OoSession>(`${this.BASE}/onlyoffice/session`, req);
   }
 
@@ -153,6 +153,10 @@ export class DocumentService {
 
   openOnlyofficeViewSession(docId: string) {
     return this.http.post<OoSession>(`${this.BASE}/onlyoffice/${docId}/view-session`, {});
+  }
+
+  openOnlyofficeVersionViewSession(docId: string, versionId: string) {
+    return this.http.post<OoSession>(`${this.BASE}/${docId}/versions/${versionId}/onlyoffice-view-session`, {});
   }
 }
 

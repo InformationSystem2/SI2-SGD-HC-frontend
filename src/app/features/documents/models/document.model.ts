@@ -1,4 +1,4 @@
-export type DocumentStatus = 'DRAFT' | 'PENDING_SIGNATURE' | 'COMPLETED';
+export type DocumentStatus = 'DRAFT' | 'PENDING_SIGNATURE' | 'COMPLETED' | 'PENDING_REVIEW' | 'REJECTED' | 'FINALIZED';
 
 
 // { fieldName: fieldType }  — ej. { "medicamento": "text", "dosis": "number" }
@@ -56,6 +56,7 @@ export interface Document {
   expiryDate?: string;
   fileUrl?: string;
   isExternalSource: boolean;
+  versionNumber?: number;
 }
 
 export interface UpdateDocumentRequest {
