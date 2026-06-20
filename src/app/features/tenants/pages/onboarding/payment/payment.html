@@ -24,12 +24,19 @@
             {{ 'TENANTS.SELECTED_PLAN' | translate }}
           </span>
           <span class="px-3 py-1 bg-gradient-to-r from-hc-primary to-hc-primary-dark text-white rounded-full text-[10px] font-bold tracking-wider uppercase">
-            {{ PLAN_NAMES[selectedPlan()] || selectedPlan() | translate }}
+            {{ planDisplayName() || selectedPlan() }}
           </span>
+        </div>
+        <div class="flex items-center justify-between py-2">
+          <span class="text-sm text-hc-text-3 flex items-center gap-2">
+            <i class="fas fa-sync-alt text-hc-text-3"></i>
+            {{ 'SUBSCRIPTION.BILLING_CYCLE' | translate }}
+          </span>
+          <span class="text-sm font-medium text-hc-text-2">{{ billingCycleLabel() | translate }}</span>
         </div>
         <div class="flex items-center justify-between py-3 border-t border-hc-border-i mt-2">
           <span class="text-base font-semibold text-hc-text">{{ 'TENANTS.TOTAL_PAY' | translate }}</span>
-          <span class="hc-h2 text-hc-primary">${{ planPrice() }}<span class="text-xs font-normal text-hc-text-3">/ {{ 'TENANTS.MONTH' | translate }}</span></span>
+          <span class="hc-h2 text-hc-primary">${{ planPrice() }}<span class="text-xs font-normal text-hc-text-3">/ {{ billingCycleLabel() | translate }}</span></span>
         </div>
       </div>
 

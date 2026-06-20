@@ -34,12 +34,21 @@ export class Info implements OnInit {
   adminFullName = signal('');
   adminEmail = signal('');
   adminPhone = signal('');
-  maxUsers = signal(10);
+  maxUsers = signal(0);
   usersCount = signal(0);
-  maxStorage = signal(5120);
+  maxStorage = signal(0);
   storageUsed = signal(0);
-  maxApiCalls = signal(50000);
+  maxApiCalls = signal(0);
   apiCalls = signal(0);
+  maxPatients = signal(0);
+  patientsCount = signal(0);
+  maxDocuments = signal(0);
+  documentsCount = signal(0);
+  maxDicomStudies = signal(0);
+  dicomStudiesCount = signal(0);
+  maxRoles = signal(0);
+  rolesCount = signal(0);
+  tenantBillingCycle = signal('MONTHLY');
   editingInfo = signal(false);
   infoForm = signal({ name: '', email: '', phone: '', address: '' });
   clinicLogoUrl = signal('');
@@ -66,7 +75,7 @@ export class Info implements OnInit {
         this.brandingService.tenantName.set(info.name || '');
         this.clinicAddress.set(info.address || '');
         this.tenantSlug.set(info.slug || '');
-        this.tenantPlan.set(info.subscriptionPlan || 'Professional');
+        this.tenantPlan.set(info.subscriptionPlan || 'BASIC');
         this.tenantStatus.set(info.subscriptionStatus || 'ACTIVE');
         this.tenantStartDate.set(info.subscriptionStartDate ? this.formatDate(info.subscriptionStartDate) : '—');
         if (info.adminFirstName) {
@@ -82,12 +91,21 @@ export class Info implements OnInit {
           address: info.address || ''
         });
 
-        this.maxUsers.set(stats.maxUsers || 10);
-        this.maxStorage.set(stats.maxStorageMB || 5120);
-        this.maxApiCalls.set(stats.maxApiCalls || 50000);
-        this.usersCount.set(stats.userCount || 0);
-        this.storageUsed.set(stats.storageUsedMB || 0);
-        this.apiCalls.set(stats.apiCallsUsed || 0);
+        this.maxUsers.set(stats.maxUsers);
+        this.maxStorage.set(stats.maxStorageMB);
+        this.maxApiCalls.set(stats.maxApiCalls);
+        this.usersCount.set(stats.userCount);
+        this.storageUsed.set(stats.storageUsedMB);
+        this.apiCalls.set(stats.apiCallsUsed);
+        this.maxPatients.set(stats.maxPatients);
+        this.patientsCount.set(stats.patientCount);
+        this.maxDocuments.set(stats.maxDocuments);
+        this.documentsCount.set(stats.documentCount);
+        this.maxDicomStudies.set(stats.maxDicomStudies);
+        this.dicomStudiesCount.set(stats.dicomStudyCount);
+        this.maxRoles.set(stats.maxStaffRoles);
+        this.rolesCount.set(stats.roleCount);
+        this.tenantBillingCycle.set(info.billingCycle || 'MONTHLY');
 
         if (settings.regional) {
           this.tenantTimezone.set(settings.regional.timezone || '');

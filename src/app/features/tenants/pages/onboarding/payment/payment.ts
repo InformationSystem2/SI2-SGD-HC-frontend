@@ -1,10 +1,11 @@
 import { ChangeDetectionStrategy, Component, inject, OnInit, signal } from '@angular/core';
 import { Router } from '@angular/router';
 import { TenantService } from '../../../services/tenant.service';
+import { PlanService } from '../../../../../core/services/plan.service';
 import { TranslatePipe, TranslateService } from '@ngx-translate/core';
 import { CommonModule } from '@angular/common';
 import { ProgressStepperComponent } from '../../../components/progress-stepper/progress-stepper';
-import { PLAN_NAMES, PLAN_PRICES } from '../../../../../core/utils/plan.utils';
+import { getBillingCycleLabel } from '../../../../../core/utils/plan.utils';
 
 @Component({
   selector: 'app-payment',
@@ -16,14 +17,16 @@ import { PLAN_NAMES, PLAN_PRICES } from '../../../../../core/utils/plan.utils';
 export class Payment implements OnInit {
   private router = inject(Router);
   protected tenantService = inject(TenantService);
+  protected planService = inject(PlanService);
   protected translate = inject(TranslateService);
 
   readonly processing = signal(false);
 
   selectedPlan = signal<string>('BASIC');
   planPrice = signal<string>('0');
-
-  readonly PLAN_NAMES = PLAN_NAMES;
+  billingCycle = signal<string>('MONTHLY');
+  billingCycleLabel = signal<string>('');
+  planDisplayName = signal<string>('');
 
   ngOnInit(): void {
     const data = this.tenantService.getFlowData();
@@ -33,7 +36,14 @@ export class Payment implements OnInit {
     }
 
     this.selectedPlan.set(data.selectedPlan);
-    this.planPrice.set(PLAN_PRICES[data.selectedPlan as keyof typeof PLAN_PRICES] || '0');
+    this.billingCycle.set(data.billingCycle || 'MONTHLY');
+    this.billingCycleLabel.set(getBillingCycleLabel(data.billingCycle || 'MONTHLY'));
+
+    this.planService.getPlan(data.selectedPlan).subscribe(plan => {
+      const price = data.billingCycle === 'YEARLY' ? plan.priceYearly : plan.priceMonthly;
+      this.planPrice.set(price.toString());
+      this.planDisplayName.set(plan.displayName);
+    });
   }
 
   confirmPayment(): void {
