@@ -76,5 +76,17 @@ export const routes: Routes = [
     component: MainLayout,
     canActivate: [permissionGuard('ROLE_SUPERUSER')],
     loadChildren: () => import('./features/audit/audit.routes').then(m => m.auditRoutes),
-  }
+  },
+  {
+    path: 'tareas',
+    component: MainLayout,
+    canActivate: [permissionGuard('review-task:read')],
+    loadChildren: () => import('./features/workflow/workflow.routes').then(m => m.workflowRoutes),
+  },
+  {
+    path: 'notificaciones',
+    component: MainLayout,
+    canActivate: [authGuard],
+    loadChildren: () => import('./features/notifications/notifications.routes').then(m => m.notificationsRoutes),
+  },
 ];

@@ -9,10 +9,11 @@ import { SidebarService } from '../sidebar/services/sidebar.service';
 import { BrandingService } from '../../../core/services/branding.service';
 import { SubscriptionStatusService } from '../../../core/services/subscription-status.service';
 import { TranslatePipe } from '@ngx-translate/core';
+import { NotificationBell } from '../notification-bell/notification-bell';
 
 @Component({
   selector: 'app-navbar',
-  imports: [FontAwesomeModule, TranslatePipe],
+  imports: [FontAwesomeModule, TranslatePipe, NotificationBell],
   templateUrl: './navbar.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })

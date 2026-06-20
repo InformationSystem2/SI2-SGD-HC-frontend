@@ -65,6 +65,17 @@ export const NAV_ITEMS: NavItem[] = [
     permissions: ['document:read'],
   },
   {
+    label: 'NAV.TASKS',
+    path: '/tareas',
+    icon: 'inbox',
+    permissions: ['review-task:read'],
+  },
+  {
+    label: 'NAV.NOTIFICATIONS',
+    path: '/notificaciones',
+    icon: 'bell',
+  },
+  {
     label: 'NAV.REPORTS',
     path: '/reportes/designer',
     icon: 'file-text',

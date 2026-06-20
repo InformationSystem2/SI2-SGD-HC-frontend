@@ -1,4 +1,4 @@
-export type DocumentStatus = 'DRAFT' | 'PENDING_SIGNATURE' | 'COMPLETED' | 'PENDING_REVIEW' | 'REJECTED' | 'FINALIZED';
+export type DocumentStatus = 'DRAFT' | 'PENDING_REVIEW' | 'REJECTED' | 'FINALIZED';
 
 
 // { fieldName: fieldType }  — ej. { "medicamento": "text", "dosis": "number" }

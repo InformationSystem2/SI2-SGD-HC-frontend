@@ -96,18 +96,20 @@ export class DocumentList implements OnInit {
   }
 
   statusClass(status: string): string {
-    return {
-      DRAFT:              'bg-yellow-100 text-yellow-700 dark:bg-yellow-900/30 dark:text-yellow-400',
-      PENDING_SIGNATURE:  'bg-blue-100   text-blue-700   dark:bg-blue-900/30   dark:text-blue-400',
-      COMPLETED:          'bg-green-100  text-green-700  dark:bg-green-900/30  dark:text-green-400',
-    }[status] ?? 'bg-hc-muted text-hc-text-2';
+    return ({
+      DRAFT:          'bg-yellow-100 text-yellow-700 dark:bg-yellow-900/30 dark:text-yellow-400',
+      PENDING_REVIEW: 'bg-blue-100   text-blue-700   dark:bg-blue-900/30   dark:text-blue-400',
+      REJECTED:       'bg-red-100    text-red-700    dark:bg-red-900/30    dark:text-red-400',
+      FINALIZED:      'bg-green-100  text-green-700  dark:bg-green-900/30  dark:text-green-400',
+    } as Record<string, string>)[status] ?? 'bg-hc-muted text-hc-text-2';
   }
 
   statusLabel(status: string): string {
-    return {
-      DRAFT:             this.translate.instant('DOCUMENT_LIST.STATUS_DRAFT'),
-      PENDING_SIGNATURE: this.translate.instant('DOCUMENT_LIST.STATUS_PENDING'),
-      COMPLETED:         this.translate.instant('DOCUMENT_LIST.STATUS_COMPLETED'),
-    }[status] ?? status;
+    return ({
+      DRAFT:          this.translate.instant('DOCUMENT_LIST.STATUS_DRAFT'),
+      PENDING_REVIEW: this.translate.instant('DOCUMENT_LIST.STATUS_PENDING_REVIEW'),
+      REJECTED:       this.translate.instant('DOCUMENT_LIST.STATUS_REJECTED'),
+      FINALIZED:      this.translate.instant('DOCUMENT_LIST.STATUS_FINALIZED'),
+    } as Record<string, string>)[status] ?? status;
   }
 }
