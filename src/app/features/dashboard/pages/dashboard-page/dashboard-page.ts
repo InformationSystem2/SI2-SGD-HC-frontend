@@ -25,6 +25,7 @@ import { DocumentService } from '../../../documents/services/document.service';
 import {
   AnalyticsService,
   CriticalAlertItem,
+  PlanUsage,
   getChartDefaults,
 } from '../../services/analytics.service';
 
@@ -94,6 +95,7 @@ export class DashboardPage implements OnInit {
   workflowData      = signal<ChartData<'doughnut'> | null>(null);
   medicalStudies    = signal<number | null>(null);
   criticalAlerts    = signal<CriticalAlertItem[]>([]);
+  planUsage         = signal<PlanUsage | null>(null);
 
   analyticsLoading  = signal(false);
   analyticsError    = signal<string | null>(null);
@@ -192,7 +194,12 @@ export class DashboardPage implements OnInit {
     });
 
     this.analytics.getCriticalAlerts(tenantId).subscribe({
-      next:  a => { this.criticalAlerts.set(a); this.analyticsLoading.set(false); this.cdr.markForCheck(); },
+      next:  a => { this.criticalAlerts.set(a); this.cdr.markForCheck(); },
+      error: () => this.analyticsError.set('ERRORS.DEFAULT'),
+    });
+
+    this.analytics.getPlanUsage(tenantId).subscribe({
+      next:  u => { this.planUsage.set(u); this.analyticsLoading.set(false); this.cdr.markForCheck(); },
       error: () => { this.analyticsError.set('ERRORS.DEFAULT'); this.analyticsLoading.set(false); },
     });
   }
@@ -201,6 +208,24 @@ export class DashboardPage implements OnInit {
 
   alertBadgeClass(status: string): string {
     return status === 'EXPIRED' ? 'hc-badge-error' : 'hc-badge-warning';
+  }
+
+  formatStorage(bytes: number): string {
+    if (!bytes || bytes <= 0) return '0 MB';
+    const mb = bytes / (1024 * 1024);
+    if (mb >= 1024) return (mb / 1024).toFixed(1) + ' GB';
+    return mb.toFixed(0) + ' MB';
+  }
+
+  getUsagePercent(current: number, max: number): number {
+    if (!max || max <= 0) return 0;
+    return Math.min(100, Math.round((current / max) * 100));
+  }
+
+  getBarColor(percent: number): string {
+    if (percent >= 90) return 'bg-hc-error';
+    if (percent >= 70) return 'bg-hc-warning';
+    return 'bg-hc-primary';
   }
 
   goTo(path: string): void { this.router.navigate([path]); }

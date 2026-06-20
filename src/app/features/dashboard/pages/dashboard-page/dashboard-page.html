@@ -252,6 +252,83 @@
       </div>
     </div><!-- /critical alerts -->
 
+    <!-- 7. Plan Usage Summary -->
+    @if (planUsage(); as usage) {
+      <div>
+        <h2 class="hc-section-label mb-3">{{ 'DASHBOARD.PLAN_USAGE' | translate }}</h2>
+        <div class="hc-card p-5">
+          <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
+            <!-- Users -->
+            <div class="space-y-1.5">
+              <div class="flex justify-between text-xs">
+                <span class="text-hc-text-3">{{ 'SUBSCRIPTION.USERS' | translate }}</span>
+                <span class="font-medium text-hc-text">{{ usage.user_count }} / {{ usage.max_users }}</span>
+              </div>
+              <div class="w-full h-2 bg-hc-muted rounded-full overflow-hidden">
+                <div class="h-full rounded-full transition-all" [class]="getBarColor(getUsagePercent(usage.user_count, usage.max_users))"
+                     [style.width.%]="getUsagePercent(usage.user_count, usage.max_users)"></div>
+              </div>
+            </div>
+            <!-- Patients -->
+            <div class="space-y-1.5">
+              <div class="flex justify-between text-xs">
+                <span class="text-hc-text-3">{{ 'SUBSCRIPTION.PATIENTS' | translate }}</span>
+                <span class="font-medium text-hc-text">{{ usage.patient_count }} / {{ usage.max_patients }}</span>
+              </div>
+              <div class="w-full h-2 bg-hc-muted rounded-full overflow-hidden">
+                <div class="h-full rounded-full transition-all bg-hc-success"
+                     [style.width.%]="getUsagePercent(usage.patient_count, usage.max_patients)"></div>
+              </div>
+            </div>
+            <!-- Documents -->
+            <div class="space-y-1.5">
+              <div class="flex justify-between text-xs">
+                <span class="text-hc-text-3">{{ 'SUBSCRIPTION.DOCUMENTS' | translate }}</span>
+                <span class="font-medium text-hc-text">{{ usage.document_count }} / {{ usage.max_documents }}</span>
+              </div>
+              <div class="w-full h-2 bg-hc-muted rounded-full overflow-hidden">
+                <div class="h-full rounded-full transition-all bg-hc-info"
+                     [style.width.%]="getUsagePercent(usage.document_count, usage.max_documents)"></div>
+              </div>
+            </div>
+            <!-- Storage -->
+            <div class="space-y-1.5">
+              <div class="flex justify-between text-xs">
+                <span class="text-hc-text-3">{{ 'SUBSCRIPTION.STORAGE' | translate }}</span>
+                <span class="font-medium text-hc-text">{{ formatStorage(usage.storage_bytes) }} / {{ usage.max_storage_mb >= 0 ? (usage.max_storage_mb >= 999999 ? '∞' : (usage.max_storage_mb >= 1024 ? (usage.max_storage_mb / 1024).toFixed(1) + ' GB' : usage.max_storage_mb + ' MB')) : '—' }}</span>
+              </div>
+              <div class="w-full h-2 bg-hc-muted rounded-full overflow-hidden">
+                <div class="h-full rounded-full transition-all bg-hc-accent"
+                     [style.width.%]="getUsagePercent(usage.storage_bytes / 1048576, usage.max_storage_mb)"></div>
+              </div>
+            </div>
+            <!-- API Calls -->
+            <div class="space-y-1.5">
+              <div class="flex justify-between text-xs">
+                <span class="text-hc-text-3">{{ 'SUBSCRIPTION.API_CALLS' | translate }}</span>
+                <span class="font-medium text-hc-text">{{ usage.api_calls }} / {{ usage.max_api_calls }}</span>
+              </div>
+              <div class="w-full h-2 bg-hc-muted rounded-full overflow-hidden">
+                <div class="h-full rounded-full transition-all bg-hc-warning"
+                     [style.width.%]="getUsagePercent(usage.api_calls, usage.max_api_calls)"></div>
+              </div>
+            </div>
+            <!-- OCR Pages -->
+            <div class="space-y-1.5">
+              <div class="flex justify-between text-xs">
+                <span class="text-hc-text-3">{{ 'PLAN_LIMIT.OCR_PAGES' | translate }}</span>
+                <span class="font-medium text-hc-text">{{ usage.ocr_pages }} / {{ usage.max_ocr_pages }}</span>
+              </div>
+              <div class="w-full h-2 bg-hc-muted rounded-full overflow-hidden">
+                <div class="h-full rounded-full transition-all bg-hc-primary"
+                     [style.width.%]="getUsagePercent(usage.ocr_pages, usage.max_ocr_pages)"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    }
+
     <!-- Quick actions -->
     <div>
       <h2 class="hc-section-label mb-3">{{ 'DASHBOARD.QUICK_ACTIONS' | translate }}</h2>
