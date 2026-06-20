@@ -35,9 +35,10 @@ export class DocumentEdit implements OnInit {
   readonly error    = signal<string | null>(null);
 
   readonly statuses: { value: DocumentStatus; label: string }[] = [
-    { value: 'DRAFT',             label: 'Borrador' },
-    { value: 'PENDING_SIGNATURE', label: 'Pendiente de firma' },
-    { value: 'COMPLETED',         label: 'Completado' },
+    { value: 'DRAFT',          label: 'Borrador' },
+    { value: 'PENDING_REVIEW', label: 'En revisión' },
+    { value: 'REJECTED',       label: 'Rechazado' },
+    { value: 'FINALIZED',      label: 'Finalizado' },
   ];
 
   form = this.fb.group({
