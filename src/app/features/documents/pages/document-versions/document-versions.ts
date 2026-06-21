@@ -2,14 +2,13 @@ import { ChangeDetectionStrategy, Component, computed, inject, OnInit, signal } 
 import { Router } from '@angular/router';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { faFileLines, faSpinner, faClock, faChevronRight, faEye } from '@fortawesome/free-solid-svg-icons';
-import { TranslatePipe } from '@ngx-translate/core';
 import { DocumentService } from '../../services/document.service';
 import { Document } from '../../models/document.model';
 import { DocumentVersionHistoryComponent } from '../../components/document-version-history/document-version-history';
 
 @Component({
   selector: 'app-document-versions',
-  imports: [FontAwesomeModule, TranslatePipe, DocumentVersionHistoryComponent],
+  imports: [FontAwesomeModule, DocumentVersionHistoryComponent],
   template: `
     <div class="space-y-6">
       <!-- Header -->
