@@ -1,0 +1,21 @@
+<!-- Floating Help Button -->
+<button
+  (click)="isModalOpen.set(true)"
+  [ngClass]="[getPositionClasses(), getSizeClasses()]"
+  class="fixed bg-hc-primary hover:bg-hc-primary-dark text-white rounded-full shadow-lg flex items-center justify-center transition-all duration-300 ease-in-out hover:scale-110 hover:shadow-xl z-40 group cursor-pointer"
+  title="Ayuda"
+  aria-label="Abrir asistente de ayuda"
+>
+  <div class="w-7 h-7 flex items-center justify-center transition-transform group-hover:rotate-12">
+    <app-help-icon name="question"></app-help-icon>
+  </div>
+
+  <!-- Ripple effect on hover -->
+  <span class="absolute w-full h-full rounded-full bg-hc-primary opacity-0 group-hover:opacity-20 animate-ping"></span>
+</button>
+
+<!-- Help Assistant Modal -->
+<app-help-chat-modal
+  [isOpen]="isModalOpen()"
+  (close)="isModalOpen.set(false)"
+></app-help-chat-modal>
