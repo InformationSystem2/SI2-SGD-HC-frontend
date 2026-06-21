@@ -195,7 +195,7 @@ export class TenantService {
     );
   }
 
-  processPayment() {
+  processPayment(paymentIntentId?: string) {
     this.loading.set(true);
     const flowData = this.loadFromLocalStorage();
     if (!flowData) {
@@ -203,7 +203,10 @@ export class TenantService {
       this.error.set(this.translate.instant('ERRORS.SESSION_EXPIRED'));
       return EMPTY;
     }
-    const request: TenantPaymentRequestDto = { sessionToken: flowData.sessionToken };
+    const request: TenantPaymentRequestDto = { 
+      sessionToken: flowData.sessionToken,
+      paymentIntentId 
+    };
     return this.http.post<any>(`${environment.apiUrl}/tenants/public/pay`, request).pipe(
       tap((res) => {
         this.loading.set(false);
@@ -217,6 +220,14 @@ export class TenantService {
         return EMPTY;
       })
     );
+  }
+
+  createOnboardingPaymentIntent(sessionToken: string) {
+    return this.http.post<any>(`${environment.apiUrl}/tenants/public/create-payment-intent`, { sessionToken });
+  }
+
+  createChangePlanPaymentIntent(plan: string) {
+    return this.http.post<any>(`${environment.apiUrl}/tenants/current/create-payment-intent`, { plan }, { headers: this.authenticatedHeaders() });
   }
 
   getSettings() {
@@ -239,12 +250,14 @@ export class TenantService {
     return this.http.get<TenantStats>(`${environment.apiUrl}/tenants/current/stats`, { headers: this.authenticatedHeaders() });
   }
 
-  renewSubscription(plan: string) {
-    return this.http.post<any>(`${environment.apiUrl}/tenants/current/renew`, plan, { headers: this.authenticatedHeaders() });
+  renewSubscription(plan: string, paymentIntentId?: string) {
+    const request = { plan, paymentIntentId };
+    return this.http.post<any>(`${environment.apiUrl}/tenants/current/renew`, request, { headers: this.authenticatedHeaders() });
   }
 
-  changePlan(newPlan: string) {
-    return this.http.post<any>(`${environment.apiUrl}/tenants/current/change-plan`, newPlan, { headers: this.authenticatedHeaders() });
+  changePlan(newPlan: string, paymentIntentId?: string) {
+    const request = { newPlan, paymentIntentId };
+    return this.http.post<any>(`${environment.apiUrl}/tenants/current/change-plan`, request, { headers: this.authenticatedHeaders() });
   }
 
   // ── ADMIN TENANT MANAGEMENT (HU-17) ─────────────────────────────────────
