@@ -69,10 +69,10 @@ export class DashboardPage implements OnInit {
   readonly totalPatients  = computed(() => this.patientService.patients().length);
   readonly totalDocs      = computed(() => this.documentService.documents().length);
   readonly completedDocs  = computed(() =>
-    this.documentService.documents().filter(d => d.status === 'COMPLETED').length
+    this.documentService.documents().filter(d => d.status === 'FINALIZED').length
   );
   readonly pendingDocs    = computed(() =>
-    this.documentService.documents().filter(d => d.status === 'PENDING_SIGNATURE').length
+    this.documentService.documents().filter(d => d.status === 'PENDING_REVIEW').length
   );
   readonly recentDocs     = computed(() =>
     [...this.documentService.documents()]

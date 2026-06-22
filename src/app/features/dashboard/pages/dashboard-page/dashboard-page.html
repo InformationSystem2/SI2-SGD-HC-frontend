@@ -175,7 +175,7 @@
         </div>
         <!-- Quick stat cards (existing) -->
         <div class="grid grid-cols-2 gap-2">
-          <div class="hc-stat-card !p-3 cursor-pointer" (click)="goTo('/pacientes')">
+          <div class="hc-stat-card !p-3 cursor-pointer" (click)="goTo('/patients')">
             <div class="hc-stat-icon bg-hc-primary/10 !w-8 !h-8">
               <fa-icon [icon]="faUserInjured" class="text-sm text-hc-primary" />
             </div>
@@ -188,7 +188,7 @@
               }
             </div>
           </div>
-          <div class="hc-stat-card !p-3 cursor-pointer" (click)="goTo('/documentos')">
+          <div class="hc-stat-card !p-3 cursor-pointer" (click)="goTo('/documents')">
             <div class="hc-stat-icon bg-hc-accent/10 !w-8 !h-8">
               <fa-icon [icon]="faFileWaveform" class="text-sm text-hc-accent" />
             </div>
@@ -333,7 +333,7 @@
     <div>
       <h2 class="hc-section-label mb-3">{{ 'DASHBOARD.QUICK_ACTIONS' | translate }}</h2>
       <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
-        <button class="hc-action-card" (click)="goTo('/pacientes/register')">
+        <button class="hc-action-card" (click)="goTo('/patients/register')">
           <div class="w-12 h-12 rounded-xl bg-hc-primary/10 flex items-center justify-center">
             <fa-icon [icon]="faUserPlus" class="text-xl text-hc-primary" />
           </div>
@@ -342,7 +342,7 @@
             <p class="text-xs text-hc-text-3 mt-0.5">{{ 'DASHBOARD.ACTION_NEW_PATIENT_DESC' | translate }}</p>
           </div>
         </button>
-        <button class="hc-action-card" (click)="goTo('/documentos/upload')">
+        <button class="hc-action-card" (click)="goTo('/documents/upload')">
           <div class="w-12 h-12 rounded-xl bg-hc-accent/10 flex items-center justify-center">
             <fa-icon [icon]="faCloudArrowUp" class="text-xl text-hc-accent" />
           </div>
@@ -351,7 +351,7 @@
             <p class="text-xs text-hc-text-3 mt-0.5">{{ 'DASHBOARD.ACTION_UPLOAD_DOC_DESC' | translate }}</p>
           </div>
         </button>
-        <button class="hc-action-card" (click)="goTo('/documentos/templates')">
+        <button class="hc-action-card" (click)="goTo('/documents/templates')">
           <div class="w-12 h-12 rounded-xl bg-hc-success-bg flex items-center justify-center">
             <fa-icon [icon]="faClipboardList" class="text-xl text-hc-success" />
           </div>
@@ -372,7 +372,7 @@
     <div class="grid grid-cols-2 lg:grid-cols-4 gap-4">
 
       <!-- Pacientes -->
-      <div class="hc-stat-card cursor-pointer" (click)="goTo('/pacientes')">
+      <div class="hc-stat-card cursor-pointer" (click)="goTo('/patients')">
         <div class="hc-stat-icon bg-hc-primary/10">
           <fa-icon [icon]="faUserInjured" class="text-hc-primary" />
         </div>
@@ -387,7 +387,7 @@
       </div>
 
       <!-- Documentos -->
-      <div class="hc-stat-card cursor-pointer" (click)="goTo('/documentos')">
+      <div class="hc-stat-card cursor-pointer" (click)="goTo('/documents')">
         <div class="hc-stat-icon bg-hc-accent/10">
           <fa-icon [icon]="faFileWaveform" class="text-hc-accent" />
         </div>
@@ -402,7 +402,7 @@
       </div>
 
       <!-- Completados -->
-      <div class="hc-stat-card cursor-pointer" (click)="goTo('/documentos')">
+      <div class="hc-stat-card cursor-pointer" (click)="goTo('/documents')">
         <div class="hc-stat-icon bg-hc-success-bg">
           <fa-icon [icon]="faFileCircleCheck" class="text-hc-success" />
         </div>
@@ -417,7 +417,7 @@
       </div>
 
       <!-- Pendientes -->
-      <div class="hc-stat-card cursor-pointer" (click)="goTo('/documentos')">
+      <div class="hc-stat-card cursor-pointer" (click)="goTo('/documents')">
         <div class="hc-stat-icon bg-hc-warning-bg">
           <fa-icon [icon]="faFilePen" class="text-hc-warning" />
         </div>
@@ -438,7 +438,7 @@
       <h2 class="hc-section-label mb-3">{{ 'DASHBOARD.QUICK_ACTIONS' | translate }}</h2>
       <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
 
-        <button class="hc-action-card" (click)="goTo('/pacientes/register')">
+        <button class="hc-action-card" (click)="goTo('/patients/register')">
           <div class="w-12 h-12 rounded-xl bg-hc-primary/10 flex items-center justify-center">
             <fa-icon [icon]="faUserPlus" class="text-xl text-hc-primary" />
           </div>
@@ -448,7 +448,7 @@
           </div>
         </button>
 
-        <button class="hc-action-card" (click)="goTo('/documentos/upload')">
+        <button class="hc-action-card" (click)="goTo('/documents/upload')">
           <div class="w-12 h-12 rounded-xl bg-hc-accent/10 flex items-center justify-center">
             <fa-icon [icon]="faCloudArrowUp" class="text-xl text-hc-accent" />
           </div>
@@ -458,7 +458,7 @@
           </div>
         </button>
 
-        <button class="hc-action-card" (click)="goTo('/documentos/templates')">
+        <button class="hc-action-card" (click)="goTo('/documents/templates')">
           <div class="w-12 h-12 rounded-xl bg-hc-success-bg flex items-center justify-center">
             <fa-icon [icon]="faClipboardList" class="text-xl text-hc-success" />
           </div>
@@ -476,7 +476,7 @@
       <div class="flex items-center justify-between mb-3">
         <h2 class="hc-section-label">{{ 'DASHBOARD.RECENT_DOCS' | translate }}</h2>
         <button class="flex items-center gap-1 text-xs text-hc-primary hover:underline"
-                (click)="goTo('/documentos')">
+                (click)="goTo('/documents')">
           {{ 'DASHBOARD.VIEW_ALL' | translate }}
           <fa-icon [icon]="faArrowRight" class="text-xs" />
         </button>
@@ -506,7 +506,7 @@
             </thead>
             <tbody>
               @for (doc of recentDocs(); track doc.id) {
-                <tr class="cursor-pointer" (click)="goTo('/documentos/detail/' + doc.id)">
+                <tr class="cursor-pointer" (click)="goTo('/documents/view/' + doc.id)">
                   <td class="font-medium text-hc-text max-w-[180px] truncate">
                     {{ doc.templateName || ('DOCUMENT_LIST.NO_TITLE' | translate) }}
                   </td>
@@ -514,10 +514,10 @@
                   <td class="text-hc-text-2 whitespace-nowrap">{{ doc.issueDate }}</td>
                   <td>
                     @switch (doc.status) {
-                      @case ('COMPLETED') {
+                      @case ('FINALIZED') {
                         <span class="hc-badge-success">{{ 'DOCUMENT_LIST.STATUS_COMPLETED' | translate }}</span>
                       }
-                      @case ('PENDING_SIGNATURE') {
+                      @case ('PENDING_REVIEW') {
                         <span class="hc-badge-warning">{{ 'DOCUMENT_LIST.STATUS_PENDING' | translate }}</span>
                       }
                       @default {
