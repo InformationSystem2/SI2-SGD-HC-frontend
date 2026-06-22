@@ -1,4 +1,5 @@
 import { ChangeDetectionStrategy, Component, inject, OnInit, signal } from '@angular/core';
+import { Router } from '@angular/router';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import {
   faBell, faSpinner, faCheck,
@@ -17,6 +18,7 @@ import { Notification, Page } from '../../models/notification.model';
 export class NotificationList implements OnInit {
 
   private notifSvc = inject(NotificationService);
+  private router = inject(Router);
 
   readonly faBell        = faBell;
   readonly faSpinner     = faSpinner;
@@ -44,6 +46,22 @@ export class NotificationList implements OnInit {
       next: page => { this.page.set(page); this.pageLoading.set(false); },
       error: () => this.pageLoading.set(false),
     });
+  }
+
+  goToNotification(n: Notification): void {
+    if (!n.isRead) {
+      this.markAsRead(n.id);
+    }
+
+    if (['TASK_APPROVED', 'TASK_REJECTED', 'DOC_FINALIZED', 'DOC_REJECTED'].includes(n.type) && n.documentId) {
+      this.router.navigate(['/documents/view', n.documentId]);
+    } else if (n.workflowId) {
+      this.router.navigate(['/tasks/workflow', n.workflowId]);
+    } else if (n.documentId) {
+      this.router.navigate(['/documents/view', n.documentId]);
+    } else {
+      this.router.navigate(['/notifications']);
+    }
   }
 
   markAsRead(id: string): void {

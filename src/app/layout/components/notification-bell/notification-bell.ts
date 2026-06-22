@@ -1,6 +1,6 @@
 import {
   ChangeDetectionStrategy, Component, ElementRef, HostListener,
-  inject, OnInit, signal,
+  inject, OnInit, OnDestroy, signal,
 } from '@angular/core';
 import { Router } from '@angular/router';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
@@ -9,6 +9,7 @@ import {
   faCircleCheck, faCircleXmark, faClock, faUsers, faPaperPlane, faFileLines,
 } from '@fortawesome/free-solid-svg-icons';
 import { TranslatePipe } from '@ngx-translate/core';
+import { interval, Subscription } from 'rxjs';
 import { NotificationService } from '../../../features/notifications/services/notification.service';
 import { Notification } from '../../../features/notifications/models/notification.model';
 
@@ -18,11 +19,12 @@ import { Notification } from '../../../features/notifications/models/notificatio
   templateUrl: './notification-bell.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class NotificationBell implements OnInit {
+export class NotificationBell implements OnInit, OnDestroy {
 
   private el       = inject(ElementRef);
   private notifSvc = inject(NotificationService);
   private router   = inject(Router);
+  private pollingSub: Subscription | null = null;
 
   readonly faBell        = faBell;
   readonly faSpinner     = faSpinner;
@@ -49,6 +51,13 @@ export class NotificationBell implements OnInit {
 
   ngOnInit(): void {
     this.notifSvc.refreshUnreadCount().subscribe();
+    this.pollingSub = interval(30_000).subscribe(() => {
+      this.notifSvc.refreshUnreadCount().subscribe();
+    });
+  }
+
+  ngOnDestroy(): void {
+    this.pollingSub?.unsubscribe();
   }
 
   toggleBell(event: MouseEvent): void {
@@ -90,7 +99,25 @@ export class NotificationBell implements OnInit {
   goToAll(event: MouseEvent): void {
     event.stopPropagation();
     this.showDropdown.set(false);
-    this.router.navigate(['/notificaciones']);
+    this.router.navigate(['/notifications']);
+  }
+
+  goToNotification(n: Notification, event: MouseEvent): void {
+    event.stopPropagation();
+    if (!n.isRead) {
+      this.markRead(n.id, event);
+    }
+    this.showDropdown.set(false);
+
+    if (['TASK_APPROVED', 'TASK_REJECTED', 'DOC_FINALIZED', 'DOC_REJECTED'].includes(n.type) && n.documentId) {
+      this.router.navigate(['/documents/view', n.documentId]);
+    } else if (n.workflowId) {
+      this.router.navigate(['/tasks/workflow', n.workflowId]);
+    } else if (n.documentId) {
+      this.router.navigate(['/documents/view', n.documentId]);
+    } else {
+      this.router.navigate(['/notifications']);
+    }
   }
 
   notifIcon(type: string): any {

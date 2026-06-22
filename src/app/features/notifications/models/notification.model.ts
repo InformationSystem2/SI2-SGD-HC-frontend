@@ -11,6 +11,7 @@ export interface Notification {
   message?: string;
   documentId?: string;
   reviewTaskId?: string;
+  workflowId?: string;
   isRead: boolean;
   createdAt: string;
   readAt?: string;
