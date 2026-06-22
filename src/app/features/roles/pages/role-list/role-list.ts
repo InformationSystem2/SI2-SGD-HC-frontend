@@ -11,6 +11,7 @@ import {
 import { RolesService } from '../../services/roles.service';
 import { TranslatePipe, TranslateService } from '@ngx-translate/core';
 import { AuthService } from '../../../../core/auth/services/auth.service';
+import { RolePolicyService, ROLES } from '../../../../core/auth/services/role-policy.service';
 
 
 @Component({
@@ -23,6 +24,7 @@ export class RoleList implements OnInit{
 
   readonly rolesService = inject(RolesService);
   readonly auth = inject(AuthService);
+  readonly rolePolicyService = inject(RolePolicyService);
   private router = inject(Router);
   private translate = inject(TranslateService);  
 
