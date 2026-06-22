@@ -6,6 +6,7 @@ import {
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { TranslatePipe, TranslateService } from '@ngx-translate/core';
 import { PatientService } from '../../services/patient.service';
+import { AuthService } from '../../../../core/auth/services/auth.service';
 
 @Component({
   selector: 'app-patient-list',
@@ -16,6 +17,7 @@ import { PatientService } from '../../services/patient.service';
 export class PatientList implements OnInit {
 
   readonly patientService = inject(PatientService);
+  readonly auth = inject(AuthService);
   private router = inject(Router);
   private translate = inject(TranslateService);  
 

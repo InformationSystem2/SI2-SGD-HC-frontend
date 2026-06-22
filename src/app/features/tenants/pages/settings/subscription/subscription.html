@@ -541,4 +541,138 @@
       </div>
     </div>
   }
+
+  <!-- Stripe Payment Modal -->
+  @if (showPaymentModal()) {
+    <div class="fixed inset-0 bg-black/60 z-[70] flex items-center justify-center p-4 backdrop-blur-sm animate-in fade-in duration-200" (click)="closePaymentModal()">
+      <div class="bg-hc-surface rounded-2xl shadow-2xl border border-hc-border max-w-lg w-full p-6 md:p-8 overflow-y-auto max-h-[90vh]" (click)="$event.stopPropagation()">
+        
+        <!-- Header -->
+        <div class="flex items-center justify-between mb-6 pb-4 border-b border-hc-border">
+          <h3 class="hc-h3 text-hc-text flex items-center gap-2">
+            <i class="fas fa-shield-alt text-hc-primary"></i>
+            {{ 'PAYMENT.SECURE_PAYMENT_CONFIRM' | translate }}
+          </h3>
+          <button (click)="closePaymentModal()" class="w-8 h-8 rounded-lg text-hc-text-3 hover:text-hc-text hover:bg-hc-muted transition-all flex items-center justify-center">
+            <i class="fas fa-times"></i>
+          </button>
+        </div>
+
+        <!-- Order Summary Card -->
+        <div class="bg-gradient-to-r from-hc-primary/5 to-transparent rounded-2xl border border-hc-border p-4 mb-6 shadow-sm">
+          <h4 class="text-xs font-bold uppercase tracking-wider text-hc-text-3 mb-3">{{ 'PAYMENT.PAYMENT_DETAIL' | translate }}</h4>
+          <div class="space-y-2">
+            <div class="flex justify-between items-center">
+              <span class="text-xs text-hc-text-3">{{ 'PAYMENT.CONCEPT' | translate }}</span>
+              <span class="text-xs font-bold text-hc-text uppercase bg-hc-primary/10 text-hc-primary px-2 py-0.5 rounded-full">
+                {{ paymentIntentAction() === 'renew' ? ('SUBSCRIPTION.ACTION_RENEW' | translate) : ('SUBSCRIPTION.ACTION_CHANGE' | translate) }}
+              </span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-xs text-hc-text-3">{{ 'PAYMENT.TARGET_PLAN' | translate }}</span>
+              <span class="text-xs font-bold text-hc-text">
+                {{ getTranslatedPlanName(paymentIntentPlan()) }}
+              </span>
+            </div>
+            <div class="flex justify-between items-center pt-2.5 border-t border-hc-border-i mt-2.5">
+              <span class="text-sm font-bold text-hc-text">{{ 'TENANTS.TOTAL_PAY' | translate }}</span>
+              <span class="text-lg font-extrabold text-hc-primary">
+                Bs. {{ PLAN_PRICES[paymentIntentPlan()] }} <span class="text-xs font-normal text-hc-text-3">BOB / {{ 'TENANTS.MONTH' | translate }}</span>
+              </span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Billing Info Prefilled -->
+        <div class="space-y-4 mb-6">
+          <div class="flex justify-between items-center">
+            <label class="text-xs font-bold text-hc-text-2 uppercase tracking-wide">{{ 'PAYMENT.BILLING_DATA' | translate }}</label>
+            <!-- Card Brand Logos -->
+            <div class="flex items-center gap-1">
+              <span class="px-1 py-0.5 text-[8px] font-bold border border-hc-border rounded text-hc-text-3 bg-hc-surface flex items-center gap-0.5">
+                <i class="fab fa-cc-visa text-blue-600"></i> VISA
+              </span>
+              <span class="px-1 py-0.5 text-[8px] font-bold border border-hc-border rounded text-hc-text-3 bg-hc-surface flex items-center gap-0.5">
+                <i class="fab fa-cc-mastercard text-red-500"></i> MC
+              </span>
+            </div>
+          </div>
+
+          <div>
+            <label class="hc-label mb-1 block text-xs font-semibold text-hc-text-3">{{ 'PAYMENT.CARDHOLDER_NAME_LABEL' | translate }}</label>
+            <div class="relative">
+              <span class="absolute left-3 top-1/2 -translate-y-1/2 text-hc-text-3 text-xs">
+                <i class="fas fa-user"></i>
+              </span>
+              <input
+                type="text"
+                [value]="tenantInfo() ? ((tenantInfo()!.adminFirstName || '') + ' ' + (tenantInfo()!.adminLastName || '')).trim() : ''"
+                disabled
+                class="w-full pl-8 pr-3 py-2 rounded-xl border border-hc-border bg-hc-input/50 text-hc-text-3 text-xs font-medium cursor-not-allowed focus:outline-none"
+              />
+            </div>
+          </div>
+
+          <div>
+            <label class="hc-label mb-1 block text-xs font-semibold text-hc-text-3">{{ 'PAYMENT.CONTACT_EMAIL' | translate }}</label>
+            <div class="relative">
+              <span class="absolute left-3 top-1/2 -translate-y-1/2 text-hc-text-3 text-xs">
+                <i class="fas fa-envelope"></i>
+              </span>
+              <input
+                type="email"
+                [value]="tenantInfo()?.adminEmail || ''"
+                disabled
+                class="w-full pl-8 pr-3 py-2 rounded-xl border border-hc-border bg-hc-input/50 text-hc-text-3 text-xs font-medium cursor-not-allowed focus:outline-none"
+              />
+            </div>
+          </div>
+        </div>
+
+        <!-- Stripe Card Input -->
+        <div class="mb-6">
+          <label class="hc-label mb-1.5 block text-xs font-bold text-hc-text-2 uppercase tracking-wide">{{ 'PAYMENT.CARD_INFO_LABEL' | translate }}</label>
+          <div id="stripe-card-element" class="p-4 border border-hc-border rounded-xl bg-hc-input shadow-inner min-h-[46px] focus-within:ring-2 focus-within:ring-hc-primary transition-all">
+            <!-- Stripe Element will be inserted here -->
+          </div>
+          <p class="text-[10px] text-hc-text-3 mt-2 text-center flex items-center justify-center gap-1">
+            <i class="fas fa-lock text-emerald-500"></i>
+            <span>{{ 'PAYMENT.STRIPE_TRUST_DESC' | translate }}</span>
+          </p>
+        </div>
+
+        @if (stripeError()) {
+          <div class="mb-4 p-3 bg-red-500/5 border border-red-500/20 rounded-xl flex items-start gap-2.5">
+            <i class="fas fa-exclamation-circle text-red-500 mt-0.5 shrink-0"></i>
+            <p class="text-xs font-medium text-red-600">{{ stripeError() }}</p>
+          </div>
+        }
+
+        <!-- Actions -->
+        <div class="flex gap-3 pt-4 border-t border-hc-border">
+          <button
+            (click)="closePaymentModal()"
+            [disabled]="paymentProcessing()"
+            class="flex-1 py-3 bg-hc-muted text-hc-text-2 font-bold rounded-xl hover:bg-hc-border transition-all text-sm cursor-pointer disabled:opacity-50"
+          >
+            {{ 'COMMON.CANCEL' | translate }}
+          </button>
+          <button
+            (click)="processStripePayment()"
+            [disabled]="paymentProcessing()"
+            class="flex-1 py-3 bg-gradient-to-r from-hc-primary to-hc-primary-dark text-white font-bold rounded-xl hover:from-hc-primary-dark hover:to-hc-primary-dark active:scale-[0.98] transition-all shadow-lg disabled:opacity-50 disabled:shadow-none flex items-center justify-center gap-2 text-sm cursor-pointer"
+          >
+            @if (paymentProcessing()) {
+              <span class="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin"></span>
+              {{ 'TENANTS.PROCESSING' | translate }}
+            } @else {
+              <i class="fas fa-lock text-xs"></i>
+              {{ 'PAYMENT.PAY_AMOUNT' | translate: { amount: PLAN_PRICES[paymentIntentPlan()] } }}
+            }
+          </button>
+        </div>
+      </div>
+    </div>
+  }
+
 </div>

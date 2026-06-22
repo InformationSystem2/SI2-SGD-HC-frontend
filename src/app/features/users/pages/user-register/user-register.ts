@@ -72,6 +72,10 @@ export class UserRegister implements OnInit {
 
   ngOnInit(): void {
     this.rolesService.loadRoles().subscribe();
+    if (!this.auth.hasPermission('user:create:gender')) {
+      this.form.get('gender')?.clearValidators();
+      this.form.get('gender')?.updateValueAndValidity();
+    }
   }
 
 

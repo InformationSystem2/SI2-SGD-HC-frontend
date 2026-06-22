@@ -5,10 +5,12 @@
       <fa-icon [icon]="faShieldHalved" class="text-hc-primary" />
       {{ 'ROLES.TITLE' | translate }}
     </h2>
-    <button (click)="goToCreate()" class="hc-btn-primary">
-      <fa-icon [icon]="faPlus" />
-      {{ 'ROLES.NEW_ROLE' | translate }}
-    </button>
+    @if (auth.hasPermission('role:create')) {
+      <button (click)="goToCreate()" class="hc-btn-primary">
+        <fa-icon [icon]="faPlus" />
+        {{ 'ROLES.NEW_ROLE' | translate }}
+      </button>
+    }
   </div>
 
   @if (rolesService.error()) {
@@ -46,12 +48,14 @@
               </td>
               <td>
                 <div class="flex items-center justify-end gap-1.5">
-                  @if (canManageRole(role.name)) {
+                  @if (auth.hasPermission('role:update')) {
                     <button (click)="goToEdit(role.id)"
                             class="p-1.5 rounded-md bg-hc-muted hover:bg-hc-primary hover:text-white text-hc-text-2 transition-colors"
                             [title]="'ROLES.COL_ACTIONS' | translate">
                       <fa-icon [icon]="faPencil" />
                     </button>
+                  }
+                  @if (auth.hasPermission('role:delete')) {
                     <button (click)="delete(role.id)"
                             class="hc-btn-icon-danger"
                             [title]="'ROLES.CONFIRM_DELETE' | translate">

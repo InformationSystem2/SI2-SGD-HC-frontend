@@ -13,4 +13,5 @@ export const environment = {
     appId: '1:776780812382:web:2ffb46facbc66b1c31e4cf',
     vapidKey: '',
   },
+  stripePublishableKey: 'pk_test_51TkUUoRSBv2Vd5gUjHYhLmvcLXuqFGBeg1hgYWCIkn9cOlveK0zjohxUFToupmNG8foyLE7qg1WSk5ejjDbXmHVo00SJgnOfFk'
 };

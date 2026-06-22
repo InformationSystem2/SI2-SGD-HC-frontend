@@ -21,6 +21,7 @@ export interface TenantRegisterResponseDto {
 
 export interface TenantPaymentRequestDto {
   sessionToken: string;
+  paymentIntentId?: string;
 }
 
 export interface TenantInfo {

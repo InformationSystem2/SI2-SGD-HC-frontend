@@ -53,54 +53,58 @@
 
       <form [formGroup]="headerForm" class="grid grid-cols-1 sm:grid-cols-2 gap-4">
 
-        <div class="flex flex-col gap-1">
-          <label for="patientId" class="text-sm font-medium text-hc-text-2">
-            {{ 'DOCUMENTS.FIELD_PATIENT' | translate }}
-          </label>
+        @if (auth.hasPermission('document:create:patient')) {
+          <div class="flex flex-col gap-1">
+            <label for="patientId" class="text-sm font-medium text-hc-text-2">
+              {{ 'DOCUMENTS.FIELD_PATIENT' | translate }}
+            </label>
 
-          @if (patientService.loading()) {
-            <div class="flex items-center gap-2 px-3 py-2 rounded-lg border border-hc-border bg-hc-surface text-xs text-hc-text-3">
-              <fa-icon [icon]="faSpinner" class="animate-spin" />
-              {{ 'DOCUMENTS.LOADING_PATIENTS' | translate }}
-            </div>
-          } @else {
-            <select
-              id="patientId"
-              formControlName="patientId"
+            @if (patientService.loading()) {
+              <div class="flex items-center gap-2 px-3 py-2 rounded-lg border border-hc-border bg-hc-surface text-xs text-hc-text-3">
+                <fa-icon [icon]="faSpinner" class="animate-spin" />
+                {{ 'DOCUMENTS.LOADING_PATIENTS' | translate }}
+              </div>
+            } @else {
+              <select
+                id="patientId"
+                formControlName="patientId"
+                class="rounded-lg border border-hc-border bg-hc-input px-3 py-2
+                       text-sm text-hc-text
+                       focus:outline-none focus:ring-2 focus:ring-hc-primary/50"
+                [class.border-hc-error]="headerForm.get('patientId')?.invalid && headerForm.get('patientId')?.touched"
+              >
+                <option value="">{{ 'DOCUMENTS.SELECT_PATIENT' | translate }}</option>
+                @for (patient of patients(); track patient.id) {
+                  <option [value]="patient.id">{{ patientLabel(patient) }}</option>
+                }
+              </select>
+            }
+
+            @if (headerForm.get('patientId')?.invalid && headerForm.get('patientId')?.touched) {
+              <span class="text-xs text-hc-error">{{ 'DOCUMENTS.VAL_REQUIRED' | translate }}</span>
+            }
+          </div>
+        }
+
+        @if (auth.hasPermission('document:create:issue_date')) {
+          <div class="flex flex-col gap-1">
+            <label for="issueDate" class="text-sm font-medium text-hc-text-2">
+              {{ 'DOCUMENTS.FIELD_ISSUE_DATE' | translate }}
+            </label>
+            <input
+              id="issueDate"
+              formControlName="issueDate"
+              type="date"
               class="rounded-lg border border-hc-border bg-hc-input px-3 py-2
                      text-sm text-hc-text
                      focus:outline-none focus:ring-2 focus:ring-hc-primary/50"
-              [class.border-hc-error]="headerForm.get('patientId')?.invalid && headerForm.get('patientId')?.touched"
-            >
-              <option value="">{{ 'DOCUMENTS.SELECT_PATIENT' | translate }}</option>
-              @for (patient of patients(); track patient.id) {
-                <option [value]="patient.id">{{ patientLabel(patient) }}</option>
-              }
-            </select>
-          }
-
-          @if (headerForm.get('patientId')?.invalid && headerForm.get('patientId')?.touched) {
-            <span class="text-xs text-hc-error">{{ 'DOCUMENTS.VAL_REQUIRED' | translate }}</span>
-          }
-        </div>
-
-        <div class="flex flex-col gap-1">
-          <label for="issueDate" class="text-sm font-medium text-hc-text-2">
-            {{ 'DOCUMENTS.FIELD_ISSUE_DATE' | translate }}
-          </label>
-          <input
-            id="issueDate"
-            formControlName="issueDate"
-            type="date"
-            class="rounded-lg border border-hc-border bg-hc-input px-3 py-2
-                   text-sm text-hc-text
-                   focus:outline-none focus:ring-2 focus:ring-hc-primary/50"
-            [class.border-hc-error]="headerForm.get('issueDate')?.invalid && headerForm.get('issueDate')?.touched"
-          />
-          @if (headerForm.get('issueDate')?.invalid && headerForm.get('issueDate')?.touched) {
-            <span class="text-xs text-hc-error">{{ 'DOCUMENTS.VAL_REQUIRED' | translate }}</span>
-          }
-        </div>
+              [class.border-hc-error]="headerForm.get('issueDate')?.invalid && headerForm.get('issueDate')?.touched"
+            />
+            @if (headerForm.get('issueDate')?.invalid && headerForm.get('issueDate')?.touched) {
+              <span class="text-xs text-hc-error">{{ 'DOCUMENTS.VAL_REQUIRED' | translate }}</span>
+            }
+          </div>
+        }
 
       </form>
     </div>
@@ -113,17 +117,19 @@
     }
 
     <!-- Formulario dinámico -->
-    <div class="bg-hc-card rounded-xl border border-hc-border p-5 shadow-sm space-y-4">
-      <h3 class="text-sm font-semibold text-hc-text-2 uppercase tracking-wide">
-        {{ 'DOCUMENTS.SECTION_CLINICAL' | translate }}
-      </h3>
+    @if (auth.hasPermission('document:create:clinical_content')) {
+      <div class="bg-hc-card rounded-xl border border-hc-border p-5 shadow-sm space-y-4">
+        <h3 class="text-sm font-semibold text-hc-text-2 uppercase tracking-wide">
+          {{ 'DOCUMENTS.SECTION_CLINICAL' | translate }}
+        </h3>
 
-      <app-dynamic-form
-        [uiSchema]="uiSchema"
-        [submitting]="documentService.loading()"
-        (submitted)="onClinicalContentReady($event)"
-      />
-    </div>
+        <app-dynamic-form
+          [uiSchema]="uiSchema"
+          [submitting]="documentService.loading()"
+          (submitted)="onClinicalContentReady($event)"
+        />
+      </div>
+    }
 
   }
 

@@ -6,6 +6,7 @@ import { faFloppyDisk, faSpinner } from '@fortawesome/free-solid-svg-icons';
 import { TranslatePipe } from '@ngx-translate/core';
 import { UpdatePatientRequest } from '../../models/patient.model';
 import { PatientService } from '../../services/patient.service';
+import { AuthService } from '../../../../core/auth/services/auth.service';
 
 @Component({
   selector: 'app-patient-form',
@@ -19,6 +20,7 @@ export class PatientForm implements OnInit {
   private router = inject(Router);
   private route  = inject(ActivatedRoute);
   readonly patientService = inject(PatientService);
+  readonly auth = inject(AuthService);
 
   readonly faFloppyDisk = faFloppyDisk;
   readonly faSpinner    = faSpinner;
@@ -60,6 +62,14 @@ export class PatientForm implements OnInit {
           gender:         patient.gender,
           birthDate:      patient.birthDate,
         });
+
+        if (!this.auth.hasPermission('patient:update:gender')) {
+          this.form.get('gender')?.disable();
+        }
+        if (!this.auth.hasPermission('patient:update:document_type')) {
+          this.form.get('documentType')?.disable();
+        }
+
         this.loadingPatient.set(false);
       },
       error: () => {
@@ -75,16 +85,16 @@ export class PatientForm implements OnInit {
       return;
     }
 
-    const v = this.form.value;
+    const rawVal = this.form.getRawValue();
     const payload: UpdatePatientRequest = {
-      firstName: v.firstName!,
-      lastName:  v.lastName!,
-      ...(v.documentType   ? { documentType: v.documentType }     : {}),
-      ...(v.documentNumber ? { documentNumber: v.documentNumber } : {}),
-      ...(v.phone          ? { phone: v.phone }                   : {}),
-      ...(v.address        ? { address: v.address }               : {}),
-      ...(v.gender         ? { gender: v.gender }                 : {}),
-      ...(v.birthDate      ? { birthDate: v.birthDate }           : {}),
+      firstName: this.auth.hasPermission('patient:update:first_name') ? (rawVal.firstName || '') : (rawVal.firstName || ''),
+      lastName:  this.auth.hasPermission('patient:update:last_name') ? (rawVal.lastName || '') : (rawVal.lastName || ''),
+      documentType: this.auth.hasPermission('patient:update:document_type') ? (rawVal.documentType || undefined) : undefined,
+      documentNumber: this.auth.hasPermission('patient:update:document_number') ? (rawVal.documentNumber || undefined) : undefined,
+      phone: this.auth.hasPermission('patient:update:phone') ? (rawVal.phone || undefined) : undefined,
+      address: this.auth.hasPermission('patient:update:address') ? (rawVal.address || undefined) : undefined,
+      gender: this.auth.hasPermission('patient:update:gender') ? (rawVal.gender || undefined) : undefined,
+      birthDate: this.auth.hasPermission('patient:update:birth_date') ? (rawVal.birthDate || undefined) : undefined,
     };
 
     this.patientService.updatePatient(this.patientId, payload).subscribe(() => {

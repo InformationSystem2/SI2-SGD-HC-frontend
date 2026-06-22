@@ -11,6 +11,7 @@ import { Document } from '../../models/document.model';
 import { AuthService } from '../../../../core/auth/services/auth.service';
 import { environment } from '../../../../../environments/environment';
 import { TranslatePipe } from '@ngx-translate/core';
+import { AuthService } from '../../../../core/auth/services/auth.service';
 import { DocumentVersionHistoryComponent } from '../../components/document-version-history/document-version-history';
 
 @Component({
@@ -21,22 +22,20 @@ import { DocumentVersionHistoryComponent } from '../../components/document-versi
 })
 export class DocumentDetail implements OnInit {
 
-  private route   = inject(ActivatedRoute);
-  private router  = inject(Router);
-  private docSvc  = inject(DocumentService);
-  private ocrSvc  = inject(OcrService);
-  readonly auth   = inject(AuthService);
+  private route  = inject(ActivatedRoute);
+  private router = inject(Router);
+  private docSvc = inject(DocumentService);
+  private ocrSvc = inject(OcrService);
+  readonly auth = inject(AuthService);
 
-  // ── Icons ────────────────────────────────────────────────────────
-  readonly faArrowLeft       = faArrowLeft;
-  readonly faFileLines       = faFileLines;
-  readonly faSpinner         = faSpinner;
-  readonly faBookOpen        = faBookOpen;
-  readonly faExpand          = faMagnifyingGlass;
-  readonly faRotateRight     = faRotateRight;
-  readonly faEdit            = faEdit;
+  readonly faArrowLeft   = faArrowLeft;
+  readonly faFileLines   = faFileLines;
+  readonly faSpinner     = faSpinner;
+  readonly faBookOpen    = faBookOpen;
+  readonly faExpand        = faMagnifyingGlass;   // faScan no existe en FA free
+  readonly faRotateRight = faRotateRight;
+  readonly faEdit        = faEdit;
 
-  // ── Document state ───────────────────────────────────────────────
   readonly doc     = signal<Document | null>(null);
   readonly loading = signal(true);
   readonly error   = signal<string | null>(null);

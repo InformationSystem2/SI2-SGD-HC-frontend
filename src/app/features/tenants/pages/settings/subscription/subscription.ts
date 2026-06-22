@@ -6,6 +6,8 @@ import { PlanService } from '../../../../../core/services/plan.service';
 import { TenantInfo } from '../../../models/tenant.model';
 import { PlanDto } from '../../../models/plan.model';
 import { toPlanOption, isDowngrade, formatStorageMB, formatLimitValue, getYearlySavings } from '../../../../../core/utils/plan.utils';
+import { PLANS, PLAN_LIMITS, PLAN_NAMES, PLAN_PRICES, PLAN_DESCRIPTIONS, PlanLimits, isDowngrade } from '../../../../../core/utils/plan.utils';
+import { environment } from '../../../../../../environments/environment';
 
 interface UsageData {
   currentUsers: number;
@@ -54,6 +56,23 @@ export class Subscription implements OnInit {
   showDowngradeWarning = signal(false);
   message = signal<string | null>(null);
   messageType = signal<'success' | 'error'>('success');
+
+  // Estados de Stripe en Modal
+  showPaymentModal = signal(false);
+  paymentIntentAction = signal<'renew' | 'change-plan'>('renew');
+  paymentIntentPlan = signal<string>('');
+  paymentIntentClientSecret = signal<string>('');
+  paymentProcessing = signal(false);
+  stripeError = signal<string | null>(null);
+
+  stripe: any = null;
+  card: any = null;
+
+  readonly PLAN_PRICES = PLAN_PRICES;
+  readonly PLAN_NAMES = PLAN_NAMES;
+  readonly PLAN_DESCRIPTIONS = PLAN_DESCRIPTIONS;
+
+  readonly plans = PLANS;
 
   userPercent = computed(() => {
     const limit = this.currentPlanLimits()['maxUsers'];
@@ -208,6 +227,41 @@ export class Subscription implements OnInit {
         this.showMessage(this.translate.instant('SUBSCRIPTION.PLAN_RENEW_ERROR'), 'error');
       }
     });
+
+    const plan = info.subscriptionPlan || 'BASIC';
+    if (plan === 'BASIC') {
+      // Renovar plan gratis de forma directa
+      this.renewing.set(true);
+      this.tenantService.renewSubscription(plan).subscribe({
+        next: () => {
+          this.renewing.set(false);
+          this.loadData();
+          this.showMessage(this.translate.instant('SUBSCRIPTION.PLAN_RENEWED'), 'success');
+        },
+        error: () => {
+          this.renewing.set(false);
+          this.showMessage(this.translate.instant('SUBSCRIPTION.PLAN_RENEW_ERROR'), 'error');
+        }
+      });
+    } else {
+      // Renovar plan de pago -> Stripe
+      this.renewing.set(true);
+      this.tenantService.createChangePlanPaymentIntent(plan).subscribe({
+        next: (res) => {
+          this.renewing.set(false);
+          this.paymentIntentAction.set('renew');
+          this.paymentIntentPlan.set(plan);
+          this.paymentIntentClientSecret.set(res.clientSecret);
+          this.showPaymentModal.set(true);
+          this.stripeError.set(null);
+          setTimeout(() => this.initializeStripeForModal(), 150);
+        },
+        error: (err) => {
+          this.renewing.set(false);
+          this.showMessage(err.error?.message ?? this.translate.instant('SUBSCRIPTION.PLAN_RENEW_ERROR'), 'error');
+        }
+      });
+    }
   }
 
   openChangePlanModal(): void {
@@ -240,7 +294,28 @@ export class Subscription implements OnInit {
       }
     }
 
-    this.executePlanChange(newPlan);
+    if (newPlan === 'BASIC') {
+      // Plan gratis -> directo
+      this.executePlanChange(newPlan);
+    } else {
+      // Plan de pago -> Crear Payment Intent en Stripe
+      this.changingPlan.set(true);
+      this.tenantService.createChangePlanPaymentIntent(newPlan).subscribe({
+        next: (res) => {
+          this.changingPlan.set(false);
+          this.paymentIntentAction.set('change-plan');
+          this.paymentIntentPlan.set(newPlan);
+          this.paymentIntentClientSecret.set(res.clientSecret);
+          this.showPaymentModal.set(true);
+          this.stripeError.set(null);
+          setTimeout(() => this.initializeStripeForModal(), 150);
+        },
+        error: (err) => {
+          this.changingPlan.set(false);
+          this.showMessage(err.error?.message ?? this.translate.instant('SUBSCRIPTION.PLAN_CHANGE_ERROR'), 'error');
+        }
+      });
+    }
   }
 
   executePlanChange(newPlan: string): void {
@@ -258,6 +333,125 @@ export class Subscription implements OnInit {
         this.showMessage(this.translate.instant('SUBSCRIPTION.PLAN_CHANGE_ERROR'), 'error');
       }
     });
+  }
+
+  // Métodos de Stripe en el Modal de pagos
+  initializeStripeForModal(): void {
+    const StripeConstructor = (window as any)['Stripe'];
+    if (!StripeConstructor) {
+      this.stripeError.set('No se pudo inicializar Stripe.js. Por favor, recarga la página.');
+      return;
+    }
+
+    this.stripe = StripeConstructor(environment.stripePublishableKey);
+    const elements = this.stripe.elements();
+
+    const isDark = document.documentElement.classList.contains('dark');
+    const style = {
+      base: {
+        color: isDark ? '#E8F0F8' : '#0F172A',
+        fontFamily: 'Inter, sans-serif',
+        fontSize: '15px',
+        '::placeholder': {
+          color: isDark ? '#4D6F8A' : '#94A3B8'
+        }
+      },
+      invalid: {
+        color: '#EF4444',
+        iconColor: '#EF4444'
+      }
+    };
+
+    this.card = elements.create('card', { style, hidePostalCode: true });
+    this.card.mount('#stripe-card-element');
+
+    this.card.on('change', (event: any) => {
+      if (event.error) {
+        this.stripeError.set(event.error.message);
+      } else {
+        this.stripeError.set(null);
+      }
+    });
+  }
+
+  closePaymentModal(): void {
+    this.showPaymentModal.set(false);
+    this.stripeError.set(null);
+    this.paymentProcessing.set(false);
+    if (this.card) {
+      this.card.destroy();
+      this.card = null;
+    }
+  }
+
+  processStripePayment(): void {
+    if (!this.stripe || !this.card) {
+      this.stripeError.set('La pasarela de pagos no está lista.');
+      return;
+    }
+
+    this.paymentProcessing.set(true);
+    this.stripeError.set(null);
+
+    const clientSecret = this.paymentIntentClientSecret();
+    const action = this.paymentIntentAction();
+    const plan = this.paymentIntentPlan();
+
+    const info = this.tenantInfo();
+    const adminName = info ? ((info.adminFirstName || '') + ' ' + (info.adminLastName || '')).trim() : '';
+    const adminEmail = info ? (info.adminEmail || '') : '';
+
+    const billing_details: any = {};
+    if (adminName) billing_details.name = adminName;
+    if (adminEmail) billing_details.email = adminEmail;
+
+    this.stripe.confirmCardPayment(clientSecret, {
+      payment_method: {
+        card: this.card,
+        ...(Object.keys(billing_details).length > 0 ? { billing_details } : {})
+      }
+    }).then((result: any) => {
+      if (result.error) {
+        this.paymentProcessing.set(false);
+        this.stripeError.set(result.error.message);
+      } else if (result.paymentIntent && result.paymentIntent.status === 'succeeded') {
+        const paymentIntentId = result.paymentIntent.id;
+
+        if (action === 'renew') {
+          this.tenantService.renewSubscription(plan, paymentIntentId).subscribe({
+            next: () => {
+              this.closePaymentModal();
+              this.loadData();
+              this.showMessage(this.translate.instant('SUBSCRIPTION.PLAN_RENEWED'), 'success');
+            },
+            error: (err) => {
+              this.paymentProcessing.set(false);
+              this.stripeError.set(err.error?.message ?? this.translate.instant('SUBSCRIPTION.PLAN_RENEW_ERROR'));
+            }
+          });
+        } else {
+          this.tenantService.changePlan(plan, paymentIntentId).subscribe({
+            next: () => {
+              this.closePaymentModal();
+              this.closeChangePlanModal();
+              this.loadData();
+              this.showMessage(this.translate.instant('SUBSCRIPTION.PLAN_CHANGED'), 'success');
+            },
+            error: (err) => {
+              this.paymentProcessing.set(false);
+              this.stripeError.set(err.error?.message ?? this.translate.instant('SUBSCRIPTION.PLAN_CHANGE_ERROR'));
+            }
+          });
+        }
+      } else {
+        this.paymentProcessing.set(false);
+        this.stripeError.set(this.translate.instant('ERRORS.PAYMENT_FAILED'));
+      }
+    });
+  }
+
+  isDowngrade(current: string, target: string): boolean {
+    return isDowngrade(current, target);
   }
 
   checkDowngradeWarnings(newPlan: string): string[] {

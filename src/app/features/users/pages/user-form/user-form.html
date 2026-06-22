@@ -68,7 +68,6 @@
             }
           </label>
           <select formControlName="documentType" class="hc-select"
-            [disabled]="!auth.hasPermission('user:update:document_type')"
             [class.opacity-50]="!auth.hasPermission('user:update:document_type')">
             <option value="">{{ 'USERS.PH_SELECT' | translate }}</option>
             @for (dt of documentTypes; track dt) {
@@ -112,7 +111,6 @@
         <div>
           <label class="hc-label">{{ 'USERS.FIELD_GENDER' | translate }}</label>
           <select formControlName="gender" class="hc-select"
-            [disabled]="!auth.hasPermission('user:update:gender')"
             [class.opacity-50]="!auth.hasPermission('user:update:gender')">
             <option value="">{{ 'USERS.PH_SELECT' | translate }}</option>
             @for (g of genders; track g.value) {
@@ -126,7 +124,6 @@
       @if (auth.hasPermission('user:read:is_active')) {
       <label class="flex items-center gap-3 cursor-pointer w-fit">
         <input formControlName="isActive" type="checkbox" id="isActive"
-          [disabled]="!auth.hasPermission('user:update:is_active')"
           class="w-4 h-4 accent-hc-primary cursor-pointer" />
         <span class="text-sm text-hc-text-2">{{ 'USERS.FIELD_ACTIVE' | translate }}</span>
       </label>

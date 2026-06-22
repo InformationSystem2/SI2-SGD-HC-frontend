@@ -1,0 +1,194 @@
+@if (isOpen()) {
+  <div class="fixed inset-0 z-50 flex items-center justify-center p-4">
+    <!-- Backdrop overlay -->
+    <div
+      class="absolute inset-0 bg-black/60 backdrop-blur-sm transition-opacity duration-300"
+      (click)="close.emit()"
+    ></div>
+
+    <!-- Modal Container -->
+    <div class="relative bg-hc-surface br-radius-lg border border-hc-border shadow-2xl w-full max-w-4xl max-h-[85vh] overflow-hidden flex flex-col z-10 animate-fade-in-scale">
+      
+      @if (selectedTopicId()) {
+        <!-- Display Topic Detail View -->
+        <app-help-topic-detail
+          [topicId]="selectedTopicId()!"
+          (back)="handleBackToTopics()"
+          (close)="close.emit()"
+          class="flex-1 min-h-0"
+        ></app-help-topic-detail>
+      } @else {
+        <!-- Main Assistant Panel -->
+        
+        <!-- Header -->
+        <div class="bg-gradient-to-r from-hc-primary to-hc-primary-dark text-white p-6 shrink-0 shadow-md">
+          <div class="flex items-center justify-between">
+            <div class="flex items-center space-x-3.5">
+              <div class="bg-white text-hc-primary rounded-lg p-2.5 flex items-center justify-center shadow-sm">
+                <app-help-icon name="message" class="w-6 h-6"></app-help-icon>
+              </div>
+              <div>
+                <h2 class="text-xl font-bold leading-none">Asistente de Ayuda</h2>
+                <p class="text-white/80 text-xs mt-1.5 font-medium">
+                  Guías paso a paso para el rol de <span class="underline decoration-white/40 decoration-2">{{ getRolesString() }}</span>
+                </p>
+              </div>
+            </div>
+            <button
+              (click)="close.emit()"
+              class="text-white/80 hover:text-white bg-white/10 hover:bg-white/20 rounded-full p-2 transition-colors cursor-pointer"
+              aria-label="Cerrar modal de ayuda"
+            >
+              <app-help-icon name="x" class="w-5 h-5"></app-help-icon>
+            </button>
+          </div>
+
+          <!-- Search Bar -->
+          <div class="mt-5 relative">
+            <div class="absolute left-4 top-1/2 -translate-y-1/2 text-white/50 flex items-center">
+              <app-help-icon name="search" class="w-5 h-5"></app-help-icon>
+            </div>
+            <input
+              type="text"
+              [ngModel]="searchQuery()"
+              (ngModelChange)="searchQuery.set($event)"
+              placeholder="¿Qué acción o consulta deseas realizar?"
+              class="w-full bg-white/15 hover:bg-white/20 focus:bg-white text-white focus:text-slate-800 placeholder-white/60 focus:placeholder-slate-400 pl-11 pr-10 py-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-hc-primary-light/40 border border-white/15 transition-all text-sm shadow-inner"
+            />
+            @if (searchQuery()) {
+              <button
+                (click)="searchQuery.set('')"
+                class="absolute right-4 top-1/2 -translate-y-1/2 text-white/60 hover:text-white focus:outline-none cursor-pointer flex items-center"
+              >
+                <app-help-icon name="x" class="w-4 h-4"></app-help-icon>
+              </button>
+            }
+          </div>
+        </div>
+
+        <!-- Scrollable Content -->
+        <div class="flex-1 overflow-y-auto p-6 scrollbar-hide">
+          
+          <!-- Category Grid / Welcome View (No search & no category selected) -->
+          @if (!searchQuery() && !selectedCategory()) {
+            <div class="space-y-6">
+              <div>
+                <h3 class="text-lg font-bold text-hc-text mb-1">¡Hola! 👋</h3>
+                <p class="text-hc-text-2 text-sm leading-relaxed">
+                  ¿Cómo puedo guiarte hoy? Selecciona una de las categorías o usa los accesos rápidos para aprender a usar el sistema.
+                </p>
+              </div>
+
+              <!-- Quick Actions -->
+              @if (quickActions().length > 0) {
+                <div>
+                  <h4 class="text-xs font-bold uppercase tracking-wider text-hc-text-3 mb-3">Accesos Rápidos</h4>
+                  <div class="flex flex-wrap gap-2.5">
+                    @for (action of quickActions(); track action.topicId) {
+                      <button
+                        (click)="handleTopicClick(action.topicId)"
+                        class="px-4 py-2 bg-hc-primary/10 hover:bg-hc-primary/20 text-hc-primary border border-hc-primary/10 br-radius-md text-xs font-semibold tracking-wide transition-colors cursor-pointer"
+                      >
+                        {{ action.title }}
+                      </button>
+                    }
+                  </div>
+                </div>
+              }
+
+              <!-- Categories -->
+              <div>
+                <h4 class="text-xs font-bold uppercase tracking-wider text-hc-text-3 mb-3">Categorías</h4>
+                <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3.5">
+                  @for (cat of categories; track cat.name) {
+                    <button
+                      (click)="handleCategoryClick(cat.name)"
+                      class="flex flex-col items-center justify-center p-4 border border-hc-border br-radius-lg hover:shadow-md transition-all cursor-pointer group text-center"
+                    >
+                      <div class="p-3 br-radius-md mb-2.5 flex items-center justify-center group-hover:scale-110 transition-transform" [ngClass]="cat.color">
+                        <app-help-icon [name]="cat.icon" class="w-6 h-6"></app-help-icon>
+                      </div>
+                      <span class="text-xs font-bold text-hc-text leading-tight">{{ cat.name }}</span>
+                    </button>
+                  }
+                </div>
+              </div>
+            </div>
+          }
+
+          <!-- List View (Filtered by Search or Category) -->
+          @if (searchQuery() || selectedCategory()) {
+            <div>
+              <!-- Navigation Header -->
+              <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 border-b border-hc-border pb-3.5 mb-4">
+                <div class="flex items-center space-x-2">
+                  @if (selectedCategory()) {
+                    <button
+                      (click)="handleBackToCategories()"
+                      class="flex items-center space-x-1.5 text-hc-primary hover:text-hc-primary-dark font-bold text-sm cursor-pointer"
+                    >
+                      <span>← Volver</span>
+                    </button>
+                  }
+                  <h4 class="font-bold text-hc-text text-sm uppercase tracking-wider">
+                    @if (searchQuery()) {
+                      Resultados para "{{ searchQuery() }}"
+                    } @else {
+                      {{ selectedCategory() }}
+                    }
+                  </h4>
+                </div>
+                <span class="text-xs font-semibold text-hc-text-3 self-start sm:self-center">
+                  {{ topics().length }} {{ topics().length === 1 ? 'resultado' : 'resultados' }}
+                </span>
+              </div>
+
+              <!-- Topics List -->
+              @if (topics().length === 0) {
+                <div class="text-center py-12">
+                  <div class="w-12 h-12 rounded-full bg-hc-muted text-hc-text-3 flex items-center justify-center mx-auto mb-3">
+                    <app-help-icon name="search" class="w-6 h-6"></app-help-icon>
+                  </div>
+                  <p class="text-hc-text font-bold">No se encontraron guías</p>
+                  <p class="text-hc-text-3 text-xs mt-1.5">Intenta buscar con palabras clave diferentes o selecciona otra categoría.</p>
+                </div>
+              } @else {
+                <div class="grid gap-3">
+                  @for (topic of topics(); track topic.id) {
+                    <button
+                      (click)="handleTopicClick(topic.id)"
+                      class="w-full text-left bg-hc-card border border-hc-border br-radius-lg p-4 hover:border-hc-primary/30 hover:shadow-md transition-all cursor-pointer flex items-center justify-between group"
+                    >
+                      <div class="flex-1 pr-4 min-w-0">
+                        <h5 class="font-bold text-hc-text text-base leading-snug mb-1 group-hover:text-hc-primary transition-colors">{{ topic.title }}</h5>
+                        <p class="text-hc-text-2 text-xs md:text-sm leading-relaxed mb-2.5 truncate-2-lines">{{ topic.description }}</p>
+                        <div class="flex flex-wrap gap-1.5">
+                          @for (tag of topic.tags.slice(0, 3); track tag) {
+                            <span class="text-[10px] uppercase font-bold tracking-wider bg-hc-muted text-hc-text-2 border border-hc-border px-2 py-0.5 br-radius-sm">
+                              {{ tag }}
+                            </span>
+                          }
+                        </div>
+                      </div>
+                      <div class="text-hc-text-3 group-hover:text-hc-primary group-hover:translate-x-1.5 transition-all shrink-0">
+                        <app-help-icon name="chevron-right" class="w-5 h-5"></app-help-icon>
+                      </div>
+                    </button>
+                  }
+                </div>
+              }
+            </div>
+          }
+
+        </div>
+
+        <!-- Footer -->
+        <div class="border-t border-hc-border p-4 bg-hc-muted/50 text-center shrink-0">
+          <p class="text-xs text-hc-text-2 leading-relaxed">
+            ¿Necesitas más información? Revisa el manual del usuario o ponte en contacto con soporte técnico.
+          </p>
+        </div>
+      }
+    </div>
+  </div>
+}

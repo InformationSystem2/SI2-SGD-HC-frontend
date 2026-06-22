@@ -34,7 +34,7 @@
                 {{ 'IDENTITY.CLINIC_INFO_DESC' | translate }}
               </p>
             </div>
-            @if (!editingInfo()) {
+            @if (!editingInfo() && auth.hasAnyPermission('tenant:update:name', 'tenant:update:email', 'tenant:update:phone', 'tenant:update:address', 'tenant:update:logo_url')) {
             <button
               (click)="startEditInfo()"
               class="px-4 py-2 bg-hc-primary text-white text-sm font-medium rounded-lg hover:bg-hc-primary-dark transition-colors flex items-center gap-2"
@@ -53,10 +53,10 @@
                 type="text"
                 [value]="infoForm().name"
                 (input)="updateInfoField('name', $any($event.target).value)"
-                [readonly]="!editingInfo()"
+                [readonly]="!editingInfo() || !auth.hasPermission('tenant:update:name')"
                 class="block w-full rounded-lg border-hc-border bg-hc-input border py-2.5 px-3 text-sm text-hc-text focus:border-hc-primary focus:ring-1 focus:ring-hc-primary transition-colors"
-                [class.opacity-60]="!editingInfo()"
-                [class.cursor-not-allowed]="!editingInfo()"
+                [class.opacity-60]="!editingInfo() || !auth.hasPermission('tenant:update:name')"
+                [class.cursor-not-allowed]="!editingInfo() || !auth.hasPermission('tenant:update:name')"
               />
             </div>
             <div>
@@ -71,10 +71,10 @@
                   type="email"
                   [value]="infoForm().email"
                   (input)="updateInfoField('email', $any($event.target).value)"
-                  [readonly]="!editingInfo()"
+                  [readonly]="!editingInfo() || !auth.hasPermission('tenant:update:email')"
                   class="block w-full rounded-lg border-hc-border bg-hc-input border py-2.5 pl-9 pr-3 text-sm text-hc-text focus:border-hc-primary focus:ring-1 focus:ring-hc-primary transition-colors"
-                  [class.opacity-60]="!editingInfo()"
-                  [class.cursor-not-allowed]="!editingInfo()"
+                  [class.opacity-60]="!editingInfo() || !auth.hasPermission('tenant:update:email')"
+                  [class.cursor-not-allowed]="!editingInfo() || !auth.hasPermission('tenant:update:email')"
                 />
               </div>
             </div>
@@ -90,10 +90,10 @@
                   type="text"
                   [value]="infoForm().phone"
                   (input)="updateInfoField('phone', $any($event.target).value)"
-                  [readonly]="!editingInfo()"
+                  [readonly]="!editingInfo() || !auth.hasPermission('tenant:update:phone')"
                   class="block w-full rounded-lg border-hc-border bg-hc-input border py-2.5 pl-9 pr-3 text-sm text-hc-text focus:border-hc-primary focus:ring-1 focus:ring-hc-primary transition-colors"
-                  [class.opacity-60]="!editingInfo()"
-                  [class.cursor-not-allowed]="!editingInfo()"
+                  [class.opacity-60]="!editingInfo() || !auth.hasPermission('tenant:update:phone')"
+                  [class.cursor-not-allowed]="!editingInfo() || !auth.hasPermission('tenant:update:phone')"
                 />
               </div>
             </div>
@@ -109,10 +109,10 @@
                   type="text"
                   [value]="infoForm().address"
                   (input)="updateInfoField('address', $any($event.target).value)"
-                  [readonly]="!editingInfo()"
+                  [readonly]="!editingInfo() || !auth.hasPermission('tenant:update:address')"
                   class="block w-full rounded-lg border-hc-border bg-hc-input border py-2.5 pl-9 pr-3 text-sm text-hc-text focus:border-hc-primary focus:ring-1 focus:ring-hc-primary transition-colors"
-                  [class.opacity-60]="!editingInfo()"
-                  [class.cursor-not-allowed]="!editingInfo()"
+                  [class.opacity-60]="!editingInfo() || !auth.hasPermission('tenant:update:address')"
+                  [class.cursor-not-allowed]="!editingInfo() || !auth.hasPermission('tenant:update:address')"
                 />
               </div>
             </div>
@@ -153,7 +153,7 @@
                   </div>
                 }
               </div>
-              @if (editingInfo()) {
+              @if (editingInfo() && auth.hasPermission('tenant:update:logo_url')) {
                 <div class="flex-1">
                   <div class="flex items-center gap-2 mb-1">
                     <i class="fas fa-cloud-upload-alt text-sm" [style.color]="brandingService.branding()?.tokens?.colors?.light?.primary || '#0D9488'"></i>
