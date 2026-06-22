@@ -53,6 +53,10 @@ export class PlanManagement implements OnInit {
     maxOcrPagesPerMonth: 'PLANS.LIMIT_OCR',
     maxBackupsPerYear: 'PLANS.LIMIT_BACKUPS',
     maxStaffRoles: 'PLANS.LIMIT_ROLES',
+    maxActiveReviewTasks: 'PLANS.LIMIT_ACTIVE_REVIEW_TASKS',
+    maxReviewTasksPerMonth: 'PLANS.LIMIT_REVIEW_TASKS_MONTHLY',
+    maxVersionsPerDocument: 'PLANS.LIMIT_VERSIONS_PER_DOC',
+    maxVersionsPerMonth: 'PLANS.LIMIT_VERSIONS_MONTHLY',
   };
 
   readonly featureLabels: Record<string, string> = {
@@ -60,17 +64,11 @@ export class PlanManagement implements OnInit {
     ocr_scanning: 'PLANS.FEATURE_OCR',
     online_editing: 'PLANS.FEATURE_EDITING',
     custom_branding: 'PLANS.FEATURE_BRANDING',
-    two_factor_auth: 'PLANS.FEATURE_2FA',
-    audit_trail: 'PLANS.FEATURE_AUDIT',
     advanced_analytics: 'PLANS.FEATURE_ANALYTICS',
     report_builder: 'PLANS.FEATURE_REPORTS',
     api_access: 'PLANS.FEATURE_API',
-    sms_notifications: 'PLANS.FEATURE_SMS',
+    email_notifications: 'PLANS.FEATURE_EMAIL',
     push_notifications: 'PLANS.FEATURE_PUSH',
-    webhooks_integrations: 'PLANS.FEATURE_WEBHOOKS',
-    dedicated_manager: 'PLANS.FEATURE_MANAGER',
-    priority_support: 'PLANS.FEATURE_PRIORITY',
-    support_24_7: 'PLANS.FEATURE_24_7',
     custom_roles: 'PLANS.FEATURE_ROLES',
   };
 

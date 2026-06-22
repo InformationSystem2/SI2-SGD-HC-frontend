@@ -15,6 +15,10 @@ export interface PlanLimits {
   maxOcrPagesPerMonth: number;
   maxBackupsPerYear: number;
   maxStaffRoles: number;
+  maxActiveReviewTasks: number;
+  maxReviewTasksPerMonth: number;
+  maxVersionsPerDocument: number;
+  maxVersionsPerMonth: number;
 }
 
 export interface PlanFeatureOption {
@@ -63,7 +67,8 @@ export function isUnlimited(value: number): boolean {
 
 export function toPlanOption(plan: PlanDto): PlanOption {
   const features: PlanFeatureOption[] = [];
-  const limits = plan.limits;
+  const limits = plan.limits || {};
+  const planFeatures = plan.features || {};
 
   if (limits['maxUsers'] !== undefined && limits['maxUsers'] !== 0) {
     features.push({
@@ -83,31 +88,31 @@ export function toPlanOption(plan: PlanDto): PlanOption {
       params: { n: formatLimitValue(limits['maxPatients']) }
     });
   }
-  if (plan.features['dicom_imaging']) {
+  if (planFeatures['dicom_imaging']) {
     features.push({ key: 'TENANTS.FEATURE_DICOM' });
   }
-  if (plan.features['ocr_scanning']) {
+  if (planFeatures['ocr_scanning']) {
     features.push({ key: 'TENANTS.FEATURE_OCR' });
   }
-  if (plan.features['custom_branding']) {
+  if (planFeatures['custom_branding']) {
     features.push({ key: 'TENANTS.FEATURE_CUSTOM_BRANDING' });
   }
-  if (plan.features['advanced_analytics']) {
+  if (planFeatures['advanced_analytics']) {
     features.push({ key: 'TENANTS.FEATURE_ADVANCED_ANALYTICS' });
   }
-  if (plan.features['two_factor_auth']) {
-    features.push({ key: 'TENANTS.FEATURE_2FA' });
+  if (planFeatures['report_builder']) {
+    features.push({ key: 'TENANTS.FEATURE_REPORTS' });
   }
-  if (plan.features['api_access']) {
+  if (planFeatures['api_access']) {
     features.push({ key: 'TENANTS.FEATURE_API' });
   }
-  if (plan.features['support_24_7']) {
-    features.push({ key: 'TENANTS.FEATURE_SUPPORT_24_7' });
-  } else if (plan.features['priority_support']) {
-    features.push({ key: 'TENANTS.FEATURE_SUPPORT_PRIORITY' });
-  } else {
-    features.push({ key: 'TENANTS.FEATURE_SUPPORT_EMAIL' });
+  if (planFeatures['push_notifications']) {
+    features.push({ key: 'TENANTS.FEATURE_PUSH' });
   }
+  if (planFeatures['email_notifications']) {
+    features.push({ key: 'TENANTS.FEATURE_EMAIL' });
+  }
+  features.push({ key: 'TENANTS.FEATURE_SUPPORT_EMAIL' });
 
   return {
     id: plan.name,
@@ -125,7 +130,8 @@ export function isDowngrade(currentPlan: string, targetPlan: string): boolean {
   return (weights[targetPlan] || 0) < (weights[currentPlan] || 0);
 }
 
-export function formatLimitValue(value: number): string {
+export function formatLimitValue(value: number | undefined | null): string {
+  if (value === undefined || value === null) return '—';
   if (isUnlimited(value)) return '∞';
   if (value >= 1000) return (value / 1000).toFixed(1) + 'K';
   return value.toString();

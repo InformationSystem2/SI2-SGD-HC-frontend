@@ -28,6 +28,7 @@ export class PlanSelection implements OnInit {
   readonly hasExistingSession = signal(false);
   readonly plans = signal<PlanDto[]>([]);
   readonly loadingPlans = signal(true);
+  readonly plansError = signal<string | null>(null);
 
   readonly faSeedling = faSeedling;
   readonly faRocket = faRocket;
@@ -59,12 +60,17 @@ export class PlanSelection implements OnInit {
   }
 
   ngOnInit(): void {
+    this.planService.clearCache();
     this.planService.getPlans().subscribe({
       next: (plans) => {
         this.plans.set(plans);
         this.loadingPlans.set(false);
       },
-      error: () => this.loadingPlans.set(false)
+      error: (err) => {
+        console.error('Error loading plans:', err);
+        this.plansError.set('TENANTS.PLANS_LOAD_ERROR');
+        this.loadingPlans.set(false);
+      }
     });
 
     const flowData = this.tenantService.getFlowData();
@@ -93,6 +99,23 @@ export class PlanSelection implements OnInit {
     this.billingCycle.set(cycle);
   }
 
+  retryLoadPlans(): void {
+    this.planService.clearCache();
+    this.plansError.set(null);
+    this.loadingPlans.set(true);
+    this.planService.getPlans().subscribe({
+      next: (plans) => {
+        this.plans.set(plans);
+        this.loadingPlans.set(false);
+      },
+      error: (err) => {
+        console.error('Error loading plans:', err);
+        this.plansError.set('TENANTS.PLANS_LOAD_ERROR');
+        this.loadingPlans.set(false);
+      }
+    });
+  }
+
   continue(): void {
     const existingFlow = this.tenantService.getFlowData();
     const selectedPlan = this.selectedPlan();
@@ -110,6 +133,9 @@ export class PlanSelection implements OnInit {
           this.router.navigate(['/tenants/register']);
         },
         error: () => {
+          this.loading.set(false);
+        },
+        complete: () => {
           this.loading.set(false);
         }
       });
