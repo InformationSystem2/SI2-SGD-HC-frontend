@@ -10,16 +10,16 @@ export const NAV_ITEMS: NavItem[] = [
   },
   {
     label: 'NAV.DOCUMENTS',
-    path: '/documentos/list',
+    path: '/documents/list',
     icon: 'file-text',
     permissions: ['document:read'],
     subItems: [
-      { label: 'NAV.DOCUMENT_LIST', path: '/documentos/list' },
-      { label: 'NAV.DOCUMENT_UPLOAD', path: '/documentos/upload' },
-      { label: 'NAV.DOCUMENT_TEMPLATES', path: '/documentos/templates' },
-      { label: 'NAV.DOCUMENT_TEMPLATE_NEW', path: '/documentos/templates/new' },
-      { label: 'NAV.DOCUMENT_EDITOR', path: '/documentos/editor' },
-      { label: 'NAV.DOCUMENT_VERSIONS', path: '/documentos/versions' },
+      { label: 'NAV.DOCUMENT_LIST', path: '/documents/list' },
+      { label: 'NAV.DOCUMENT_UPLOAD', path: '/documents/upload' },
+      { label: 'NAV.DOCUMENT_TEMPLATES', path: '/documents/templates' },
+      { label: 'NAV.DOCUMENT_TEMPLATE_NEW', path: '/documents/templates/new' },
+      { label: 'NAV.DOCUMENT_EDITOR', path: '/documents/editor' },
+      { label: 'NAV.DOCUMENT_VERSIONS', path: '/documents/versions' },
     ],
   },
   {
@@ -30,22 +30,22 @@ export const NAV_ITEMS: NavItem[] = [
   },
   {
     label: 'NAV.USERS',
-    path: '/usuarios/list',
+    path: '/users/list',
     icon: 'users',
     permissions: ['user:read'],
     subItems: [
-      { label: 'NAV.USER_LIST', path: '/usuarios/list' },
-      { label: 'NAV.USER_REGISTER', path: '/usuarios/register' },
+      { label: 'NAV.USER_LIST', path: '/users/list' },
+      { label: 'NAV.USER_REGISTER', path: '/users/register' },
     ],
   },
   {
     label: 'NAV.PATIENTS',
-    path: '/pacientes/list',
+    path: '/patients/list',
     icon: 'heart-pulse',
     permissions: ['patient:read'],
     subItems: [
-      { label: 'NAV.PATIENT_LIST', path: '/pacientes/list' },
-      { label: 'NAV.PATIENT_REGISTER', path: '/pacientes/register' },
+      { label: 'NAV.PATIENT_LIST', path: '/patients/list' },
+      { label: 'NAV.PATIENT_REGISTER', path: '/patients/register' },
     ],
   },
   {
@@ -60,29 +60,34 @@ export const NAV_ITEMS: NavItem[] = [
   },
   {
     label: 'NAV.HISTORIAL',
-    path: '/historiales',
+    path: '/records',
     icon: 'search',
     permissions: ['document:read'],
   },
   {
     label: 'NAV.TASKS',
-    path: '/tareas',
+    path: '/tasks',
     icon: 'inbox',
     permissions: ['review-task:read'],
+    subItems: [
+      { label: 'NAV.TASKS_INBOX', path: '/tasks' },
+      { label: 'NAV.TASKS_CREATE', path: '/tasks/create' },
+      { label: 'NAV.TASKS_STATS', path: '/tasks/stats' },
+    ],
   },
   {
     label: 'NAV.NOTIFICATIONS',
-    path: '/notificaciones',
+    path: '/notifications',
     icon: 'bell',
   },
   {
     label: 'NAV.REPORTS',
-    path: '/reportes/designer',
+    path: '/reports/designer',
     icon: 'file-text',
     permissions: ['report:read'],
     subItems: [
-      { label: 'NAV.REPORTS_DESIGNER', path: '/reportes/designer' },
-      { label: 'NAV.REPORTS_TEMPLATES', path: '/reportes/templates' }
+      { label: 'NAV.REPORTS_DESIGNER', path: '/reports/designer' },
+      { label: 'NAV.REPORTS_TEMPLATES', path: '/reports/templates' }
     ]
   },
   {

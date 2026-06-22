@@ -10,4 +10,5 @@ export interface NavItem {
   permissions?: string[];
   roles?: string[];
   subItems?: NavSubItem[];
+  badge?: number;
 }
