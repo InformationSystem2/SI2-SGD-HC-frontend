@@ -1,5 +1,5 @@
 import {
-  ChangeDetectionStrategy, Component, inject, OnInit, signal,
+  ChangeDetectionStrategy, Component, computed, inject, OnInit, signal,
 } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
@@ -10,6 +10,7 @@ import {
 import { TranslatePipe } from '@ngx-translate/core';
 import { DocumentTemplateService } from '../../services/document-template.service';
 import { FieldType } from '../../models/document.model';
+import { AuthService } from '../../../../core/auth/services/auth.service';
 
 interface OptionEntry { key: string; value: string; }
 
@@ -62,6 +63,7 @@ export class TemplateForm implements OnInit {
   private router = inject(Router);
   private route = inject(ActivatedRoute);
   readonly templateService = inject(DocumentTemplateService);
+  readonly auth = inject(AuthService);
 
   readonly faArrowLeft = faArrowLeft;
   readonly faFloppyDisk = faFloppyDisk;
@@ -72,6 +74,11 @@ export class TemplateForm implements OnInit {
   readonly isEdit = signal(false);
   readonly templateId = signal<string | null>(null);
   readonly loading = signal(false);
+  readonly canEditSchema = computed(() =>
+    this.isEdit()
+      ? this.auth.hasPermission('template:update:ui_schema')
+      : this.auth.hasPermission('template:create:ui_schema')
+  );
 
   readonly fieldTypes = Object.values(FieldType);
   readonly subColTypes = SUB_COL_TYPES;
@@ -94,6 +101,14 @@ export class TemplateForm implements OnInit {
       this.templateService.getById(id).subscribe({
         next: t => {
           this.form.patchValue({ name: t.name, description: t.description });
+          
+          if (!this.auth.hasPermission('template:update:name')) {
+            this.form.get('name')?.disable();
+          }
+          if (!this.auth.hasPermission('template:update:description')) {
+            this.form.get('description')?.disable();
+          }
+
           const parsed: FieldDef[] = Object.entries(t.uiSchema)
             .sort(([, a], [, b]) => a.order - b.order)
             .map(([name, cfg]) => ({
@@ -118,6 +133,13 @@ export class TemplateForm implements OnInit {
         },
         error: () => this.loading.set(false),
       });
+    } else {
+      if (!this.auth.hasPermission('template:create:name')) {
+        this.form.get('name')?.disable();
+      }
+      if (!this.auth.hasPermission('template:create:description')) {
+        this.form.get('description')?.disable();
+      }
     }
   }
 
@@ -301,8 +323,19 @@ export class TemplateForm implements OnInit {
       uiSchema[f.name.trim()] = entry;
     });
 
-    const v = this.form.value;
-    const payload = { name: v.name!, description: v.description ?? '', uiSchema } as any;
+    const v = this.form.getRawValue();
+    const isEditing = !!this.templateId();
+    const payload = {
+      name: isEditing
+        ? (this.auth.hasPermission('template:update:name') ? v.name! : null)
+        : (this.auth.hasPermission('template:create:name') ? v.name! : null),
+      description: isEditing
+        ? (this.auth.hasPermission('template:update:description') ? (v.description ?? '') : null)
+        : (this.auth.hasPermission('template:create:description') ? (v.description ?? '') : null),
+      uiSchema: isEditing
+        ? (this.auth.hasPermission('template:update:ui_schema') ? uiSchema : null)
+        : (this.auth.hasPermission('template:create:ui_schema') ? uiSchema : null),
+    } as any;
 
     const obs$ = this.templateId()
       ? this.templateService.update(this.templateId()!, payload)
@@ -310,7 +343,6 @@ export class TemplateForm implements OnInit {
 
     obs$.subscribe(() => this.router.navigate(['/documentos/templates']));
   }
-
   back(): void {
     this.router.navigate(['/documentos/templates']);
   }

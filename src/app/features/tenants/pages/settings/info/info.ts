@@ -7,6 +7,7 @@ import { BrandingService } from '../../../../../core/services/branding.service';
 import { StorageService } from '../../../../../core/services/storage.service';
 import { forkJoin } from 'rxjs';
 import { environment } from '../../../../../../environments/environment';
+import { AuthService } from '../../../../../core/auth/services/auth.service';
 
 @Component({
   selector: 'app-info',
@@ -20,6 +21,7 @@ export class Info implements OnInit {
   protected brandingService = inject(BrandingService);
   protected storageService = inject(StorageService);
   protected translate = inject(TranslateService);
+  readonly auth = inject(AuthService);
 
   loading = signal(true);
   saving = signal(false);
@@ -154,11 +156,11 @@ export class Info implements OnInit {
     const data = this.infoForm();
     this.saving.set(true);
     this.tenantService.updateTenantInfo({
-      name: data.name,
-      email: data.email,
-      phone: data.phone,
-      address: data.address,
-      logoUrl: this.clinicLogoUrl()
+      name: this.auth.hasPermission('tenant:update:name') ? data.name : undefined,
+      email: this.auth.hasPermission('tenant:update:email') ? data.email : undefined,
+      phone: this.auth.hasPermission('tenant:update:phone') ? data.phone : undefined,
+      address: this.auth.hasPermission('tenant:update:address') ? data.address : undefined,
+      logoUrl: this.auth.hasPermission('tenant:update:logo_url') ? this.clinicLogoUrl() : undefined
     }).subscribe({
       next: (updated) => {
         this.saving.set(false);
@@ -211,6 +213,10 @@ export class Info implements OnInit {
   }
 
   private uploadClinicLogo(file: File) {
+    if (!this.auth.hasPermission('tenant:update:logo_url')) {
+      this.showMessage('No tienes permiso para actualizar el logo', 'error');
+      return;
+    }
     if (file.size > 2 * 1024 * 1024) {
       this.showMessage(this.translate.instant('COMMON.FILE_TOO_BIG'), 'error');
       return;
@@ -231,7 +237,9 @@ export class Info implements OnInit {
   }
 
   saveTenantAddress() {
-    this.tenantService.updateTenantInfo({ address: this.clinicAddress() }).subscribe({});
+    if (this.auth.hasPermission('tenant:update:address')) {
+      this.tenantService.updateTenantInfo({ address: this.clinicAddress() }).subscribe({});
+    }
   }
 
   showMessage(msg: string, type: 'success' | 'error') {

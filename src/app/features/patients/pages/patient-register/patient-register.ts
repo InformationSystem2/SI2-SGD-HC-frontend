@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
+import { ChangeDetectionStrategy, Component, inject, OnInit } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
@@ -6,6 +6,7 @@ import { faSpinner, faUserPlus } from '@fortawesome/free-solid-svg-icons';
 import { TranslatePipe } from '@ngx-translate/core';
 import { CreatePatientRequest } from '../../models/patient.model';
 import { PatientService } from '../../services/patient.service';
+import { AuthService } from '../../../../core/auth/services/auth.service';
 
 @Component({
   selector: 'app-patient-register',
@@ -13,11 +14,12 @@ import { PatientService } from '../../services/patient.service';
   templateUrl: './patient-register.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class PatientRegister {
+export class PatientRegister implements OnInit {
 
   private fb     = inject(FormBuilder);
   private router = inject(Router);
   readonly patientService = inject(PatientService);
+  readonly auth = inject(AuthService);
 
   readonly faUserPlus = faUserPlus;
   readonly faSpinner  = faSpinner;
@@ -39,6 +41,9 @@ export class PatientRegister {
     birthDate:      ['', Validators.required],
   });
 
+  ngOnInit(): void {
+  }
+
   onSubmit(): void {
     if (this.form.invalid) {
       this.form.markAllAsTouched();
@@ -49,12 +54,12 @@ export class PatientRegister {
     const payload: CreatePatientRequest = {
       firstName: v.firstName!,
       lastName:  v.lastName!,
-      ...(v.documentType   ? { documentType: v.documentType }     : {}),
-      ...(v.documentNumber ? { documentNumber: v.documentNumber } : {}),
-      ...(v.phone          ? { phone: v.phone }                   : {}),
-      ...(v.address        ? { address: v.address }               : {}),
-      ...(v.gender         ? { gender: v.gender }                 : {}),
-      ...(v.birthDate      ? { birthDate: v.birthDate }           : {}),
+      documentType: this.auth.hasPermission('patient:create:document_type') ? (v.documentType || undefined) : undefined,
+      documentNumber: this.auth.hasPermission('patient:create:document_number') ? (v.documentNumber || undefined) : undefined,
+      phone: this.auth.hasPermission('patient:create:phone') ? (v.phone || undefined) : undefined,
+      address: this.auth.hasPermission('patient:create:address') ? (v.address || undefined) : undefined,
+      gender: v.gender!,
+      birthDate: v.birthDate!,
     };
 
     this.patientService.createPatient(payload).subscribe(() => {

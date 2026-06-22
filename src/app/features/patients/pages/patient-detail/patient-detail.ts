@@ -5,6 +5,7 @@ import { faArrowLeft, faSpinner, faUser } from '@fortawesome/free-solid-svg-icon
 import { TranslatePipe } from '@ngx-translate/core';
 import { Patient } from '../../models/patient.model';
 import { PatientService } from '../../services/patient.service';
+import { AuthService } from '../../../../core/auth/services/auth.service';
 
 @Component({
   selector: 'app-patient-detail',
@@ -17,6 +18,7 @@ export class PatientDetail implements OnInit {
   private route  = inject(ActivatedRoute);
   private router = inject(Router);
   private patientService = inject(PatientService);
+  readonly auth = inject(AuthService);
 
   readonly faUser      = faUser;
   readonly faSpinner   = faSpinner;

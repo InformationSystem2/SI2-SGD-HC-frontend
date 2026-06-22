@@ -88,6 +88,37 @@ export class UserForm implements OnInit {
           isActive:       user.isActive,
           rolesIds:       user.rolesIds       ?? [],
         });
+
+        if (!this.auth.hasPermission('user:update:gender')) {
+          this.form.get('gender')?.disable();
+          this.form.get('gender')?.clearValidators();
+          this.form.get('gender')?.updateValueAndValidity();
+        }
+        if (!this.auth.hasPermission('user:update:document_type')) {
+          this.form.get('documentType')?.disable();
+          this.form.get('documentType')?.clearValidators();
+          this.form.get('documentType')?.updateValueAndValidity();
+        }
+        if (!this.auth.hasPermission('user:update:document_number')) {
+          this.form.get('documentNumber')?.clearValidators();
+          this.form.get('documentNumber')?.updateValueAndValidity();
+        }
+        if (!this.auth.hasPermission('user:update:first_name')) {
+          this.form.get('firstName')?.clearValidators();
+          this.form.get('firstName')?.updateValueAndValidity();
+        }
+        if (!this.auth.hasPermission('user:update:last_name')) {
+          this.form.get('lastName')?.clearValidators();
+          this.form.get('lastName')?.updateValueAndValidity();
+        }
+        if (!this.auth.hasPermission('user:update:is_active')) {
+          this.form.get('isActive')?.disable();
+        }
+        if (!this.auth.hasPermission('user:update:roles')) {
+          this.form.get('rolesIds')?.disable();
+          this.form.get('rolesIds')?.clearValidators();
+          this.form.get('rolesIds')?.updateValueAndValidity();
+        }
       });
     }
   }

@@ -28,10 +28,12 @@
     <div class="bg-hc-card rounded-xl border border-hc-border shadow-sm overflow-hidden">
       <div class="px-6 py-4 border-b border-hc-border bg-hc-muted/40">
         <p class="hc-h3 text-hc-text">{{ docTitle() }}</p>
-        <span class="mt-1 inline-block px-2.5 py-0.5 rounded-full text-xs font-medium"
-              [class]="statusClass(d.status)">
-          {{ statusLabel(d.status) }}
-        </span>
+        @if (auth.hasPermission('document:read:status')) {
+          <span class="mt-1 inline-block px-2.5 py-0.5 rounded-full text-xs font-medium"
+                [class]="statusClass(d.status)">
+            {{ statusLabel(d.status) }}
+          </span>
+        }
       </div>
       <div class="grid grid-cols-1 sm:grid-cols-2 gap-0 divide-y sm:divide-y-0 sm:divide-x divide-hc-border">
         <div class="px-6 py-4 space-y-4">
@@ -43,11 +45,13 @@
             <p class="text-xs text-hc-text-3 uppercase tracking-wide font-medium">{{ 'DOCUMENT_LIST.ISSUED_BY' | translate }}</p>
             <p class="text-hc-text mt-0.5">{{ d.uploaderName }}</p>
           </div>
-          <div>
-            <p class="text-xs text-hc-text-3 uppercase tracking-wide font-medium">{{ 'DOCUMENT_LIST.ISSUE_DATE' | translate }}</p>
-            <p class="text-hc-text mt-0.5">{{ d.issueDate }}</p>
-          </div>
-          @if (d.expiryDate) {
+          @if (auth.hasPermission('document:read:issue_date')) {
+            <div>
+              <p class="text-xs text-hc-text-3 uppercase tracking-wide font-medium">{{ 'DOCUMENT_LIST.ISSUE_DATE' | translate }}</p>
+              <p class="text-hc-text mt-0.5">{{ d.issueDate }}</p>
+            </div>
+          }
+          @if (d.expiryDate && auth.hasPermission('document:read:expiry_date')) {
             <div>
             <p class="text-xs text-hc-text-3 uppercase tracking-wide font-medium">{{ 'DOCUMENT_LIST.ISSUE_DATE' | translate }}</p>
               <p class="text-hc-text mt-0.5">{{ d.expiryDate }}</p>
@@ -99,7 +103,7 @@
     </div>
 
     <!-- Contenido clínico -->
-    @if (contentEntries().length > 0) {
+    @if (contentEntries().length > 0 && auth.hasPermission('document:read:clinical_content')) {
       <div class="bg-hc-card rounded-xl border border-hc-border shadow-sm">
         <div class="px-6 py-3 border-b border-hc-border bg-hc-muted/40">
           <p class="text-sm font-semibold text-hc-text">{{ 'DOCUMENT_LIST.CLINICAL_CONTENT' | translate }}</p>
@@ -157,7 +161,7 @@
     }
 
     <!-- ── Panel OCR: dos columnas lado a lado ── -->
-    @if (d.fileUrl) {
+    @if (d.fileUrl && auth.hasPermission('document:read:file_url')) {
       <div class="bg-hc-card rounded-xl border border-hc-border shadow-sm overflow-hidden">
 
         <!-- Header con botón -->

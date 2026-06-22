@@ -10,6 +10,7 @@ import { OcrService, OcrResult } from '../../services/ocr.service';
 import { Document } from '../../models/document.model';
 import { environment } from '../../../../../environments/environment';
 import { TranslatePipe } from '@ngx-translate/core';
+import { AuthService } from '../../../../core/auth/services/auth.service';
 import { DocumentVersionHistoryComponent } from '../../components/document-version-history/document-version-history';
 
 @Component({
@@ -24,6 +25,7 @@ export class DocumentDetail implements OnInit {
   private router = inject(Router);
   private docSvc = inject(DocumentService);
   private ocrSvc = inject(OcrService);
+  readonly auth = inject(AuthService);
 
   readonly faArrowLeft   = faArrowLeft;
   readonly faFileLines   = faFileLines;
