@@ -19,4 +19,15 @@ export interface AuthState {
   loading: boolean;
   error: string | null;
   permissions: string[] | null;
+  attributePermissions?: any;
+}
+
+export interface ForgotPasswordRequest {
+  email: string;
+}
+
+export interface VerifyRecoveryCodeRequest {
+  email: string;
+  code: string;
+  newPassword: string;
 }

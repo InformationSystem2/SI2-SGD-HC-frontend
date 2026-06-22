@@ -8,5 +8,6 @@ export interface NavItem {
   path: string;
   icon: string;
   permissions?: string[];
+  roles?: string[];
   subItems?: NavSubItem[];
 }

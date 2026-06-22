@@ -68,11 +68,21 @@ export class DocumentList implements OnInit {
   }
 
   view(id: string): void {
-    this.router.navigate(['/documentos/view', id]);
+    const doc = this.documentService.documents().find(d => d.id === id);
+    if (doc && (doc.isExternalSource || doc.clinicalContent?.['origen'] === 'OnlyOffice')) {
+      this.router.navigate(['/documentos/editor'], { queryParams: { docId: id, mode: 'view' } });
+    } else {
+      this.router.navigate(['/documentos/view', id]);
+    }
   }
 
   edit(id: string): void {
-    this.router.navigate(['/documentos/edit', id]);
+    const doc = this.documentService.documents().find(d => d.id === id);
+    if (doc && (doc.isExternalSource || doc.clinicalContent?.['origen'] === 'OnlyOffice')) {
+      this.router.navigate(['/documentos/editor'], { queryParams: { docId: id } });
+    } else {
+      this.router.navigate(['/documentos/edit', id]);
+    }
   }
 
   delete(id: string): void {

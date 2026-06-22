@@ -8,6 +8,7 @@ export interface FieldDefinition {
   label: string;
   type: string;
   kind: string;
+  options?: { value: string; label: string }[];
 }
 
 export interface ReportTypeDefinition {
@@ -114,4 +115,15 @@ export class ReportService {
   deleteTemplate(id: string): Observable<void> {
     return this.http.delete<void>(`${this.BASE}/templates/${id}`);
   }
+
+  runReportByPrompt(prompt: string): Observable<{ query: ReportRunRequest, result: ReportResult }> {
+    return this.http.post<{ query: ReportRunRequest, result: ReportResult }>(`${this.BASE}/prompt`, { prompt });
+  }
+
+  runReportByAudio(file: File): Observable<{ transcript: string, query: ReportRunRequest, result: ReportResult }> {
+    const formData = new FormData();
+    formData.append('file', file);
+    return this.http.post<{ transcript: string, query: ReportRunRequest, result: ReportResult }>(`${this.BASE}/audio`, formData);
+  }
 }
+

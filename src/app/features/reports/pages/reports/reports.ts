@@ -16,11 +16,17 @@ import {
   faMagnifyingGlass,
   faSpinner,
   faChevronDown,
+  faChevronUp,
   faDownload,
   faEye,
   faTimes,
   faShareNodes,
-  faBookmark
+  faBookmark,
+  faMicrophone,
+  faRobot,
+  faStop,
+  faChevronLeft,
+  faChevronRight
 } from '@fortawesome/free-solid-svg-icons';
 import { ReportService, ReportTypeDefinition, ReportResult, ReportTemplate, ReportFilter } from '../../services/report.service';
 
@@ -48,11 +54,17 @@ export class ReportsComponent implements OnInit {
   readonly faMagnifyingGlass = faMagnifyingGlass;
   readonly faSpinner = faSpinner;
   readonly faChevronDown = faChevronDown;
+  readonly faChevronUp = faChevronUp;
   readonly faDownload = faDownload;
   readonly faEye = faEye;
   readonly faTimes = faTimes;
   readonly faShareNodes = faShareNodes;
   readonly faBookmark = faBookmark;
+  readonly faMicrophone = faMicrophone;
+  readonly faRobot = faRobot;
+  readonly faStop = faStop;
+  readonly faChevronLeft = faChevronLeft;
+  readonly faChevronRight = faChevronRight;
 
   readonly Math = Math;
 
@@ -86,6 +98,10 @@ export class ReportsComponent implements OnInit {
   readonly pageSize = signal(15);
   readonly error = signal<string | null>(null);
 
+  // UI Expand/Collapse state
+  readonly isSidebarCollapsed = signal(false);
+  readonly isFiltersCollapsed = signal(false);
+
   // Template Modal
   readonly showSaveModal = signal(false);
   readonly templateName = signal('');
@@ -93,6 +109,13 @@ export class ReportsComponent implements OnInit {
   readonly templateDepartment = signal('');
   readonly templateIsShared = signal(false);
   readonly savingTemplate = signal(false);
+
+  // AI/Prompt state
+  readonly promptText = signal('');
+  readonly promptLoading = signal(false);
+  readonly isRecording = signal(false);
+  private mediaRecorder: any = null;
+  private audioChunks: Blob[] = [];
 
   translateColumn(col: string, fallback?: string): string {
     const key = `REPORTS.FIELDS.${col}`;
@@ -214,6 +237,14 @@ export class ReportsComponent implements OnInit {
   }
 
   getFieldOptions(fieldKey: string): { value: string; label: string }[] | null {
+    const report = this.selectedReport();
+    if (report) {
+      const field = report.fields.find(f => f.key === fieldKey);
+      if (field && field.options && field.options.length > 0) {
+        return field.options;
+      }
+    }
+
     if (fieldKey === 'gender') {
       return [
         { value: 'MALE', label: 'Masculino' },
@@ -546,5 +577,99 @@ export class ReportsComponent implements OnInit {
     const start = Math.max(0, Math.min(cur - 2, total - 5));
     const end = Math.min(total - 1, start + 4);
     return Array.from({ length: end - start + 1 }, (_, i) => start + i);
+  }
+
+  // --- AI Assistant Prompt & Audio Methods ---
+
+  runPromptReport(textPrompt?: string): void {
+    const promptVal = textPrompt || this.promptText().trim();
+    if (!promptVal) {
+      alert('El prompt no puede estar vacío');
+      return;
+    }
+
+    this.promptLoading.set(true);
+    this.error.set(null);
+    this.reportService.runReportByPrompt(promptVal).subscribe({
+      next: (res) => {
+        this.selectedReportKey.set(res.query.reportType);
+        this.selectedFields.set([...res.query.selectedFields]);
+        this.filters.set(res.query.filters.map(f => ({
+          field: f.field,
+          operator: f.operator,
+          value: f.value
+        })));
+        this.sortField.set(res.query.sortField ?? '');
+        this.sortOrder.set((res.query.sortOrder as 'asc' | 'desc') ?? 'asc');
+        this.previewResult.set(res.result);
+        this.promptLoading.set(false);
+      },
+      error: (err) => {
+        this.error.set(err.error?.detail ?? 'Error al procesar el prompt de IA');
+        this.promptLoading.set(false);
+      }
+    });
+  }
+
+  toggleRecording(): void {
+    if (this.isRecording()) {
+      this.stopRecording();
+    } else {
+      this.startRecording();
+    }
+  }
+
+  private startRecording(): void {
+    navigator.mediaDevices.getUserMedia({ audio: true }).then((stream) => {
+      this.audioChunks = [];
+      this.mediaRecorder = new MediaRecorder(stream);
+      this.mediaRecorder.ondataavailable = (event: any) => {
+        if (event.data.size > 0) {
+          this.audioChunks.push(event.data);
+        }
+      };
+      this.mediaRecorder.onstop = () => {
+        const audioBlob = new Blob(this.audioChunks, { type: 'audio/webm' });
+        const audioFile = new File([audioBlob], 'report_command.webm', { type: 'audio/webm' });
+        
+        // Detener microfono
+        stream.getTracks().forEach(track => track.stop());
+
+        this.promptLoading.set(true);
+        this.error.set(null);
+        this.reportService.runReportByAudio(audioFile).subscribe({
+          next: (res) => {
+            this.promptText.set(res.transcript || '');
+            this.selectedReportKey.set(res.query.reportType);
+            this.selectedFields.set([...res.query.selectedFields]);
+            this.filters.set(res.query.filters.map(f => ({
+              field: f.field,
+              operator: f.operator,
+              value: f.value
+            })));
+            this.sortField.set(res.query.sortField ?? '');
+            this.sortOrder.set((res.query.sortOrder as 'asc' | 'desc') ?? 'asc');
+            this.previewResult.set(res.result);
+            this.promptLoading.set(false);
+          },
+          error: (err) => {
+            this.error.set(err.error?.detail ?? 'Error al procesar el audio de IA');
+            this.promptLoading.set(false);
+          }
+        });
+      };
+
+      this.mediaRecorder.start();
+      this.isRecording.set(true);
+    }).catch(() => {
+      this.error.set('No se pudo acceder al micrófono. Por favor, revisa tus permisos.');
+    });
+  }
+
+  private stopRecording(): void {
+    if (this.mediaRecorder && this.isRecording()) {
+      this.mediaRecorder.stop();
+      this.isRecording.set(false);
+    }
   }
 }

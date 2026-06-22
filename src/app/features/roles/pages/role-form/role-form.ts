@@ -26,6 +26,7 @@ export interface StructuredPermissionGroup {
   };
   attributes: AttributePermission[];
 }
+import { RoleAttributePermission } from '../../models/role.models';
 
 @Component({
   selector: 'app-role-form',
@@ -99,6 +100,23 @@ export class RoleForm implements OnInit {
     return sortedGroups;
   });
 
+  readonly availableAttributes = [
+    { entity: 'Patient', field: 'firstName', label: 'Nombre Paciente' },
+    { entity: 'Patient', field: 'lastName', label: 'Apellido Paciente' },
+    { entity: 'Patient', field: 'documentType', label: 'Tipo Doc. Paciente' },
+    { entity: 'Patient', field: 'documentNumber', label: 'Nro Doc. Paciente' },
+    { entity: 'Patient', field: 'birthDate', label: 'Fecha Nac. Paciente' },
+    { entity: 'Patient', field: 'gender', label: 'Género Paciente' },
+    { entity: 'Patient', field: 'phone', label: 'Teléfono Paciente' },
+    { entity: 'Patient', field: 'address', label: 'Dirección Paciente' },
+    { entity: 'User', field: 'firstName', label: 'Nombre Usuario' },
+    { entity: 'User', field: 'lastName', label: 'Apellido Usuario' },
+    { entity: 'User', field: 'email', label: 'Email Usuario' },
+    { entity: 'User', field: 'phone', label: 'Teléfono Usuario' },
+  ];
+
+  readonly attributePermissions = signal<Record<string, 'EDITABLE'|'READ_ONLY'|'NO_VISIBLE'>>({});
+
   form = this.fb.group({
     name:        ['', Validators.required],
     description: ['', Validators.required],
@@ -138,6 +156,18 @@ export class RoleForm implements OnInit {
     }
   }
 
+  updateAttributeAccess(entity: string, field: string, event: Event): void {
+    const value = (event.target as HTMLSelectElement).value as 'EDITABLE'|'READ_ONLY'|'NO_VISIBLE';
+    this.attributePermissions.update(current => ({
+      ...current,
+      [`${entity}_${field}`]: value
+    }));
+  }
+
+  getAttributeAccess(entity: string, field: string): string {
+    return this.attributePermissions()[`${entity}_${field}`] || 'EDITABLE';
+  }
+
   togglePermission(id: string): void {
     const allowed = this.isEdit()
       ? this.auth.hasPermission('role:update:permissions')
@@ -171,6 +201,11 @@ export class RoleForm implements OnInit {
 
     const v = this.form.getRawValue();
     const permissionsIds = this.selectedPermissionIds();
+    
+    const attrPermsArray: RoleAttributePermission[] = Object.entries(this.attributePermissions()).map(([key, accessLevel]) => {
+      const [entityName, attributeName] = key.split('_');
+      return { entityName, attributeName, accessLevel };
+    });
 
     if (this.isEdit()) {
       const payload = {

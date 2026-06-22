@@ -1,5 +1,7 @@
 import { HttpInterceptorFn } from "@angular/common/http";
 
+const sessionId = crypto.randomUUID();
+
 function decodeJwt(token: string): any {
   try {
     const payload = token.split('.')[1];
@@ -17,8 +19,20 @@ export const authInterceptor: HttpInterceptorFn = (req, next) => {
     return next(req);
   }
 
-  let headers: { [name: string]: string } = {};
-
+  let headers: { [name: string]: string } = {
+    'X-Session-ID': sessionId,
+    'X-Client-Time': (() => {
+      const now = new Date();
+      const tzOffsetMs = now.getTimezoneOffset() * -60000;
+      const local = new Date(now.getTime() + tzOffsetMs);
+      const sign = tzOffsetMs >= 0 ? '+' : '-';
+      const absOffset = Math.abs(now.getTimezoneOffset());
+      const hh = String(Math.floor(absOffset / 60)).padStart(2, '0');
+      const mm = String(absOffset % 60).padStart(2, '0');
+      return local.toISOString().slice(0, -1) + `${sign}${hh}:${mm}`;
+    })()
+  };
+  
   if (accessToken) {
     headers['Authorization'] = `Bearer ${accessToken}`;
     const payload = decodeJwt(accessToken);

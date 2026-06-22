@@ -53,6 +53,18 @@ export const documentsRoutes: Routes = [
     loadComponent: () =>
       import('./pages/document-edit/document-edit').then(m => m.DocumentEdit),
   },
+  // ── Editor OnlyOffice ─────────────────────────────────────────────────────
+  {
+    path: 'editor',
+    loadComponent: () =>
+      import('./pages/document-editor/document-editor').then(m => m.DocumentEditorPage),
+  },
+  // ── Historial de versiones ────────────────────────────────────────────────
+  {
+    path: 'versions',
+    loadComponent: () =>
+      import('./pages/document-versions/document-versions').then(m => m.DocumentVersionsPage),
+  },
   // ── Default ──────────────────────────────────────────────────────────────
   {
     path: '',

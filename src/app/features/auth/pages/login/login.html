@@ -56,105 +56,215 @@
       <!-- Card -->
       <div class="hc-card p-8">
 
-        <!-- Header -->
-        <div class="mb-8">
-          <h1 class="hc-h1 text-hc-text">{{ 'AUTH.TITLE' | translate }}</h1>
-          <p class="text-sm text-hc-text-3 mt-1">{{ 'AUTH.LOGIN_SUBTITLE' | translate }}</p>
-        </div>
-
-        <form [formGroup]="form" (ngSubmit)="onSubmit()" class="space-y-5">
-
-          <!-- Username -->
-          <div>
-            <label for="username" class="hc-label">{{ 'AUTH.USERNAME' | translate }}</label>
-            <input
-              id="username"
-              type="text"
-              formControlName="username"
-              autocomplete="username"
-              [placeholder]="'AUTH.USERNAME_PLACEHOLDER' | translate"
-              class="hc-input"
-            />
-            @if (form.controls.username.touched && form.controls.username.hasError('required')) {
-              <p class="mt-1 text-xs text-hc-error">{{ 'AUTH.USERNAME_REQUIRED' | translate }}</p>
-            }
+        @if (view() === 'LOGIN') {
+          <!-- Header -->
+          <div class="mb-8">
+            <h1 class="hc-h1 text-hc-text">{{ 'AUTH.TITLE' | translate }}</h1>
+            <p class="text-sm text-hc-text-3 mt-1">{{ 'AUTH.LOGIN_SUBTITLE' | translate }}</p>
           </div>
 
-          <!-- Password -->
-          <div>
-            <label for="password" class="hc-label">{{ 'AUTH.PASSWORD' | translate }}</label>
-            <div class="relative">
+          <form [formGroup]="form" (ngSubmit)="onSubmit()" class="space-y-5">
+
+            <!-- Username -->
+            <div>
+              <label for="username" class="hc-label">{{ 'AUTH.USERNAME' | translate }}</label>
               <input
-                id="password"
-                [type]="hidePassword() ? 'password' : 'text'"
-                formControlName="password"
-                autocomplete="current-password"
-                [placeholder]="'AUTH.PASSWORD_PLACEHOLDER' | translate"
-                class="hc-input pr-10"
+                id="username"
+                type="text"
+                formControlName="username"
+                autocomplete="username"
+                [placeholder]="'AUTH.USERNAME_PLACEHOLDER' | translate"
+                class="hc-input"
               />
+              @if (form.controls.username.touched && form.controls.username.hasError('required')) {
+                <p class="mt-1 text-xs text-hc-error">{{ 'AUTH.USERNAME_REQUIRED' | translate }}</p>
+              }
+            </div>
+
+            <!-- Password -->
+            <div>
+              <label for="password" class="hc-label">{{ 'AUTH.PASSWORD' | translate }}</label>
+              <div class="relative">
+                <input
+                  id="password"
+                  [type]="hidePassword() ? 'password' : 'text'"
+                  formControlName="password"
+                  autocomplete="current-password"
+                  [placeholder]="'AUTH.PASSWORD_PLACEHOLDER' | translate"
+                  class="hc-input pr-10"
+                />
+                <button
+                  type="button"
+                  (click)="hidePassword.set(!hidePassword())"
+                  class="absolute inset-y-0 right-0 flex items-center px-3 text-hc-text-3 hover:text-hc-text-2 transition-colors"
+                >
+                  @if (hidePassword()) {
+                    <svg xmlns="http://www.w3.org/2000/svg" class="size-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7
+                           a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878
+                           l4.242 4.242M9.88 9.88L6.59 6.59m7.532 7.532l3.29 3.29
+                           M3 3l3.59 3.59m0 0A9.953 9.953 0 0112 5c4.478 0 8.268 2.943 9.543 7
+                           a10.025 10.025 0 01-4.132 5.411m0 0L21 21" />
+                    </svg>
+                  } @else {
+                    <svg xmlns="http://www.w3.org/2000/svg" class="size-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M2.458 12C3.732 7.943 7.523 5 12 5
+                           c4.478 0 8.268 2.943 9.542 7
+                           -1.274 4.057-5.064 7-9.542 7
+                           -4.477 0-8.268-2.943-9.542-7z" />
+                    </svg>
+                  }
+                </button>
+              </div>
+              @if (form.controls.password.touched && form.controls.password.hasError('required')) {
+                <p class="mt-1 text-xs text-hc-error">{{ 'AUTH.PASSWORD_REQUIRED' | translate }}</p>
+              }
+              <div class="mt-2 text-right">
+                <button type="button" (click)="setView('FORGOT_PASSWORD')" class="text-sm text-hc-primary hover:underline">
+                  ¿Olvidó su contraseña?
+                </button>
+              </div>
+            </div>
+
+            <!-- Server error -->
+            @if (auth.error()) {
+              <div class="hc-alert-error text-center">{{ auth.error()! | translate }}</div>
+            }
+
+            <!-- Submit -->
+            <button
+              type="submit"
+              [disabled]="form.invalid || auth.isLoading()"
+              class="hc-btn-primary w-full justify-center py-2.5"
+            >
+              @if (auth.isLoading()) {
+                <svg class="animate-spin size-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                  <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"/>
+                  <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8z"/>
+                </svg>
+                {{ 'AUTH.LOGGING_IN' | translate }}
+              } @else {
+                {{ 'AUTH.LOGIN_BTN' | translate }}
+              }
+            </button>
+
+          </form>
+
+          <!-- Register link -->
+          <p class="mt-6 text-center text-sm text-hc-text-3">
+            {{ 'TENANTS.WANT_REGISTER' | translate }}
+            <a routerLink="/tenants/select-plan" class="text-hc-primary hover:underline font-medium">
+              {{ 'TENANTS.REGISTER_LINK' | translate }}
+            </a>
+          </p>
+        } @else {
+          <!-- Forgot Password View -->
+          <div class="mb-8">
+            <h1 class="hc-h1 text-hc-text">Recuperar contraseña</h1>
+            <p class="text-sm text-hc-text-3 mt-1">Ingrese su correo para recibir un código de verificación.</p>
+          </div>
+
+          <form [formGroup]="resetForm" (ngSubmit)="onResetPasswordSubmit()" class="space-y-5 animate-in fade-in slide-in-from-right-4 duration-300">
+            
+            <div class="grid grid-cols-1 md:grid-cols-[1fr_auto] gap-4">
+              <div>
+                <input
+                  type="email"
+                  formControlName="email"
+                  placeholder="Correo electrónico"
+                  class="hc-input"
+                />
+              </div>
+              <button type="button" 
+                      (click)="requestRecoveryCode()"
+                      [disabled]="resetForm.controls.email.invalid || auth.isLoading()"
+                      class="h-[46px] px-6 bg-hc-surface border-2 border-hc-primary text-hc-primary font-bold rounded-xl hover:bg-hc-primary/10 transition-all disabled:opacity-50 flex items-center justify-center gap-2 text-sm whitespace-nowrap">
+                @if (auth.isLoading() && !codeSent()) {
+                  <span class="w-4 h-4 border-2 border-hc-primary/30 border-t-hc-primary rounded-full animate-spin"></span>
+                } @else {
+                  <i class="fas fa-paper-plane"></i>
+                }
+                {{ codeSent() ? 'Reenviar' : 'Enviar código' }}
+              </button>
+            </div>
+
+            @if (codeSent()) {
+              <div class="animate-in fade-in slide-in-from-top-2 duration-300 space-y-5">
+                <div>
+                  <input
+                    type="text"
+                    formControlName="code"
+                    placeholder="Código de 6 dígitos"
+                    maxlength="6"
+                    class="hc-input font-mono tracking-widest text-center"
+                  />
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div>
+                    <div class="relative">
+                      <input [type]="hideResetPassword() ? 'password' : 'text'" formControlName="newPassword" placeholder="Nueva contraseña" class="hc-input pr-10" />
+                      <button type="button" (click)="hideResetPassword.set(!hideResetPassword())" class="absolute inset-y-0 right-0 flex items-center px-3 text-hc-text-3 hover:text-hc-primary">
+                        <i class="fas" [class.fa-eye]="hideResetPassword()" [class.fa-eye-slash]="!hideResetPassword()"></i>
+                      </button>
+                    </div>
+                    @if (resetForm.controls.newPassword.touched && resetForm.controls.newPassword.errors) {
+                      <div class="mt-1 ml-1 flex flex-wrap gap-x-3 gap-y-1">
+                        @if (resetForm.controls.newPassword.errors['minlength']) { <p class="text-[10px] text-hc-error font-medium">• Mínimo 8 caracteres</p> }
+                        @if (resetForm.controls.newPassword.errors['uppercase']) { <p class="text-[10px] text-hc-error font-medium">• Una mayúscula</p> }
+                        @if (resetForm.controls.newPassword.errors['number']) { <p class="text-[10px] text-hc-error font-medium">• Un número</p> }
+                      </div>
+                    }
+                  </div>
+                  <div>
+                    <div class="relative">
+                      <input [type]="hideConfirmPassword() ? 'password' : 'text'" formControlName="confirmPassword" placeholder="Confirmar contraseña" class="hc-input pr-10" />
+                      <button type="button" (click)="hideConfirmPassword.set(!hideConfirmPassword())" class="absolute inset-y-0 right-0 flex items-center px-3 text-hc-text-3 hover:text-hc-primary">
+                        <i class="fas" [class.fa-eye]="hideConfirmPassword()" [class.fa-eye-slash]="!hideConfirmPassword()"></i>
+                      </button>
+                    </div>
+                  </div>
+                </div>
+                @if (resetForm.hasError('passwordsMismatch') && resetForm.controls.confirmPassword.touched) {
+                  <p class="text-xs text-hc-error font-medium">Las contraseñas no coinciden.</p>
+                }
+              </div>
+            }
+
+            @if (auth.error()) {
+              <div class="hc-alert-error text-center">{{ auth.error()! | translate }}</div>
+            }
+
+            <div class="flex gap-4 pt-2">
               <button
                 type="button"
-                (click)="hidePassword.set(!hidePassword())"
-                class="absolute inset-y-0 right-0 flex items-center px-3 text-hc-text-3 hover:text-hc-text-2 transition-colors"
+                (click)="setView('LOGIN')"
+                class="py-2.5 px-4 border-2 border-hc-border text-hc-text-3 font-bold rounded-xl hover:bg-hc-input transition-all flex items-center justify-center gap-2 text-sm"
               >
-                @if (hidePassword()) {
-                  <svg xmlns="http://www.w3.org/2000/svg" class="size-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                      d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7
-                         a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878
-                         l4.242 4.242M9.88 9.88L6.59 6.59m7.532 7.532l3.29 3.29
-                         M3 3l3.59 3.59m0 0A9.953 9.953 0 0112 5c4.478 0 8.268 2.943 9.543 7
-                         a10.025 10.025 0 01-4.132 5.411m0 0L21 21" />
+                Cancelar
+              </button>
+              <button
+                type="submit"
+                [disabled]="resetForm.invalid || !codeSent() || auth.isLoading()"
+                class="flex-1 hc-btn-primary justify-center py-2.5"
+              >
+                @if (auth.isLoading() && codeSent()) {
+                  <svg class="animate-spin size-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                    <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"/>
+                    <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8z"/>
                   </svg>
+                  Procesando...
                 } @else {
-                  <svg xmlns="http://www.w3.org/2000/svg" class="size-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                      d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                      d="M2.458 12C3.732 7.943 7.523 5 12 5
-                         c4.478 0 8.268 2.943 9.542 7
-                         -1.274 4.057-5.064 7-9.542 7
-                         -4.477 0-8.268-2.943-9.542-7z" />
-                  </svg>
+                  Restablecer Contraseña
                 }
               </button>
             </div>
-            @if (form.controls.password.touched && form.controls.password.hasError('required')) {
-              <p class="mt-1 text-xs text-hc-error">{{ 'AUTH.PASSWORD_REQUIRED' | translate }}</p>
-            }
-          </div>
-
-          <!-- Server error -->
-          @if (auth.error()) {
-            <div class="hc-alert-error text-center">{{ auth.error()! | translate }}</div>
-          }
-
-          <!-- Submit -->
-          <button
-            type="submit"
-            [disabled]="form.invalid || auth.isLoading()"
-            class="hc-btn-primary w-full justify-center py-2.5"
-          >
-            @if (auth.isLoading()) {
-              <svg class="animate-spin size-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"/>
-                <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8z"/>
-              </svg>
-              {{ 'AUTH.LOGGING_IN' | translate }}
-            } @else {
-              {{ 'AUTH.LOGIN_BTN' | translate }}
-            }
-          </button>
-
-        </form>
-
-        <!-- Register link -->
-        <p class="mt-6 text-center text-sm text-hc-text-3">
-          {{ 'TENANTS.WANT_REGISTER' | translate }}
-          <a routerLink="/tenants/select-plan" class="text-hc-primary hover:underline font-medium">
-            {{ 'TENANTS.REGISTER_LINK' | translate }}
-          </a>
-        </p>
+          </form>
+        }
 
       </div>
     </div>

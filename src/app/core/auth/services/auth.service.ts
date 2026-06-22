@@ -17,6 +17,11 @@ export class AuthService {
   private _state = signal<AuthState>((() => {
     const accessToken = localStorage.getItem('accessToken');
     const expiresAt   = Number(localStorage.getItem('expiresAt')) || null;
+    const attributePermissionsStr = localStorage.getItem('attributePermissions');
+    let attributePermissions = {};
+    try {
+      if (attributePermissionsStr) attributePermissions = JSON.parse(attributePermissionsStr);
+    } catch {}
     let username: string | null = null;
     let roles: string[] | null  = null;
     let tenantId: string | null = null;
@@ -33,7 +38,7 @@ export class AuthService {
         }
       } catch { /* token malformado */ }
     }
-    return { accessToken, username, roles, tenantId, expiresAt, loading: false, error: null, permissions };
+    return { accessToken, username, roles, attributePermissions, expiresAt, loading: false, error: null } as any;
   })());
 
   readonly accessToken     = computed(() => this._state().accessToken);
@@ -97,6 +102,7 @@ export class AuthService {
           accessToken: response.accessToken,
           username: payload.sub ?? null,
           roles: payload.roles ?? [],
+          attributePermissions: {}, // Inicialmente vacío
           expiresAt: Date.now() + response.expiresIn,
           tenantId: payload.tenantId ?? null,
           loading: true,
@@ -162,5 +168,29 @@ export class AuthService {
     } catch {
       return {};
     }
+  }
+
+  forgotPassword(request: import('../models/auth.models').ForgotPasswordRequest) {
+    this._state.update(s => ({ ...s, loading: true, error: null }));
+    return this.http.post<{message: string, code?: string}>(`${environment.apiUrl}/auth/public/forgot-password`, request).pipe(
+      tap(() => this._state.update(s => ({ ...s, loading: false }))),
+      catchError(err => {
+        const message = err.error?.message ?? 'ERRORS.FORGOT_PASSWORD_FAILED';
+        this._state.update(s => ({ ...s, loading: false, error: message }));
+        return EMPTY;
+      })
+    );
+  }
+
+  resetPassword(request: import('../models/auth.models').VerifyRecoveryCodeRequest) {
+    this._state.update(s => ({ ...s, loading: true, error: null }));
+    return this.http.post<{message: string}>(`${environment.apiUrl}/auth/public/reset-password`, request).pipe(
+      tap(() => this._state.update(s => ({ ...s, loading: false }))),
+      catchError(err => {
+        const message = err.error?.message ?? 'ERRORS.RESET_PASSWORD_FAILED';
+        this._state.update(s => ({ ...s, loading: false, error: message }));
+        return EMPTY;
+      })
+    );
   }
 }

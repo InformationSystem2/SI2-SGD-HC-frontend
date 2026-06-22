@@ -3,7 +3,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import {
   faArrowLeft, faFileLines, faSpinner, faBookOpen,
-  faMagnifyingGlass, faRotateRight,
+  faMagnifyingGlass, faRotateRight, faEdit
 } from '@fortawesome/free-solid-svg-icons';
 import { DocumentService } from '../../services/document.service';
 import { OcrService, OcrResult } from '../../services/ocr.service';
@@ -11,10 +11,11 @@ import { Document } from '../../models/document.model';
 import { environment } from '../../../../../environments/environment';
 import { TranslatePipe } from '@ngx-translate/core';
 import { AuthService } from '../../../../core/auth/services/auth.service';
+import { DocumentVersionHistoryComponent } from '../../components/document-version-history/document-version-history';
 
 @Component({
   selector: 'app-document-detail',
-  imports: [FontAwesomeModule, TranslatePipe],
+  imports: [FontAwesomeModule, TranslatePipe, DocumentVersionHistoryComponent],
   templateUrl: './document-detail.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
@@ -32,6 +33,7 @@ export class DocumentDetail implements OnInit {
   readonly faBookOpen    = faBookOpen;
   readonly faExpand        = faMagnifyingGlass;   // faScan no existe en FA free
   readonly faRotateRight = faRotateRight;
+  readonly faEdit        = faEdit;
 
   readonly doc     = signal<Document | null>(null);
   readonly loading = signal(true);
@@ -147,6 +149,12 @@ export class DocumentDetail implements OnInit {
   openInViewer(): void {
     this.router.navigate(['/documentos/editor'], {
       queryParams: { docId: this.doc()!.id, mode: 'view' },
+    });
+  }
+
+  edit(): void {
+    this.router.navigate(['/documentos/editor'], {
+      queryParams: { docId: this.doc()!.id },
     });
   }
   objectKeys(obj: any): string[] {
