@@ -6,8 +6,50 @@ import { TranslatePipe, TranslateService } from '@ngx-translate/core';
 import { CommonModule } from '@angular/common';
 import { ProgressStepperComponent } from '../../../components/progress-stepper/progress-stepper';
 import { getBillingCycleLabel } from '../../../../../core/utils/plan.utils';
-import { PLAN_NAMES, PLAN_PRICES, PLANS } from '../../../../../core/utils/plan.utils';
 import { environment } from '../../../../../../environments/environment';
+
+const PLAN_PRICES = {
+  BASIC: '0',
+  PRO: '49',
+  ENTERPRISE: '99'
+};
+
+const PLAN_NAMES: Record<string, string> = {
+  BASIC: 'TENANTS.PLAN_BASIC_NAME',
+  PRO: 'TENANTS.PLAN_PRO_NAME',
+  ENTERPRISE: 'TENANTS.PLAN_ENTERPRISE_NAME'
+};
+
+const PLANS = [
+  {
+    id: 'BASIC',
+    name: 'TENANTS.PLAN_BASIC_NAME',
+    price: '0',
+    icon: 'fa-seedling',
+    popular: false,
+    description: 'TENANTS.PLAN_BASIC_SHORT',
+    features: ['TENANTS.FEATURE_USERS_10', 'TENANTS.FEATURE_STORAGE_1GB', 'TENANTS.FEATURE_SUPPORT_EMAIL']
+  },
+  {
+    id: 'PRO',
+    name: 'TENANTS.PLAN_PRO_NAME',
+    price: '49',
+    icon: 'fa-rocket',
+    popular: true,
+    description: 'TENANTS.PLAN_PRO_SHORT',
+    features: ['TENANTS.FEATURE_USERS_50', 'TENANTS.FEATURE_STORAGE_10GB', 'TENANTS.FEATURE_SUPPORT_PRIORITY', 'TENANTS.FEATURE_ADVANCED_ANALYTICS']
+  },
+  {
+    id: 'ENTERPRISE',
+    name: 'TENANTS.PLAN_ENTERPRISE_NAME',
+    price: '99',
+    icon: 'fa-building',
+    popular: false,
+    description: 'TENANTS.PLAN_ENTERPRISE_SHORT',
+    features: ['TENANTS.FEATURE_USERS_UNLIMITED', 'TENANTS.FEATURE_STORAGE_UNLIMITED', 'TENANTS.FEATURE_SUPPORT_24_7', 'TENANTS.FEATURE_DEDICATED_ACCOUNT', 'TENANTS.FEATURE_CUSTOM_INTEGRATIONS']
+  }
+];
+
 
 @Component({
   selector: 'app-payment',
@@ -52,12 +94,18 @@ export class Payment implements OnInit {
     this.billingCycle.set(data.billingCycle || 'MONTHLY');
     this.billingCycleLabel.set(getBillingCycleLabel(data.billingCycle || 'MONTHLY'));
 
-    this.planService.getPlan(data.selectedPlan).subscribe(plan => {
-      const price = data.billingCycle === 'YEARLY' ? plan.priceYearly : plan.priceMonthly;
-      this.planPrice.set(price.toString());
-      this.planDisplayName.set(plan.displayName);
-    const price = PLAN_PRICES[data.selectedPlan as keyof typeof PLAN_PRICES] || '0';
-    this.planPrice.set(price);
+    this.planService.getPlan(data.selectedPlan).subscribe({
+      next: (plan) => {
+        const price = data.billingCycle === 'YEARLY' ? plan.priceYearly : plan.priceMonthly;
+        this.planPrice.set(price.toString());
+        this.planDisplayName.set(plan.displayName);
+      },
+      error: () => {
+        const price = PLAN_PRICES[data.selectedPlan as keyof typeof PLAN_PRICES] || '0';
+        this.planPrice.set(price);
+        this.planDisplayName.set(this.translate.instant(PLAN_NAMES[data.selectedPlan] || data.selectedPlan));
+      }
+    });
 
     const name = (data.registrationData?.adminFirstName || '') + ' ' + (data.registrationData?.adminLastName || '');
     this.adminName.set(name.trim());

@@ -6,7 +6,6 @@ import { PlanService } from '../../../../../core/services/plan.service';
 import { TenantInfo } from '../../../models/tenant.model';
 import { PlanDto } from '../../../models/plan.model';
 import { toPlanOption, isDowngrade, formatStorageMB, formatLimitValue, getYearlySavings } from '../../../../../core/utils/plan.utils';
-import { PLANS, PLAN_LIMITS, PLAN_NAMES, PLAN_PRICES, PLAN_DESCRIPTIONS, PlanLimits, isDowngrade } from '../../../../../core/utils/plan.utils';
 import { environment } from '../../../../../../environments/environment';
 
 interface UsageData {
@@ -68,11 +67,7 @@ export class Subscription implements OnInit {
   stripe: any = null;
   card: any = null;
 
-  readonly PLAN_PRICES = PLAN_PRICES;
-  readonly PLAN_NAMES = PLAN_NAMES;
-  readonly PLAN_DESCRIPTIONS = PLAN_DESCRIPTIONS;
 
-  readonly plans = PLANS;
 
   userPercent = computed(() => {
     const limit = this.currentPlanLimits()['maxUsers'];
