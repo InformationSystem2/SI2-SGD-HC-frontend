@@ -59,29 +59,29 @@ export class DocumentList implements OnInit {
   }
 
   goToUpload(): void {
-    this.router.navigate(['/documentos/upload']);
+    this.router.navigate(['/documents/upload']);
   }
 
   /** Abre el documento en OnlyOffice en modo SOLO LECTURA. */
   openInViewer(id: string): void {
-    this.router.navigate(['/documentos/editor'], { queryParams: { docId: id, mode: 'view' } });
+    this.router.navigate(['/documents/editor'], { queryParams: { docId: id, mode: 'view' } });
   }
 
   view(id: string): void {
     const doc = this.documentService.documents().find(d => d.id === id);
     if (doc && (doc.isExternalSource || doc.clinicalContent?.['origen'] === 'OnlyOffice')) {
-      this.router.navigate(['/documentos/editor'], { queryParams: { docId: id, mode: 'view' } });
+      this.router.navigate(['/documents/editor'], { queryParams: { docId: id, mode: 'view' } });
     } else {
-      this.router.navigate(['/documentos/view', id]);
+      this.router.navigate(['/documents/view', id]);
     }
   }
 
   edit(id: string): void {
     const doc = this.documentService.documents().find(d => d.id === id);
     if (doc && (doc.isExternalSource || doc.clinicalContent?.['origen'] === 'OnlyOffice')) {
-      this.router.navigate(['/documentos/editor'], { queryParams: { docId: id } });
+      this.router.navigate(['/documents/editor'], { queryParams: { docId: id } });
     } else {
-      this.router.navigate(['/documentos/edit', id]);
+      this.router.navigate(['/documents/edit', id]);
     }
   }
 

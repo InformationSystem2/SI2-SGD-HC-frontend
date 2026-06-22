@@ -308,10 +308,10 @@ export class TemplateForm implements OnInit {
       ? this.templateService.update(this.templateId()!, payload)
       : this.templateService.create(payload);
 
-    obs$.subscribe(() => this.router.navigate(['/documentos/templates']));
+    obs$.subscribe(() => this.router.navigate(['/documents/templates']));
   }
 
   back(): void {
-    this.router.navigate(['/documentos/templates']);
+    this.router.navigate(['/documents/templates']);
   }
 }

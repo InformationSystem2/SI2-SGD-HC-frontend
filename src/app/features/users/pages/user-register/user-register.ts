@@ -145,11 +145,11 @@ export class UserRegister implements OnInit {
       })
     ).subscribe(() => {
       this.form.reset();
-      this.router.navigate(['/usuarios/list']);
+      this.router.navigate(['/users/list']);
     });
   }
 
   cancel(): void {
-    this.router.navigate(['/usuarios/list']);
+    this.router.navigate(['/users/list']);
   }
 }

@@ -77,19 +77,19 @@ export class UserList implements OnInit {
   }
 
   goToRegister(): void {
-    this.router.navigate(['/usuarios/register']);
+    this.router.navigate(['/users/register']);
   }
 
   goToDetail(id: string): void {
-    this.router.navigate(['/usuarios/detail', id]);
+    this.router.navigate(['/users/detail', id]);
   }
 
   goToEdit(id: string): void {
-    this.router.navigate(['/usuarios/form', id]);
+    this.router.navigate(['/users/form', id]);
   }
 
   goToPassword(id: string): void {
-    this.router.navigate(['/usuarios/password', id]);
+    this.router.navigate(['/users/password', id]);
   }
 
   delete(id: string): void {

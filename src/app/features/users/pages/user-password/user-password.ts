@@ -84,11 +84,11 @@ export class UserPassword implements OnInit {
     };
 
     this.userService.updateUser(this.userId()!, payload).subscribe(() => {
-      this.router.navigate(['/usuarios/list']);
+      this.router.navigate(['/users/list']);
     });
   }
 
   cancel(): void {
-    this.router.navigate(['/usuarios/list']);
+    this.router.navigate(['/users/list']);
   }
 }

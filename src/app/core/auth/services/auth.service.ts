@@ -5,6 +5,7 @@ import { environment } from '../../../../environments/environment';
 import { catchError, EMPTY, switchMap, tap } from 'rxjs';
 import { AuthState, LoginRequest, LoginResponse } from '../models/auth.models';
 import { BrandingService } from '../../services/branding.service';
+import { PushNotificationService } from '../../services/push-notification.service';
 
 
 @Injectable({ providedIn: 'root' })
@@ -12,7 +13,8 @@ export class AuthService {
 
   private http = inject(HttpClient);
   private router = inject(Router);
-  private branding = inject(BrandingService);  
+  private branding = inject(BrandingService);
+  private push = inject(PushNotificationService);  
 
   private _state = signal<AuthState>((() => {
     const accessToken = localStorage.getItem('accessToken');
@@ -38,7 +40,7 @@ export class AuthService {
         }
       } catch { /* token malformado */ }
     }
-    return { accessToken, username, roles, attributePermissions, expiresAt, loading: false, error: null } as any;
+    return { accessToken, username, roles, tenantId, attributePermissions, expiresAt, permissions, loading: false, error: null } as any;
   })());
 
   readonly accessToken     = computed(() => this._state().accessToken);
@@ -122,6 +124,7 @@ export class AuthService {
               loading: false
             }));
             this.router.navigate(['/dashboard']);
+            this.push.requestPermissionAndRegisterToken().catch(() => {});
           }),
           catchError( err => {
             console.error('Error fetching permissions:', err);

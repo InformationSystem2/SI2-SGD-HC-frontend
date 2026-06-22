@@ -37,6 +37,6 @@ export class PatientDetail implements OnInit {
   }
 
   back(): void {
-    this.router.navigate(['/pacientes/list']);
+    this.router.navigate(['/patients/list']);
   }
 }

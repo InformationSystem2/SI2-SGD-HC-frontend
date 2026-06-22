@@ -59,11 +59,11 @@ export class PatientRegister {
 
     this.patientService.createPatient(payload).subscribe(() => {
       this.form.reset();
-      this.router.navigate(['/pacientes/list']);
+      this.router.navigate(['/patients/list']);
     });
   }
 
   cancel(): void {
-    this.router.navigate(['/pacientes/list']);
+    this.router.navigate(['/patients/list']);
   }
 }

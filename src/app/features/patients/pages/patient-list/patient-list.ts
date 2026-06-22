@@ -64,15 +64,15 @@ export class PatientList implements OnInit {
   }
 
   goToRegister(): void {
-    this.router.navigate(['/pacientes/register']);
+    this.router.navigate(['/patients/register']);
   }
 
   goToDetail(id: string): void {
-    this.router.navigate(['/pacientes/detail', id]);
+    this.router.navigate(['/patients/detail', id]);
   }
 
   goToEdit(id: string): void {
-    this.router.navigate(['/pacientes/form', id]);
+    this.router.navigate(['/patients/form', id]);
   }
 
   delete(id: string): void {

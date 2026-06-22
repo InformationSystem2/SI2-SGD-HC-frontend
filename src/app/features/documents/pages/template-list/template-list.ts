@@ -31,15 +31,15 @@ export class TemplateList implements OnInit {
   }
 
   goToCreate(): void {
-    this.router.navigate(['/documentos/templates/new']);
+    this.router.navigate(['/documents/templates/new']);
   }
 
   goToEdit(id: string): void {
-    this.router.navigate(['/documentos/templates/edit', id]);
+    this.router.navigate(['/documents/templates/edit', id]);
   }
 
   useTemplate(templateId: string): void {
-    this.router.navigate(['/documentos/new', templateId]);
+    this.router.navigate(['/documents/new', templateId]);
   }
 
   delete(id: string): void {

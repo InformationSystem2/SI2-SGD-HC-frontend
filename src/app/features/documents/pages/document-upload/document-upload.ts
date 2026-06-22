@@ -89,7 +89,7 @@ export class DocumentUpload implements OnInit {
         }).subscribe({
           next: () => {
             this.uploading.set(false);
-            this.router.navigate(['/documentos/list']);
+            this.router.navigate(['/documents/list']);
           },
           error: err => {
             this.uploading.set(false);
@@ -105,6 +105,6 @@ export class DocumentUpload implements OnInit {
   }
 
   back(): void {
-    this.router.navigate(['/documentos/list']);
+    this.router.navigate(['/documents/list']);
   }
 }

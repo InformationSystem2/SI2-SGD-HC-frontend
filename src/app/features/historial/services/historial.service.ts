@@ -16,7 +16,7 @@ import { Page, HistorialSearchParams, DocumentResponse } from '../models/histori
 export class HistorialService {
   private http = inject(HttpClient);
   // URL base del endpoint (definida en environments)
-  private readonly BASE = `${environment.apiUrl}/historiales/search`;
+  private readonly BASE = `${environment.apiUrl}/records/search`;
 
   // Señales para manejar estado de la UI
   readonly loading = signal(false);      // Indica si hay una petición en curso
