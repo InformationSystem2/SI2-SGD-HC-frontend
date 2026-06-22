@@ -11,7 +11,6 @@ import { Document } from '../../models/document.model';
 import { AuthService } from '../../../../core/auth/services/auth.service';
 import { environment } from '../../../../../environments/environment';
 import { TranslatePipe } from '@ngx-translate/core';
-import { AuthService } from '../../../../core/auth/services/auth.service';
 import { DocumentVersionHistoryComponent } from '../../components/document-version-history/document-version-history';
 
 @Component({
