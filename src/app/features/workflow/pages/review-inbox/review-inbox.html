@@ -14,53 +14,73 @@
     </button>
   </div>
 
-  <!-- Error alert -->
-  @if (actionError()) {
-    <div class="p-3 rounded-lg bg-hc-error-bg border border-hc-error/30 text-hc-error text-sm">
-      {{ actionError() }}
-    </div>
-  }
+  <!-- View Mode Toggle -->
+  <div class="flex gap-2">
+    <button (click)="toggleViewMode('ASSIGNED_TO_ME')"
+            [class]="viewMode() === 'ASSIGNED_TO_ME'
+              ? 'px-4 py-2 text-sm font-semibold rounded-lg bg-hc-primary text-white'
+              : 'px-4 py-2 text-sm font-medium rounded-lg border border-hc-border text-hc-text-2 hover:bg-hc-hover'">
+      {{ 'REVIEW_TASKS.TAB_PENDING' | translate }} (Asignadas a mí)
+    </button>
+    <button (click)="toggleViewMode('ASSIGNED_BY_ME')"
+            [class]="viewMode() === 'ASSIGNED_BY_ME'
+              ? 'px-4 py-2 text-sm font-semibold rounded-lg bg-hc-primary text-white'
+              : 'px-4 py-2 text-sm font-medium rounded-lg border border-hc-border text-hc-text-2 hover:bg-hc-hover'">
+      Mis Workflows (Asignadas por mí)
+    </button>
+  </div>
 
-  <!-- Tabs -->
+  <!-- Shared Tabs and Table -->
   <div class="bg-hc-card rounded-xl border border-hc-border shadow-sm overflow-hidden">
-
     <div class="flex border-b border-hc-border">
       <button
-        (click)="activeTab.set('PENDING')"
-        [class]="activeTab() === 'PENDING'
+        (click)="activeWfTab.set('PENDING')"
+        [class]="activeWfTab() === 'PENDING'
           ? 'flex items-center gap-2 px-5 py-3 text-sm font-semibold text-hc-primary border-b-2 border-hc-primary -mb-px bg-hc-primary/5'
           : 'flex items-center gap-2 px-5 py-3 text-sm font-medium text-hc-text-2 hover:text-hc-text hover:bg-hc-hover transition-colors'">
-        {{ 'REVIEW_TASKS.TAB_PENDING' | translate }}
-        @if (pendingCount() > 0) {
+        Pendientes
+        @if (wfPendingCount() > 0) {
           <span class="inline-flex items-center justify-center min-w-[20px] h-5 px-1 rounded-full text-xs font-bold bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-400">
-            {{ pendingCount() }}
+            {{ wfPendingCount() }}
           </span>
         }
       </button>
       <button
-        (click)="activeTab.set('IN_PROGRESS')"
-        [class]="activeTab() === 'IN_PROGRESS'
+        (click)="activeWfTab.set('IN_PROGRESS')"
+        [class]="activeWfTab() === 'IN_PROGRESS'
           ? 'flex items-center gap-2 px-5 py-3 text-sm font-semibold text-hc-primary border-b-2 border-hc-primary -mb-px bg-hc-primary/5'
           : 'flex items-center gap-2 px-5 py-3 text-sm font-medium text-hc-text-2 hover:text-hc-text hover:bg-hc-hover transition-colors'">
-        {{ 'REVIEW_TASKS.TAB_IN_PROGRESS' | translate }}
-        @if (inProgressCount() > 0) {
+        En progreso
+        @if (wfInProgressCount() > 0) {
           <span class="inline-flex items-center justify-center min-w-[20px] h-5 px-1 rounded-full text-xs font-bold bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400">
-            {{ inProgressCount() }}
+            {{ wfInProgressCount() }}
           </span>
         }
       </button>
       <button
-        (click)="activeTab.set('COMPLETED')"
-        [class]="activeTab() === 'COMPLETED'
+        (click)="activeWfTab.set('COMPLETED')"
+        [class]="activeWfTab() === 'COMPLETED'
           ? 'flex items-center gap-2 px-5 py-3 text-sm font-semibold text-hc-primary border-b-2 border-hc-primary -mb-px bg-hc-primary/5'
           : 'flex items-center gap-2 px-5 py-3 text-sm font-medium text-hc-text-2 hover:text-hc-text hover:bg-hc-hover transition-colors'">
-        {{ 'REVIEW_TASKS.TAB_COMPLETED' | translate }}
-        @if (completedCount() > 0) {
+        Completadas
+        @if (wfCompletedCount() > 0) {
           <span class="inline-flex items-center justify-center min-w-[20px] h-5 px-1 rounded-full text-xs font-bold bg-hc-muted text-hc-text-3">
-            {{ completedCount() }}
+            {{ wfCompletedCount() }}
           </span>
         }
       </button>
+    </div>
+
+    <!-- Search -->
+    <div class="px-4 py-3 border-b border-hc-border">
+      <div class="relative">
+        <fa-icon [icon]="faSearch" class="absolute left-3 top-1/2 -translate-y-1/2 text-hc-text-3 text-sm" />
+        <input type="text"
+               [value]="searchQuery()"
+               (input)="searchQuery.set($any($event.target).value)"
+               placeholder="Buscar workflows..."
+               class="w-full pl-9 pr-3 py-2 rounded-lg border border-hc-border bg-hc-input text-hc-text text-sm placeholder:text-hc-text-3 focus:outline-none focus:ring-1 focus:ring-hc-primary" />
+      </div>
     </div>
 
     <!-- Table -->
@@ -70,213 +90,75 @@
           <fa-icon [icon]="faSpinner" class="animate-spin text-lg text-hc-primary" />
           {{ 'REVIEW_TASKS.LOADING' | translate }}
         </div>
-      } @else if (!filtered().length) {
+      } @else if (!filteredWorkflows().length) {
         <div class="flex flex-col items-center gap-2 py-14 text-hc-text-3">
           <fa-icon [icon]="faInbox" class="text-4xl opacity-30" />
-          <p class="text-sm">{{ 'REVIEW_TASKS.EMPTY' | translate }}</p>
+          <p class="text-sm">{{ searchQuery() ? ('REVIEW_TASKS.NO_RESULTS' | translate) : ('REVIEW_TASKS.EMPTY' | translate) }}</p>
         </div>
       } @else {
         <table class="w-full text-sm">
           <thead class="bg-hc-muted/60">
             <tr>
               <th class="px-4 py-3 text-left text-xs font-semibold text-hc-text-2 uppercase tracking-wide">
-                {{ 'REVIEW_TASKS.COL_DOCUMENT' | translate }}
+                {{ 'WORKFLOWS.TITLE' | translate }}
               </th>
               <th class="px-4 py-3 text-left text-xs font-semibold text-hc-text-2 uppercase tracking-wide">
-                {{ 'REVIEW_TASKS.COL_PRIORITY' | translate }}
+                {{ viewMode() === 'ASSIGNED_TO_ME' ? ('WORKFLOWS.CREATOR' | translate) : ('WORKFLOWS.ASSIGNEE' | translate) }}
               </th>
               <th class="px-4 py-3 text-left text-xs font-semibold text-hc-text-2 uppercase tracking-wide">
-                {{ 'REVIEW_TASKS.COL_DUE' | translate }}
+                {{ 'WORKFLOWS.DUE_DATE' | translate }}
               </th>
               <th class="px-4 py-3 text-left text-xs font-semibold text-hc-text-2 uppercase tracking-wide">
-                {{ 'REVIEW_TASKS.COL_STATUS' | translate }}
+                {{ 'WORKFLOWS.STATUS' | translate }}
               </th>
               <th class="px-4 py-3 text-left text-xs font-semibold text-hc-text-2 uppercase tracking-wide">
-                {{ 'REVIEW_TASKS.COL_ACTIONS' | translate }}
+                {{ 'WORKFLOWS.ACTIONS' | translate }}
               </th>
             </tr>
           </thead>
           <tbody class="divide-y divide-hc-border/50">
-            @for (task of filtered(); track task.id) {
+            @for (wf of filteredWorkflows(); track wf.id) {
               <tr class="hover:bg-hc-hover/50 transition-colors">
-
-                <!-- Document ID -->
                 <td class="px-4 py-3">
-                  <p class="font-mono text-xs text-hc-text-2 truncate max-w-[180px]" [title]="task.documentId">
-                    {{ truncateId(task.documentId) }}
-                  </p>
-                  <p class="text-xs text-hc-text-3 mt-0.5">{{ formatDate(task.createdAt) }}</p>
+                  <p class="font-medium text-hc-text">{{ wf.title }}</p>
+                  <p class="text-xs text-hc-text-3 mt-0.5">{{ formatDate(wf.createdAt) }}</p>
                 </td>
-
-                <!-- Priority -->
-                <td class="px-4 py-3">
-                  <span [class]="priorityClass(task.priority) + ' px-2 py-0.5 rounded-full text-xs font-medium'">
-                    {{ priorityLabel(task.priority) }}
-                  </span>
+                <td class="px-4 py-3 text-hc-text">
+                  {{ viewMode() === 'ASSIGNED_TO_ME' ? wf.creatorName : wf.assigneeName }}
                 </td>
-
-                <!-- Due date -->
                 <td class="px-4 py-3 text-xs text-hc-text-2">
-                  @if (task.dueDate) {
-                    {{ formatDate(task.dueDate) }}
+                  @if (wf.dueDate) {
+                    {{ formatDate(wf.dueDate) }}
                   } @else {
-                    <span class="text-hc-text-3">{{ 'REVIEW_TASKS.NO_DUE' | translate }}</span>
+                    <span class="text-hc-text-3">{{ 'WORKFLOWS.NO_DUE' | translate }}</span>
                   }
                 </td>
-
-                <!-- Status + outcome -->
                 <td class="px-4 py-3">
-                  @if (task.status === 'COMPLETED' && task.outcome) {
-                    <div class="flex items-center gap-1.5">
-                      @if (task.outcome === 'APPROVED') {
-                        <fa-icon [icon]="faCircleCheck" class="text-green-600" />
-                        <span class="text-xs font-medium text-green-700 dark:text-green-400">
-                          {{ 'REVIEW_TASKS.OUTCOME_APPROVED' | translate }}
-                        </span>
-                      } @else {
-                        <fa-icon [icon]="faCircleXmark" class="text-red-600" />
-                        <span class="text-xs font-medium text-red-700 dark:text-red-400">
-                          {{ 'REVIEW_TASKS.OUTCOME_REJECTED' | translate }}
-                        </span>
-                      }
-                    </div>
-                  } @else {
-                    <span [class]="
-                      (task.status === 'PENDING'     ? 'bg-yellow-100 text-yellow-700 dark:bg-yellow-900/30 dark:text-yellow-400' :
-                       task.status === 'IN_PROGRESS' ? 'bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400' :
-                       'bg-hc-muted text-hc-text-3') + ' px-2 py-0.5 rounded-full text-xs font-medium'">
-                      {{ task.status === 'PENDING' ? ('REVIEW_TASKS.STATUS_PENDING' | translate) :
-                         task.status === 'IN_PROGRESS' ? ('REVIEW_TASKS.STATUS_IN_PROGRESS' | translate) :
-                         ('REVIEW_TASKS.STATUS_CANCELLED' | translate) }}
-                    </span>
+                  <span [class]="
+                    (wf.status === 'ACTIVE' ? 'bg-blue-100 text-blue-700' :
+                     wf.status === 'COMPLETED' ? 'bg-green-100 text-green-700' :
+                     'bg-hc-muted text-hc-text-3') + ' px-2 py-0.5 rounded-full text-xs font-medium'">
+                    {{ 'WORKFLOWS.STATUS_' + wf.status | translate }}
+                  </span>
+                  @if (wf.status === 'ACTIVE') {
+                    <p class="text-[10px] text-hc-text-3 mt-1 ml-1">
+                      {{ wf.completedTaskCount }} / {{ wf.pendingTaskCount + wf.completedTaskCount }} tareas
+                    </p>
                   }
                 </td>
-
-                <!-- Actions -->
                 <td class="px-4 py-3">
-                  <div class="flex items-center gap-2 flex-wrap">
-
-                    <!-- Ver documento -->
-                    <button (click)="viewDocument(task.documentId)"
-                            class="flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg text-xs font-medium border border-hc-border hover:bg-hc-hover text-hc-text transition-colors">
-                      <fa-icon [icon]="faEye" />
-                      {{ 'COMMON.VIEW' | translate }}
-                    </button>
-
-                    <!-- Reclamar (PENDING) -->
-                    @if (task.status === 'PENDING') {
-                      <button (click)="claimTask(task.id)"
-                              [disabled]="actionLoading()"
-                              class="flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg text-xs font-medium border border-hc-primary/50 hover:bg-hc-primary/8 text-hc-primary disabled:opacity-50 transition-colors">
-                        @if (actionLoading()) {
-                          <fa-icon [icon]="faSpinner" class="animate-spin" />
-                        } @else {
-                          <fa-icon [icon]="faPen" />
-                        }
-                        {{ 'REVIEW_TASKS.CLAIM' | translate }}
-                      </button>
-                    }
-
-                    <!-- Aprobar / Rechazar (IN_PROGRESS) -->
-                    @if (task.status === 'IN_PROGRESS') {
-                      <button (click)="openCompleteModal(task, 'APPROVED')"
-                              [disabled]="actionLoading()"
-                              class="flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg text-xs font-medium bg-green-600 text-white hover:bg-green-700 disabled:opacity-50 transition-colors">
-                        <fa-icon [icon]="faCheck" />
-                        {{ 'REVIEW_TASKS.APPROVE' | translate }}
-                      </button>
-                      <button (click)="openCompleteModal(task, 'REJECTED')"
-                              [disabled]="actionLoading()"
-                              class="flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg text-xs font-medium bg-red-600 text-white hover:bg-red-700 disabled:opacity-50 transition-colors">
-                        <fa-icon [icon]="faXmark" />
-                        {{ 'REVIEW_TASKS.REJECT' | translate }}
-                      </button>
-                    }
-
-                  </div>
+                  <button (click)="viewWorkflow(wf.id)"
+                          class="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium border border-hc-border hover:bg-hc-hover text-hc-text transition-colors">
+                    <fa-icon [icon]="faEye" />
+                    {{ 'WORKFLOWS.VIEW' | translate }}
+                  </button>
                 </td>
-
               </tr>
             }
           </tbody>
         </table>
       }
     </div>
-
   </div>
 
 </div>
-
-<!-- ══════════════════════════════════════════════════════════ -->
-<!-- Modal: Completar tarea                                    -->
-<!-- ══════════════════════════════════════════════════════════ -->
-@if (showCompleteModal()) {
-  <div class="fixed inset-0 z-50 flex items-center justify-center p-4">
-    <div class="absolute inset-0 bg-black/50" (click)="showCompleteModal.set(false)"></div>
-    <div class="relative bg-hc-card rounded-xl border border-hc-border shadow-xl w-full max-w-md z-10">
-
-      <div class="flex items-center justify-between px-6 py-4 border-b border-hc-border">
-        <div class="flex items-center gap-2">
-          @if (completeOutcome() === 'APPROVED') {
-            <fa-icon [icon]="faCircleCheck" class="text-green-600" />
-            <p class="text-sm font-semibold text-hc-text">{{ 'REVIEW_TASKS.APPROVE' | translate }}</p>
-          } @else {
-            <fa-icon [icon]="faCircleXmark" class="text-red-600" />
-            <p class="text-sm font-semibold text-hc-text">{{ 'REVIEW_TASKS.REJECT' | translate }}</p>
-          }
-        </div>
-        <button (click)="showCompleteModal.set(false)" class="p-1 rounded-lg hover:bg-hc-hover text-hc-text-3 transition-colors">
-          <fa-icon [icon]="faXmark" />
-        </button>
-      </div>
-
-      <div class="px-6 py-4 space-y-3">
-        @if (actionError()) {
-          <div class="p-3 rounded-lg bg-hc-error-bg border border-hc-error/30 text-hc-error text-sm">{{ actionError() }}</div>
-        }
-        <div>
-          <label class="text-xs font-semibold text-hc-text-2 block mb-1.5">
-            {{ 'REVIEW_TASKS.FIELD_COMMENT' | translate }}
-            @if (completeOutcome() === 'REJECTED') {
-              <span class="text-hc-error">*</span>
-            } @else {
-              <span class="text-hc-text-3 font-normal">({{ 'COMMON.OPTIONAL' | translate }})</span>
-            }
-          </label>
-          <textarea [value]="completeComment()"
-                    (input)="completeComment.set($any($event.target).value)"
-                    [placeholder]="'REVIEW_TASKS.PH_COMMENT' | translate"
-                    rows="4"
-                    class="block w-full px-3 py-2 rounded-lg border border-hc-border bg-hc-input text-hc-text text-sm resize-none focus:outline-none focus:ring-1 focus:ring-hc-primary">
-          </textarea>
-          @if (completeOutcome() === 'REJECTED' && !completeComment().trim()) {
-            <p class="text-xs text-hc-error mt-1">El comentario es requerido para rechazar.</p>
-          }
-        </div>
-      </div>
-
-      <div class="flex items-center justify-end gap-2 px-6 py-4 border-t border-hc-border">
-        <button (click)="showCompleteModal.set(false)"
-                class="px-4 py-2 rounded-lg text-sm text-hc-text hover:bg-hc-hover transition-colors">
-          {{ 'WORKFLOW.CANCEL' | translate }}
-        </button>
-        <button (click)="submitCompleteTask()"
-                [disabled]="(completeOutcome() === 'REJECTED' && !completeComment().trim()) || actionLoading()"
-                [class]="(completeOutcome() === 'APPROVED' ? 'bg-green-600 hover:bg-green-700' : 'bg-red-600 hover:bg-red-700')
-                  + ' flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium text-white disabled:opacity-50 transition-colors'">
-          @if (actionLoading()) {
-            <fa-icon [icon]="faSpinner" class="animate-spin" />
-            {{ 'REVIEW_TASKS.COMPLETING' | translate }}
-          } @else if (completeOutcome() === 'APPROVED') {
-            <fa-icon [icon]="faCheck" />
-            {{ 'REVIEW_TASKS.CONFIRM_COMPLETE' | translate }}
-          } @else {
-            <fa-icon [icon]="faXmark" />
-            {{ 'REVIEW_TASKS.CONFIRM_COMPLETE' | translate }}
-          }
-        </button>
-      </div>
-
-    </div>
-  </div>
-}

@@ -6,6 +6,7 @@ import {
   CompleteTaskRequest,
   ReviewTask,
   StartReviewRequest,
+  WorkflowStats,
 } from '../models/workflow.model';
 
 @Injectable({ providedIn: 'root' })
@@ -45,5 +46,9 @@ export class ReviewTaskService {
 
   completeTask(taskId: string, req: CompleteTaskRequest) {
     return this.http.post<ReviewTask>(`${this.BASE}/${taskId}/complete`, req);
+  }
+
+  getStats() {
+    return this.http.get<WorkflowStats>(`${this.BASE}/stats`);
   }
 }

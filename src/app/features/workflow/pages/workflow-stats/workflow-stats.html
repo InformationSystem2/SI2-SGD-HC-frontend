@@ -1,0 +1,57 @@
+<div class="max-w-6xl mx-auto px-4 py-8">
+  <h1 class="text-2xl font-bold text-hc-text mb-6">
+    <fa-icon [icon]="faChartBar" class="mr-2 text-hc-primary"></fa-icon>
+    {{ 'WORKFLOW.STATS_TITLE' | translate }}
+  </h1>
+
+  @if (loading()) {
+    <div class="flex items-center justify-center py-20">
+      <fa-icon [icon]="faSpinner" class="fa-spin text-hc-primary text-3xl"></fa-icon>
+    </div>
+  } @else if (error()) {
+    <div class="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-xl p-6 text-center">
+      <fa-icon [icon]="faExclamationTriangle" class="text-red-500 text-2xl mb-2"></fa-icon>
+      <p class="text-red-700 dark:text-red-400">{{ error() }}</p>
+    </div>
+  } @else if (stats(); as s) {
+    <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
+      <!-- Pending -->
+      <div class="bg-hc-card border border-hc-border rounded-xl p-5 text-center">
+        <fa-icon [icon]="faClock" class="text-amber-500 text-2xl mb-2"></fa-icon>
+        <p class="text-3xl font-bold text-hc-text">{{ s.pendingCount }}</p>
+        <p class="text-sm text-hc-text-3 mt-1">{{ 'WORKFLOW.STATS_PENDING' | translate }}</p>
+      </div>
+      <!-- In Progress -->
+      <div class="bg-hc-card border border-hc-border rounded-xl p-5 text-center">
+        <fa-icon [icon]="faSpinner" class="text-blue-500 text-2xl mb-2"></fa-icon>
+        <p class="text-3xl font-bold text-hc-text">{{ s.inProgressCount }}</p>
+        <p class="text-sm text-hc-text-3 mt-1">{{ 'WORKFLOW.STATS_IN_PROGRESS' | translate }}</p>
+      </div>
+      <!-- Completed -->
+      <div class="bg-hc-card border border-hc-border rounded-xl p-5 text-center">
+        <fa-icon [icon]="faCheckCircle" class="text-emerald-500 text-2xl mb-2"></fa-icon>
+        <p class="text-3xl font-bold text-hc-text">{{ s.completedCount }}</p>
+        <p class="text-sm text-hc-text-3 mt-1">{{ 'WORKFLOW.STATS_COMPLETED' | translate }}</p>
+      </div>
+      <!-- Overdue -->
+      <div class="bg-hc-card border border-hc-border rounded-xl p-5 text-center">
+        <fa-icon [icon]="faExclamationTriangle" class="text-red-500 text-2xl mb-2"></fa-icon>
+        <p class="text-3xl font-bold text-hc-text">{{ s.overdueCount }}</p>
+        <p class="text-sm text-hc-text-3 mt-1">{{ 'WORKFLOW.STATS_OVERDUE' | translate }}</p>
+      </div>
+    </div>
+
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+      <div class="bg-hc-card border border-hc-border rounded-xl p-5">
+        <h3 class="text-lg font-semibold text-hc-text mb-3">{{ 'WORKFLOW.STATS_LAST_30_DAYS' | translate }}</h3>
+        <p class="text-4xl font-bold text-hc-primary">{{ s.completedLast30Days }}</p>
+        <p class="text-sm text-hc-text-3 mt-1">{{ 'WORKFLOW.STATS_COMPLETED_30_DAYS_DESC' | translate }}</p>
+      </div>
+      <div class="bg-hc-card border border-hc-border rounded-xl p-5">
+        <h3 class="text-lg font-semibold text-hc-text mb-3">{{ 'WORKFLOW.STATS_AVG_HOURS' | translate }}</h3>
+        <p class="text-4xl font-bold text-hc-primary">{{ s.avgHoursToComplete }}</p>
+        <p class="text-sm text-hc-text-3 mt-1">{{ 'WORKFLOW.STATS_AVG_HOURS_DESC' | translate }}</p>
+      </div>
+    </div>
+  }
+</div>

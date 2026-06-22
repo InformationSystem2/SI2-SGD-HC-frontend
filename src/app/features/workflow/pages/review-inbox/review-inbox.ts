@@ -3,10 +3,11 @@ import { Router } from '@angular/router';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import {
   faInbox, faSpinner, faRotateRight, faPen, faCheck, faXmark,
-  faEye, faCircleCheck, faCircleXmark,
+  faEye, faCircleCheck, faCircleXmark, faSearch,
 } from '@fortawesome/free-solid-svg-icons';
 import { TranslatePipe } from '@ngx-translate/core';
 import { ReviewTaskService } from '../../services/review-task.service';
+import { WorkflowService } from '../../services/workflow.service';
 import { ReviewTask, ReviewTaskOutcome } from '../../models/workflow.model';
 
 type TabKey = 'PENDING' | 'IN_PROGRESS' | 'COMPLETED';
@@ -20,6 +21,7 @@ type TabKey = 'PENDING' | 'IN_PROGRESS' | 'COMPLETED';
 export class ReviewInbox implements OnInit {
 
   private taskSvc = inject(ReviewTaskService);
+  private workflowSvc = inject(WorkflowService);
   private router  = inject(Router);
 
   readonly faInbox       = faInbox;
@@ -31,88 +33,56 @@ export class ReviewInbox implements OnInit {
   readonly faEye         = faEye;
   readonly faCircleCheck = faCircleCheck;
   readonly faCircleXmark = faCircleXmark;
+  readonly faSearch = faSearch;
 
-  readonly loading       = this.taskSvc.loading;
-  readonly activeTab     = signal<TabKey>('PENDING');
-  readonly actionLoading = signal(false);
-  readonly actionError   = signal<string | null>(null);
+  readonly loading       = computed(() => this.workflowSvc.loading());
+  readonly viewMode      = signal<'ASSIGNED_TO_ME' | 'ASSIGNED_BY_ME'>('ASSIGNED_TO_ME');
+  readonly activeWfTab   = signal<TabKey>('PENDING');
+  readonly searchQuery   = signal('');
 
-  readonly pendingCount    = computed(() => this.taskSvc.myTasks().filter(t => t.status === 'PENDING').length);
-  readonly inProgressCount = computed(() => this.taskSvc.myTasks().filter(t => t.status === 'IN_PROGRESS').length);
-  readonly completedCount  = computed(() => this.taskSvc.myTasks().filter(t => t.status === 'COMPLETED' || t.status === 'CANCELLED').length);
-
-  readonly filtered = computed(() => {
-    const tab = this.activeTab();
-    if (tab === 'COMPLETED') {
-      return this.taskSvc.myTasks().filter(t => t.status === 'COMPLETED' || t.status === 'CANCELLED');
-    }
-    return this.taskSvc.myTasks().filter(t => t.status === tab);
+  readonly currentWorkflows = computed(() => {
+    return this.viewMode() === 'ASSIGNED_TO_ME' ? this.workflowSvc.assignedWorkflows() : this.workflowSvc.workflows();
   });
 
-  // ── Complete modal state ─────────────────────────────────────────
-  readonly showCompleteModal = signal(false);
-  readonly taskToComplete    = signal<ReviewTask | null>(null);
-  readonly completeOutcome   = signal<ReviewTaskOutcome | ''>('');
-  readonly completeComment   = signal('');
+  readonly wfPendingCount    = computed(() => this.currentWorkflows().filter(w => this.getWorkflowTabStatus(w) === 'PENDING').length);
+  readonly wfInProgressCount = computed(() => this.currentWorkflows().filter(w => this.getWorkflowTabStatus(w) === 'IN_PROGRESS').length);
+  readonly wfCompletedCount  = computed(() => this.currentWorkflows().filter(w => this.getWorkflowTabStatus(w) === 'COMPLETED').length);
+
+  readonly filteredWorkflows = computed(() => {
+    const tab = this.activeWfTab();
+    const query = this.searchQuery().toLowerCase().trim();
+    let workflows = this.currentWorkflows().filter(w => this.getWorkflowTabStatus(w) === tab);
+    
+    if (query) {
+      workflows = workflows.filter(w =>
+        w.title.toLowerCase().includes(query) ||
+        (w.assigneeName && w.assigneeName.toLowerCase().includes(query)) ||
+        (w.dueDate && this.formatDate(w.dueDate).toLowerCase().includes(query)) ||
+        w.status.toLowerCase().includes(query)
+      );
+    }
+    return workflows;
+  });
 
   ngOnInit(): void {
-    this.taskSvc.getMyTasks().subscribe();
+    this.refresh();
   }
 
   refresh(): void {
-    this.taskSvc.getMyTasks().subscribe();
+    if (this.viewMode() === 'ASSIGNED_TO_ME') {
+      this.workflowSvc.getWorkflowsAssignedToMe().subscribe();
+    } else {
+      this.workflowSvc.getMyWorkflows().subscribe();
+    }
   }
 
-  viewDocument(documentId: string): void {
-    this.router.navigate(['/documentos/view', documentId]);
+  toggleViewMode(mode: 'ASSIGNED_TO_ME' | 'ASSIGNED_BY_ME'): void {
+    this.viewMode.set(mode);
+    this.refresh();
   }
 
-  claimTask(taskId: string): void {
-    this.actionLoading.set(true);
-    this.actionError.set(null);
-    this.taskSvc.claimTask(taskId).subscribe({
-      next: () => {
-        this.taskSvc.getMyTasks().subscribe();
-        this.actionLoading.set(false);
-        this.activeTab.set('IN_PROGRESS');
-      },
-      error: e => {
-        this.actionError.set(e.error?.message ?? 'Error al reclamar la tarea');
-        this.actionLoading.set(false);
-      },
-    });
-  }
-
-  openCompleteModal(task: ReviewTask, outcome: ReviewTaskOutcome): void {
-    this.taskToComplete.set(task);
-    this.completeOutcome.set(outcome);
-    this.completeComment.set('');
-    this.actionError.set(null);
-    this.showCompleteModal.set(true);
-  }
-
-  submitCompleteTask(): void {
-    const task    = this.taskToComplete();
-    const outcome = this.completeOutcome() as ReviewTaskOutcome;
-    if (!task || !outcome) return;
-    if (outcome === 'REJECTED' && !this.completeComment().trim()) return;
-    this.actionLoading.set(true);
-    this.actionError.set(null);
-    this.taskSvc.completeTask(task.id, {
-      outcome,
-      comment: this.completeComment().trim() || undefined,
-    }).subscribe({
-      next: () => {
-        this.showCompleteModal.set(false);
-        this.actionLoading.set(false);
-        this.taskSvc.getMyTasks().subscribe();
-        this.activeTab.set('COMPLETED');
-      },
-      error: e => {
-        this.actionError.set(e.error?.message ?? 'Error al completar la tarea');
-        this.actionLoading.set(false);
-      },
-    });
+  viewWorkflow(workflowId: string): void {
+    this.router.navigate(['/tasks/workflow', workflowId]);
   }
 
   priorityLabel(p: number): string {
@@ -135,5 +105,15 @@ export class ReviewInbox implements OnInit {
     return new Date(dateStr).toLocaleString('es', {
       day: '2-digit', month: 'short', year: 'numeric',
     });
+  }
+
+  getWorkflowTabStatus(wf: any): TabKey {
+    if (wf.status === 'COMPLETED' || wf.status === 'CANCELLED') {
+      return 'COMPLETED';
+    }
+    if (wf.completedTaskCount > 0 || (wf.tasks && wf.tasks.some((t: any) => t.status === 'IN_PROGRESS'))) {
+      return 'IN_PROGRESS';
+    }
+    return 'PENDING';
   }
 }

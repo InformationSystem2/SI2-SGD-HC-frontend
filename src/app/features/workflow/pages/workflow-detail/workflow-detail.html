@@ -1,0 +1,514 @@
+<div class="space-y-6 max-w-5xl mx-auto">
+
+  <!-- Back + Header -->
+  <div class="flex items-center gap-4">
+    <button (click)="goBack()"
+            class="p-2 rounded-lg hover:bg-hc-hover text-hc-text-3 transition-colors">
+      <fa-icon [icon]="faArrowLeft" />
+    </button>
+    @if (workflow(); as wf) {
+      <div class="flex-1">
+        <h2 class="hc-h2 text-hc-text">{{ wf.title }}</h2>
+        <p class="text-xs text-hc-text-3 mt-0.5">
+          {{ 'WORKFLOWS.CREATED_BY' | translate }} {{ wf.creatorName }} · {{ formatDate(wf.createdAt) }}
+        </p>
+      </div>
+      <span [class]="statusClass(wf.status) + ' px-2.5 py-1 rounded-full text-xs font-medium'">
+        {{ 'WORKFLOWS.STATUS_' + wf.status | translate }}
+      </span>
+    }
+  </div>
+
+  <!-- Loading -->
+  @if (loading()) {
+    <div class="flex items-center justify-center gap-2 py-12 text-hc-text-3 text-sm">
+      <fa-icon [icon]="faSpinner" class="animate-spin text-lg text-hc-primary" />
+      {{ 'REVIEW_TASKS.LOADING' | translate }}
+    </div>
+  } @else if (workflow(); as wf) {
+
+    <!-- Info cards -->
+    <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+      <div class="bg-hc-card rounded-xl border border-hc-border p-4">
+        <div class="flex items-center gap-2 mb-2">
+          <fa-icon [icon]="faUser" class="text-hc-primary text-sm" />
+          <span class="text-xs font-semibold text-hc-text-2 uppercase">{{ 'WORKFLOWS.ASSIGNEE' | translate }}</span>
+        </div>
+        <p class="text-sm font-medium text-hc-text">{{ wf.assigneeName }}</p>
+      </div>
+      <div class="bg-hc-card rounded-xl border border-hc-border p-4">
+        <div class="flex items-center gap-2 mb-2">
+          <fa-icon [icon]="faCalendar" class="text-hc-primary text-sm" />
+          <span class="text-xs font-semibold text-hc-text-2 uppercase">{{ 'WORKFLOWS.DUE_DATE' | translate }}</span>
+        </div>
+        <p class="text-sm text-hc-text">{{ wf.dueDate ? formatDate(wf.dueDate) : ('WORKFLOWS.NO_DUE' | translate) }}</p>
+      </div>
+      <div class="bg-hc-card rounded-xl border border-hc-border p-4">
+        <div class="flex items-center gap-2 mb-2">
+          <fa-icon [icon]="faClock" class="text-hc-primary text-sm" />
+          <span class="text-xs font-semibold text-hc-text-2 uppercase">{{ 'WORKFLOWS.TASKS_SUMMARY' | translate }}</span>
+        </div>
+        <p class="text-sm text-hc-text">
+          {{ wf.pendingTaskCount }} {{ 'WORKFLOWS.PENDING' | translate }} · {{ wf.completedTaskCount }} {{ 'WORKFLOWS.COMPLETED' | translate }}
+        </p>
+      </div>
+    </div>
+
+    <!-- Message -->
+    @if (wf.message) {
+      <div class="bg-hc-card rounded-xl border border-hc-border p-4">
+        <div class="flex items-center gap-2 mb-2">
+          <fa-icon [icon]="faComment" class="text-hc-primary text-sm" />
+          <span class="text-xs font-semibold text-hc-text-2 uppercase">{{ 'WORKFLOWS.MESSAGE' | translate }}</span>
+        </div>
+        <p class="text-sm text-hc-text whitespace-pre-wrap">{{ wf.message }}</p>
+      </div>
+    }
+
+    <!-- Documents -->
+    <div class="bg-hc-card rounded-xl border border-hc-border p-4">
+      <div class="flex items-center gap-2 mb-3">
+        <fa-icon [icon]="faFileLines" class="text-hc-primary text-sm" />
+        <span class="text-xs font-semibold text-hc-text-2 uppercase">{{ 'WORKFLOWS.ELEMENTS' | translate }} ({{ wf.documents.length }})</span>
+      </div>
+      @if (wf.documents.length === 0) {
+        <p class="text-sm text-hc-text-3">{{ 'WORKFLOWS.NO_DOCUMENTS' | translate }}</p>
+      } @else {
+        <div class="space-y-1">
+          @for (doc of wf.documents; track doc.id) {
+            <div class="flex items-center justify-between px-3 py-2 rounded-lg bg-hc-muted/40 border border-hc-border/50">
+              <div class="flex items-center gap-2">
+                <fa-icon [icon]="faFileLines" class="text-hc-primary text-sm" />
+                <a [routerLink]="['/documents/view', doc.documentId]" class="text-sm text-hc-primary hover:underline font-medium">
+                  {{ doc.documentName }}
+                </a>
+              </div>
+              <div class="flex items-center gap-2">
+                <span [class]="
+                  (doc.documentStatus === 'FINALIZED' ? 'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400' :
+                   doc.documentStatus === 'REJECTED' ? 'bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400' :
+                   doc.documentStatus === 'PENDING_REVIEW' ? 'bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400' :
+                   doc.documentStatus === 'DRAFT' ? 'bg-yellow-100 text-yellow-700 dark:bg-yellow-900/30 dark:text-yellow-400' :
+                   'bg-hc-muted text-hc-text-3') + ' px-2 py-0.5 rounded-full text-xs font-medium'">
+                  {{ doc.documentStatus === 'FINALIZED' ? 'Aprobado' :
+                     doc.documentStatus === 'REJECTED' ? 'Rechazado' :
+                     doc.documentStatus === 'PENDING_REVIEW' ? 'En revisión' :
+                     doc.documentStatus === 'DRAFT' ? 'Borrador (Editado)' :
+                     doc.documentStatus }}
+                </span>
+                @if ((doc.documentStatus === 'REJECTED' || doc.documentStatus === 'DRAFT') && wf.status === 'ACTIVE') {
+                  <button (click)="openResubmitModal(doc.documentId)"
+                          [disabled]="resubmitLoading()"
+                          class="flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg text-xs font-medium bg-amber-500 text-white hover:bg-amber-600 disabled:opacity-50 transition-colors">
+                    @if (resubmitLoading()) {
+                      <fa-icon [icon]="faSpinner" class="animate-spin" />
+                    } @else {
+                      <fa-icon [icon]="faPen" />
+                    }
+                    Corregir y Reenviar
+                  </button>
+                }
+              </div>
+            </div>
+          }
+        </div>
+      }
+    </div>
+
+    <!-- Tabs: Tasks + History + Comments -->
+    <div class="bg-hc-card rounded-xl border border-hc-border shadow-sm overflow-hidden">
+      <div class="flex border-b border-hc-border overflow-x-auto">
+        <button (click)="activeTab.set('tasks')"
+                [class]="activeTab() === 'tasks'
+                  ? 'flex items-center gap-2 px-5 py-3 text-sm font-semibold text-hc-primary border-b-2 border-hc-primary -mb-px bg-hc-primary/5 whitespace-nowrap'
+                  : 'flex items-center gap-2 px-5 py-3 text-sm font-medium text-hc-text-2 hover:text-hc-text hover:bg-hc-hover transition-colors whitespace-nowrap'">
+          {{ 'WORKFLOWS.CURRENT_TASKS' | translate }}
+        </button>
+        <button (click)="activeTab.set('history')"
+                [class]="activeTab() === 'history'
+                  ? 'flex items-center gap-2 px-5 py-3 text-sm font-semibold text-hc-primary border-b-2 border-hc-primary -mb-px bg-hc-primary/5 whitespace-nowrap'
+                  : 'flex items-center gap-2 px-5 py-3 text-sm font-medium text-hc-text-2 hover:text-hc-text hover:bg-hc-hover transition-colors whitespace-nowrap'">
+          <fa-icon [icon]="faHistory" />
+          {{ 'WORKFLOWS.HISTORY' | translate }}
+        </button>
+        <button (click)="activeTab.set('comments')"
+                [class]="activeTab() === 'comments'
+                  ? 'flex items-center gap-2 px-5 py-3 text-sm font-semibold text-hc-primary border-b-2 border-hc-primary -mb-px bg-hc-primary/5 whitespace-nowrap'
+                  : 'flex items-center gap-2 px-5 py-3 text-sm font-medium text-hc-text-2 hover:text-hc-text hover:bg-hc-hover transition-colors whitespace-nowrap'">
+          <fa-icon [icon]="faComments" />
+          {{ 'REVIEW_TASKS.COMMENTS_TITLE' | translate }}
+        </button>
+      </div>
+
+      <!-- Tasks tab -->
+      @if (activeTab() === 'tasks') {
+        @if (wf.tasks.length === 0) {
+          <div class="flex flex-col items-center gap-2 py-14 text-hc-text-3">
+            <fa-icon [icon]="faFileLines" class="text-4xl opacity-30" />
+            <p class="text-sm">{{ 'WORKFLOWS.NO_TASKS' | translate }}</p>
+          </div>
+        } @else {
+          <div class="overflow-x-auto">
+            <table class="w-full text-sm">
+              <thead class="bg-hc-muted/60">
+                <tr>
+                  <th class="px-4 py-3 text-left text-xs font-semibold text-hc-text-2 uppercase">{{ 'WORKFLOWS.TASK_TYPE' | translate }}</th>
+                  <th class="px-4 py-3 text-left text-xs font-semibold text-hc-text-2 uppercase">{{ 'WORKFLOWS.ASSIGNEE' | translate }}</th>
+                  <th class="px-4 py-3 text-left text-xs font-semibold text-hc-text-2 uppercase">{{ 'WORKFLOWS.DUE_DATE' | translate }}</th>
+                  <th class="px-4 py-3 text-left text-xs font-semibold text-hc-text-2 uppercase">{{ 'WORKFLOWS.STATUS' | translate }}</th>
+                  <th class="px-4 py-3 text-left text-xs font-semibold text-hc-text-2 uppercase">{{ 'WORKFLOWS.ACTIONS' | translate }}</th>
+                </tr>
+              </thead>
+              <tbody class="divide-y divide-hc-border/50">
+                @for (task of wf.tasks; track task.id) {
+                  <tr class="hover:bg-hc-hover/50 transition-colors">
+                    <td class="px-4 py-3 text-sm text-hc-text">
+                      <a [routerLink]="['/documents/view', task.documentId]" class="font-medium text-hc-primary hover:underline">{{ task.documentName }}</a>
+                      <p class="text-xs text-hc-text-3 mt-0.5">{{ formatDate(task.createdAt) }}</p>
+                    </td>
+                    <td class="px-4 py-3 text-sm text-hc-text">{{ task.assignedToName }}</td>
+                    <td class="px-4 py-3 text-xs text-hc-text-2">
+                      {{ task.dueDate ? formatDate(task.dueDate) : ('WORKFLOWS.NO_DUE' | translate) }}
+                    </td>
+                    <td class="px-4 py-3">
+                      @if (task.status === 'COMPLETED' && task.outcome) {
+                        <div class="flex items-center gap-1.5">
+                          @if (task.outcome === 'APPROVED') {
+                            <fa-icon [icon]="faCheckSm" class="text-green-600" />
+                            <span class="text-xs font-medium text-green-700">{{ 'REVIEW_TASKS.OUTCOME_APPROVED' | translate }}</span>
+                          } @else {
+                            <fa-icon [icon]="faXmarkSm" class="text-red-600" />
+                            <span class="text-xs font-medium text-red-700">{{ 'REVIEW_TASKS.OUTCOME_REJECTED' | translate }}</span>
+                          }
+                        </div>
+                      } @else {
+                        <span [class]="
+                          (task.status === 'PENDING' ? 'bg-yellow-100 text-yellow-700' :
+                           task.status === 'IN_PROGRESS' ? 'bg-blue-100 text-blue-700' :
+                           'bg-hc-muted text-hc-text-3') + ' px-2 py-0.5 rounded-full text-xs font-medium'">
+                          {{ 'REVIEW_TASKS.STATUS_' + task.status | translate }}
+                        </span>
+                      }
+                    </td>
+                    <td class="px-4 py-3">
+                      @if (canClaimOrComplete(task.id)) {
+                        @if (task.status === 'PENDING') {
+                          <button (click)="claimTask(task.id)"
+                                  [disabled]="actionLoading()"
+                                  class="flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg text-xs font-medium border border-hc-primary/50 hover:bg-hc-primary/8 text-hc-primary transition-colors disabled:opacity-50">
+                            @if (actionLoading()) {
+                              <fa-icon [icon]="faSpinner" class="animate-spin" />
+                            } @else {
+                              <fa-icon [icon]="faPaperPlane" />
+                            }
+                            {{ 'REVIEW_TASKS.CLAIM' | translate }}
+                          </button>
+                        } @else if (task.status === 'IN_PROGRESS') {
+                          <div class="flex items-center gap-2">
+                            <button (click)="openCompleteModal(task, 'APPROVED')"
+                                    [disabled]="actionLoading()"
+                                    class="flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg text-xs font-medium bg-green-600 text-white hover:bg-green-700 disabled:opacity-50 transition-colors">
+                              <fa-icon [icon]="faCheckSm" />
+                              {{ 'REVIEW_TASKS.APPROVE' | translate }}
+                            </button>
+                            <button (click)="openCompleteModal(task, 'REJECTED')"
+                                    [disabled]="actionLoading()"
+                                    class="flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg text-xs font-medium bg-red-600 text-white hover:bg-red-700 disabled:opacity-50 transition-colors">
+                              <fa-icon [icon]="faXmarkSm" />
+                              {{ 'REVIEW_TASKS.REJECT' | translate }}
+                            </button>
+                          </div>
+                        }
+                      }
+                    </td>
+                  </tr>
+                }
+              </tbody>
+            </table>
+          </div>
+        }
+      }
+
+      <!-- History tab -->
+      @if (activeTab() === 'history') {
+        <div class="px-6 py-5">
+          @if (eventsLoading()) {
+            <div class="flex items-center gap-2 text-hc-text-3 text-sm py-2">
+              <fa-icon [icon]="faSpinner" class="animate-spin" />
+              Cargando historial…
+            </div>
+          } @else {
+            <div class="relative">
+              <div class="absolute left-3 top-3 bottom-3 w-px bg-hc-border/60"></div>
+              <div class="space-y-4">
+                @for (event of events(); track event.id) {
+                  <div class="flex items-start gap-3 relative">
+                    <div class="w-7 h-7 rounded-full bg-hc-card border-2 border-hc-border flex items-center justify-center shrink-0 z-10">
+                      <fa-icon [icon]="eventIcon(event.eventType)" [class]="eventIconClass(event.eventType)" class="text-xs" />
+                    </div>
+                    <div class="flex-1 min-w-0 pt-0.5">
+                      <p class="text-sm font-medium text-hc-text">
+                        {{ eventLabel(event.eventType) }}
+                        @if (event.documentName && event.documentId) {
+                          <span class="font-normal text-hc-text-3 ml-1">- 
+                            <a (click)="viewDocument(event.documentId)" class="text-hc-primary hover:underline cursor-pointer">{{ event.documentName }}</a>
+                          </span>
+                        }
+                      </p>
+                      <p class="text-xs text-hc-text-3 mt-0.5">
+                        @if (event.performedByName) { {{ event.performedByName }} · }
+                        {{ formatDate(event.performedAt) }}
+                      </p>
+                    </div>
+                  </div>
+                } @empty {
+                  <p class="text-sm text-hc-text-3 pl-8 py-2">Sin eventos registrados en el flujo.</p>
+                }
+              </div>
+            </div>
+          }
+        </div>
+      }
+
+      <!-- Comments tab -->
+      @if (activeTab() === 'comments') {
+        <div class="px-6 py-4 space-y-4">
+          @if (commentsLoading()) {
+            <div class="flex items-center gap-2 text-hc-text-3 text-sm py-2">
+              <fa-icon [icon]="faSpinner" class="animate-spin" />
+              Cargando comentarios…
+            </div>
+          } @else {
+            @for (c of comments(); track c.id) {
+              <div class="flex gap-3">
+                <div class="w-8 h-8 rounded-full bg-hc-primary/10 text-hc-primary flex items-center justify-center text-xs font-semibold shrink-0">
+                  {{ c.authorName.charAt(0).toUpperCase() }}
+                </div>
+                <div class="flex-1 bg-hc-muted/40 rounded-lg px-4 py-3">
+                  <div class="flex items-center justify-between mb-1.5">
+                    <p class="text-xs font-semibold text-hc-text">{{ c.authorName }}</p>
+                    <p class="text-xs text-hc-text-3">{{ formatDate(c.createdAt) }}</p>
+                  </div>
+                  <p class="text-sm text-hc-text whitespace-pre-line">{{ c.commentText }}</p>
+                </div>
+              </div>
+            } @empty {
+              <p class="text-sm text-hc-text-3 text-center py-3">{{ 'REVIEW_TASKS.NO_COMMENTS' | translate }}</p>
+            }
+
+            @if (auth.hasPermission('workflow:comment:create')) {
+              <div class="flex gap-3 pt-4 border-t border-hc-border/50">
+                <div class="w-8 h-8 rounded-full bg-hc-primary/10 text-hc-primary flex items-center justify-center text-xs font-semibold shrink-0">
+                  {{ (auth.username() ?? '?').charAt(0).toUpperCase() }}
+                </div>
+                <div class="flex-1 flex gap-2 items-end">
+                  <textarea [value]="newComment()"
+                            (input)="newComment.set($any($event.target).value)"
+                            [placeholder]="'REVIEW_TASKS.PH_NEW_COMMENT' | translate"
+                            rows="2"
+                            class="flex-1 px-3 py-2 rounded-lg border border-hc-border bg-hc-input text-hc-text text-sm resize-none focus:outline-none focus:ring-1 focus:ring-hc-primary">
+                  </textarea>
+                  <button (click)="submitComment()"
+                          [disabled]="!newComment().trim() || commentSubmitting()"
+                          class="p-2.5 rounded-lg bg-hc-primary text-white hover:bg-hc-primary/90 disabled:opacity-40 transition-colors">
+                    @if (commentSubmitting()) {
+                      <fa-icon [icon]="faSpinner" class="animate-spin" />
+                    } @else {
+                      <fa-icon [icon]="faPaperPlane" />
+                    }
+                  </button>
+                </div>
+              </div>
+            }
+          }
+        </div>
+      }
+    </div>
+
+    <!-- Cancel button -->
+    @if (wf.status === 'ACTIVE' && isCreator()) {
+      <div class="flex justify-end">
+        <button (click)="cancelWorkflow()"
+                class="flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium border border-red-300 text-red-600 hover:bg-red-50 dark:hover:bg-red-900/10 transition-colors">
+          <fa-icon [icon]="faBan" />
+          {{ 'WORKFLOWS.CANCEL_WORKFLOW' | translate }}
+        </button>
+      </div>
+    }
+
+  }
+
+</div>
+
+<!-- ══════════════════════════════════════════════════════════════════ -->
+<!-- Modal: Completar tarea (Aprobar / Rechazar)                       -->
+<!-- ══════════════════════════════════════════════════════════════════ -->
+@if (showCompleteModal()) {
+  <div class="fixed inset-0 z-50 flex items-center justify-center p-4">
+    <div class="absolute inset-0 bg-black/50" (click)="showCompleteModal.set(false)"></div>
+    <div class="relative bg-hc-card rounded-xl border border-hc-border shadow-xl w-full max-w-md z-10">
+
+      <!-- Modal header -->
+      <div class="flex items-center justify-between px-6 py-4 border-b border-hc-border">
+        <div class="flex items-center gap-2">
+          @if (completeOutcome() === 'APPROVED') {
+            <fa-icon [icon]="faCheckSm" class="text-green-600" />
+            <p class="text-sm font-semibold text-hc-text">{{ 'REVIEW_TASKS.APPROVE' | translate }}</p>
+          } @else {
+            <fa-icon [icon]="faXmarkSm" class="text-red-600" />
+            <p class="text-sm font-semibold text-hc-text">{{ 'REVIEW_TASKS.REJECT' | translate }}</p>
+          }
+        </div>
+        <button (click)="showCompleteModal.set(false)" class="p-1 rounded-lg hover:bg-hc-hover text-hc-text-3 transition-colors">
+          <fa-icon [icon]="faXmarkSm" />
+        </button>
+      </div>
+
+      <!-- Modal body -->
+      <div class="px-6 py-4 space-y-3">
+
+        @if (actionError()) {
+          <div class="p-3 rounded-lg bg-hc-error-bg border border-hc-error/30 text-hc-error text-sm">{{ actionError() }}</div>
+        }
+
+        <div>
+          <label class="text-xs font-semibold text-hc-text-2 block mb-1.5">
+            {{ 'REVIEW_TASKS.FIELD_COMMENT' | translate }}
+            @if (completeOutcome() === 'REJECTED') {
+              <span class="text-hc-error">*</span>
+            } @else {
+              <span class="text-hc-text-3 font-normal">({{ 'COMMON.OPTIONAL' | translate }})</span>
+            }
+          </label>
+          <textarea [value]="completeComment()"
+                    (input)="completeComment.set($any($event.target).value)"
+                    [placeholder]="'REVIEW_TASKS.PH_COMMENT' | translate"
+                    rows="4"
+                    class="block w-full px-3 py-2 rounded-lg border border-hc-border bg-hc-input text-hc-text text-sm resize-none focus:outline-none focus:ring-1 focus:ring-hc-primary">
+          </textarea>
+          @if (completeOutcome() === 'REJECTED' && !completeComment().trim()) {
+            <p class="text-xs text-hc-error mt-1">El comentario es requerido para rechazar.</p>
+          }
+        </div>
+
+      </div>
+
+      <!-- Modal footer -->
+      <div class="flex items-center justify-end gap-2 px-6 py-4 border-t border-hc-border">
+        <button (click)="showCompleteModal.set(false)"
+                class="px-4 py-2 rounded-lg text-sm text-hc-text hover:bg-hc-hover transition-colors">
+          {{ 'WORKFLOW.CANCEL' | translate }}
+        </button>
+        <button (click)="submitCompleteTask()"
+                [disabled]="(completeOutcome() === 'REJECTED' && !completeComment().trim()) || actionLoading()"
+                [class]="(completeOutcome() === 'APPROVED'
+                  ? 'bg-green-600 hover:bg-green-700'
+                  : 'bg-red-600 hover:bg-red-700')
+                  + ' flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium text-white disabled:opacity-50 transition-colors'">
+          @if (actionLoading()) {
+            <fa-icon [icon]="faSpinner" class="animate-spin" />
+            {{ 'REVIEW_TASKS.COMPLETING' | translate }}
+          } @else if (completeOutcome() === 'APPROVED') {
+            <fa-icon [icon]="faCheckSm" />
+            {{ 'REVIEW_TASKS.CONFIRM_COMPLETE' | translate }}
+          } @else {
+            <fa-icon [icon]="faXmarkSm" />
+            {{ 'REVIEW_TASKS.CONFIRM_COMPLETE' | translate }}
+          }
+        </button>
+      </div>
+
+    </div>
+  </div>
+}
+
+<!-- ══════════════════════════════════════════════════════════════════ -->
+<!-- Modal: Corregir y Reenviar (Elegir Asignado)                        -->
+<!-- ══════════════════════════════════════════════════════════════════ -->
+@if (resubmitDocId() !== null) {
+  <div class="fixed inset-0 z-50 flex items-center justify-center p-4">
+    <div class="absolute inset-0 bg-black/50" (click)="closeResubmitModal()"></div>
+    <div class="relative bg-hc-card rounded-xl border border-hc-border shadow-xl w-full max-w-md z-10">
+      
+      <div class="flex items-center justify-between px-6 py-4 border-b border-hc-border">
+        <div class="flex items-center gap-2">
+          <fa-icon [icon]="faPen" class="text-amber-500" />
+          <p class="text-sm font-semibold text-hc-text">Corregir y Reenviar</p>
+        </div>
+        <button (click)="closeResubmitModal()" class="p-1 rounded-lg hover:bg-hc-hover text-hc-text-3 transition-colors">
+          <fa-icon [icon]="faXmarkSm" />
+        </button>
+      </div>
+
+      <div class="px-6 py-4 space-y-4">
+        <p class="text-sm text-hc-text-2">
+          Al reenviar este documento, se crearán nuevas tareas de revisión. Puedes seleccionar un nuevo revisor o mantener a los anteriores.
+        </p>
+
+        <div>
+          <label class="text-xs font-semibold text-hc-text-2 block mb-1.5">
+            Versión a reenviar <span class="text-red-500">*</span>
+          </label>
+          @if (resubmitVersionsLoading()) {
+            <div class="flex items-center gap-2 text-hc-text-3 text-sm py-2">
+              <fa-icon [icon]="faSpinner" class="animate-spin" />
+              Cargando versiones…
+            </div>
+          } @else {
+            <select [value]="resubmitSelectedVersion()"
+                    (change)="resubmitSelectedVersion.set(+$any($event.target).value)"
+                    class="w-full px-3 py-2 rounded-lg border border-hc-border bg-hc-input text-hc-text text-sm focus:outline-none focus:ring-1 focus:ring-hc-primary">
+              <option [value]="resubmitVersions().length > 0 ? resubmitVersions()[0].versionNumber + 1 : 1"
+                      [disabled]="resubmitRejectedVersion() === (resubmitVersions().length > 0 ? resubmitVersions()[0].versionNumber + 1 : 1)">
+                Versión Actual {{ resubmitRejectedVersion() === (resubmitVersions().length > 0 ? resubmitVersions()[0].versionNumber + 1 : 1) ? '- (Rechazada)' : '' }}
+              </option>
+              @for (v of resubmitVersions(); track v.id) {
+                <option [value]="v.versionNumber" [disabled]="v.versionNumber === resubmitRejectedVersion()">
+                  Versión {{ v.versionNumber }} {{ v.versionNumber === resubmitRejectedVersion() ? '- (Versión Rechazada)' : '' }} - {{ v.createdAt | date:'short' }}
+                </option>
+              }
+            </select>
+            @if (resubmitSelectedVersion() === resubmitRejectedVersion()) {
+              <p class="text-xs text-red-500 mt-1">
+                No puedes reenviar la misma versión que fue rechazada.
+              </p>
+            }
+          }
+        </div>
+
+        <div>
+          <label class="text-xs font-semibold text-hc-text-2 block mb-1.5">
+            Nuevo revisor (Opcional)
+          </label>
+          <select [value]="resubmitAssigneeId()"
+                  (change)="resubmitAssigneeId.set($any($event.target).value)"
+                  class="w-full px-3 py-2 rounded-lg border border-hc-border bg-hc-input text-hc-text text-sm focus:outline-none focus:ring-1 focus:ring-hc-primary">
+            <option value="">Mantener revisores anteriores</option>
+            @for (user of users(); track user.id) {
+              <option [value]="user.id">{{ user.firstName }} {{ user.lastName }}</option>
+            }
+          </select>
+        </div>
+      </div>
+
+      <div class="flex items-center justify-end gap-2 px-6 py-4 border-t border-hc-border">
+        <button (click)="closeResubmitModal()"
+                class="px-4 py-2 rounded-lg text-sm text-hc-text hover:bg-hc-hover transition-colors">
+          {{ 'WORKFLOW.CANCEL' | translate }}
+        </button>
+        <button (click)="confirmResubmit()"
+                [disabled]="resubmitLoading() || resubmitSelectedVersion() === resubmitRejectedVersion()"
+                class="flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium bg-amber-500 text-white hover:bg-amber-600 disabled:opacity-50 transition-colors">
+          @if (resubmitLoading()) {
+            <fa-icon [icon]="faSpinner" class="animate-spin" />
+            Reenviando...
+          } @else {
+            <fa-icon [icon]="faPaperPlane" />
+            Confirmar reenvío
+          }
+        </button>
+      </div>
+
+    </div>
+  </div>
+}
