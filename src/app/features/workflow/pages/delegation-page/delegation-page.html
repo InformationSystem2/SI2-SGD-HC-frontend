@@ -1,0 +1,177 @@
+<div class="space-y-6 max-w-4xl mx-auto">
+
+  <!-- Header -->
+  <div class="flex items-center justify-between">
+    <div class="flex items-center gap-3">
+      <fa-icon [icon]="faHandshake" class="text-hc-primary text-xl" />
+      <h2 class="hc-h2 text-hc-text">{{ 'DELEGATIONS.TITLE' | translate }}</h2>
+    </div>
+    <div class="flex items-center gap-2">
+      <button (click)="refresh()"
+              [disabled]="loading()"
+              class="flex items-center gap-2 px-3 py-1.5 rounded-lg text-sm border border-hc-border hover:bg-hc-hover text-hc-text-2 disabled:opacity-50 transition-colors">
+        <fa-icon [icon]="loading() ? faSpinner : faRotateRight" [class]="loading() ? 'animate-spin' : ''" />
+      </button>
+      <button (click)="openModal()"
+              class="flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium bg-hc-primary text-white hover:bg-hc-primary-dark transition-colors">
+        <fa-icon [icon]="faPlus" />
+        {{ 'DELEGATIONS.NEW' | translate }}
+      </button>
+    </div>
+  </div>
+
+  <!-- Description -->
+  <p class="text-sm text-hc-text-3">
+    {{ 'DELEGATIONS.DESCRIPTION' | translate }}
+  </p>
+
+  <!-- Table -->
+  <div class="bg-hc-card rounded-xl border border-hc-border shadow-sm overflow-hidden">
+    <div class="overflow-x-auto">
+      @if (loading()) {
+        <div class="flex items-center justify-center gap-2 py-12 text-hc-text-3 text-sm">
+          <fa-icon [icon]="faSpinner" class="animate-spin text-lg text-hc-primary" />
+          {{ 'DELEGATIONS.LOADING' | translate }}
+        </div>
+      } @else if (!delegations().length) {
+        <div class="flex flex-col items-center gap-2 py-14 text-hc-text-3">
+          <fa-icon [icon]="faHandshake" class="text-4xl opacity-30" />
+          <p class="text-sm">{{ 'DELEGATIONS.EMPTY' | translate }}</p>
+        </div>
+      } @else {
+        <table class="w-full text-sm">
+          <thead class="bg-hc-muted/60">
+            <tr>
+              <th class="px-4 py-3 text-left text-xs font-semibold text-hc-text-2 uppercase tracking-wide">
+                {{ 'DELEGATIONS.COL_DELEGATE' | translate }}
+              </th>
+              <th class="px-4 py-3 text-left text-xs font-semibold text-hc-text-2 uppercase tracking-wide">
+                {{ 'DELEGATIONS.COL_START' | translate }}
+              </th>
+              <th class="px-4 py-3 text-left text-xs font-semibold text-hc-text-2 uppercase tracking-wide">
+                {{ 'DELEGATIONS.COL_END' | translate }}
+              </th>
+              <th class="px-4 py-3 text-left text-xs font-semibold text-hc-text-2 uppercase tracking-wide">
+                {{ 'DELEGATIONS.COL_STATUS' | translate }}
+              </th>
+              <th class="px-4 py-3 text-left text-xs font-semibold text-hc-text-2 uppercase tracking-wide">
+                {{ 'DELEGATIONS.COL_ACTIONS' | translate }}
+              </th>
+            </tr>
+          </thead>
+          <tbody class="divide-y divide-hc-border/50">
+            @for (d of delegations(); track d.id) {
+              <tr class="hover:bg-hc-hover/50 transition-colors">
+                <td class="px-4 py-3">
+                  <div class="flex items-center gap-2">
+                    <div class="w-8 h-8 rounded-full bg-hc-primary/10 flex items-center justify-center">
+                      <fa-icon [icon]="faHandshake" class="text-hc-primary text-xs" />
+                    </div>
+                    <div>
+                      <p class="font-medium text-hc-text text-sm">{{ displayName(d.delegate) }}</p>
+                      <p class="text-xs text-hc-text-3">{{ d.delegate.username }}</p>
+                    </div>
+                  </div>
+                </td>
+                <td class="px-4 py-3 text-sm text-hc-text-2">{{ formatDate(d.startDate) }}</td>
+                <td class="px-4 py-3 text-sm text-hc-text-2">
+                  @if (d.endDate) {
+                    {{ formatDate(d.endDate) }}
+                  } @else {
+                    <span class="text-hc-text-3">—</span>
+                  }
+                </td>
+                <td class="px-4 py-3">
+                  <span class="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full text-xs font-medium bg-hc-success-bg text-hc-success">
+                    <span class="w-1.5 h-1.5 rounded-full bg-hc-success"></span>
+                    {{ 'DELEGATIONS.ACTIVE' | translate }}
+                  </span>
+                </td>
+                <td class="px-4 py-3">
+                  <button (click)="cancelDelegation(d.id)"
+                          [disabled]="actionLoading()"
+                          class="flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg text-xs font-medium border border-red-300 text-red-600 hover:bg-red-50 dark:border-red-800 dark:text-red-400 dark:hover:bg-red-900/20 disabled:opacity-50 transition-colors">
+                    <fa-icon [icon]="faTrash" />
+                    {{ 'DELEGATIONS.CANCEL' | translate }}
+                  </button>
+                </td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      }
+    </div>
+  </div>
+</div>
+
+<!-- Modal: Create Delegation -->
+@if (showModal()) {
+  <div class="fixed inset-0 z-50 flex items-center justify-center p-4">
+    <div class="absolute inset-0 bg-black/50" (click)="showModal.set(false)"></div>
+    <div class="relative bg-hc-card rounded-xl border border-hc-border shadow-xl w-full max-w-md z-10">
+
+      <div class="flex items-center justify-between px-6 py-4 border-b border-hc-border">
+        <div class="flex items-center gap-2">
+          <fa-icon [icon]="faHandshake" class="text-hc-primary" />
+          <p class="text-sm font-semibold text-hc-text">{{ 'DELEGATIONS.CREATE_TITLE' | translate }}</p>
+        </div>
+        <button (click)="showModal.set(false)" class="p-1 rounded-lg hover:bg-hc-hover text-hc-text-3 transition-colors">
+          <fa-icon [icon]="faXmark" />
+        </button>
+      </div>
+
+      <div class="px-6 py-4 space-y-4">
+        @if (actionError()) {
+          <div class="p-3 rounded-lg bg-hc-error-bg border border-hc-error/30 text-hc-error text-sm">{{ actionError() }}</div>
+        }
+
+        <div>
+          <label class="text-xs font-semibold text-hc-text-2 block mb-1.5">{{ 'DELEGATIONS.FIELD_DELEGATE' | translate }}</label>
+          <select [value]="selectedDelegateId()"
+                  (change)="selectedDelegateId.set($any($event.target).value)"
+                  class="block w-full px-3 py-2 rounded-lg border border-hc-border bg-hc-input text-hc-text text-sm focus:outline-none focus:ring-1 focus:ring-hc-primary">
+            <option value="">{{ 'DELEGATIONS.SELECT_DELEGATE' | translate }}</option>
+            @for (user of availableUsers(); track user.id) {
+              <option [value]="user.id">
+                {{ user.firstName || '' }} {{ user.lastName || '' }} ({{ user.username }})
+              </option>
+            }
+          </select>
+        </div>
+
+        <div class="grid grid-cols-2 gap-3">
+          <div>
+            <label class="text-xs font-semibold text-hc-text-2 block mb-1.5">{{ 'DELEGATIONS.FIELD_START' | translate }}</label>
+            <input type="date" [value]="startDate()"
+                   (input)="startDate.set($any($event.target).value)"
+                   class="block w-full px-3 py-2 rounded-lg border border-hc-border bg-hc-input text-hc-text text-sm focus:outline-none focus:ring-1 focus:ring-hc-primary" />
+          </div>
+          <div>
+            <label class="text-xs font-semibold text-hc-text-2 block mb-1.5">
+              {{ 'DELEGATIONS.FIELD_END' | translate }}
+              <span class="text-hc-text-3 font-normal">({{ 'COMMON.OPTIONAL' | translate }})</span>
+            </label>
+            <input type="date" [value]="endDate()"
+                   (input)="endDate.set($any($event.target).value)"
+                   class="block w-full px-3 py-2 rounded-lg border border-hc-border bg-hc-input text-hc-text text-sm focus:outline-none focus:ring-1 focus:ring-hc-primary" />
+          </div>
+        </div>
+      </div>
+
+      <div class="flex items-center justify-end gap-2 px-6 py-4 border-t border-hc-border">
+        <button (click)="showModal.set(false)"
+                class="px-4 py-2 rounded-lg text-sm text-hc-text hover:bg-hc-hover transition-colors">
+          {{ 'COMMON.CANCEL' | translate }}
+        </button>
+        <button (click)="submitCreate()"
+                [disabled]="!selectedDelegateId() || !startDate() || actionLoading()"
+                class="flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium bg-hc-primary text-white hover:bg-hc-primary-dark disabled:opacity-50 transition-colors">
+          @if (actionLoading()) {
+            <fa-icon [icon]="faSpinner" class="animate-spin" />
+          }
+          {{ 'DELEGATIONS.CREATE_BTN' | translate }}
+        </button>
+      </div>
+    </div>
+  </div>
+}

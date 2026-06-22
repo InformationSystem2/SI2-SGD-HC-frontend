@@ -1,0 +1,207 @@
+<div class="min-h-screen bg-hc-app p-6 md:p-8">
+  <div class="max-w-7xl mx-auto space-y-6">
+
+    <div class="flex items-center justify-between">
+      <div>
+        <h1 class="hc-h1 text-hc-text">{{ 'PLANS.MANAGEMENT_TITLE' | translate }}</h1>
+        <p class="text-sm text-hc-text-3 mt-1">{{ 'PLANS.MANAGEMENT_DESC' | translate }}</p>
+      </div>
+    </div>
+
+    @if (message()) {
+      <div class="fixed bottom-6 right-6 p-4 rounded-xl shadow-xl flex items-center gap-3 animate-in slide-in-from-bottom-2 z-50"
+           [class]="messageType() === 'success' ? 'bg-hc-success-bg text-hc-success border border-hc-success/30' : 'bg-hc-error-bg text-hc-error border border-hc-error/30'">
+        <i [class]="messageType() === 'success' ? 'fas fa-check-circle' : 'fas fa-exclamation-circle'"
+           [class.text-hc-success]="messageType() === 'success'"
+           [class.text-hc-error]="messageType() !== 'success'"></i>
+        <span class="text-sm font-medium">{{ message() }}</span>
+      </div>
+    }
+
+    @if (loading()) {
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-5">
+        @for (i of [1,2,3]; track i) {
+          <div class="bg-hc-surface rounded-2xl shadow-lg border border-hc-border p-6 animate-pulse">
+            <div class="h-6 bg-hc-muted rounded w-24 mb-4 mx-auto"></div>
+            <div class="h-8 bg-hc-muted rounded w-32 mb-3 mx-auto"></div>
+            <div class="h-3 bg-hc-muted rounded w-20 mx-auto mb-4"></div>
+            <div class="space-y-2">
+              <div class="h-3 bg-hc-muted rounded w-full"></div>
+              <div class="h-3 bg-hc-muted rounded w-3/4"></div>
+            </div>
+          </div>
+        }
+      </div>
+    } @else {
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-5">
+        @for (plan of plans(); track plan.id) {
+          <div class="relative bg-hc-surface rounded-2xl shadow-lg border transition-all duration-500 overflow-hidden group"
+               [class.border-hc-border]="!isExpanded(plan.name)"
+               [class.border-hc-primary]="isExpanded(plan.name)"
+               [class.shadow-xl]="isExpanded(plan.name)"
+               [class.shadow-hc-primary/20]="isExpanded(plan.name)">
+
+            <!-- Top gradient bar -->
+            <div class="h-2 bg-gradient-to-r" [class]="getPlanColor(plan.name)"></div>
+
+            <!-- Card header -->
+            <button (click)="toggleExpand(plan.name)"
+                    class="w-full px-6 pt-5 pb-4 text-left focus:outline-none group/header">
+              <div class="flex items-center justify-between mb-3">
+                <div class="flex items-center gap-3">
+                  <div class="w-12 h-12 rounded-2xl bg-gradient-to-br flex items-center justify-center shadow-lg transition-transform duration-300"
+                       [class]="getPlanColor(plan.name)">
+                    <i class="fas text-xl text-white" [class]="getPlanIcon(plan.name)"></i>
+                  </div>
+                  <div>
+                    <p class="text-xs text-hc-text-3 uppercase tracking-wider font-semibold">{{ plan.name }}</p>
+                    <p class="text-lg font-bold text-hc-text">{{ plan.displayName }}</p>
+                  </div>
+                </div>
+                <fa-icon [icon]="isExpanded(plan.name) ? faChevronUp : faChevronDown"
+                         class="text-hc-text-3 transition-transform duration-300"
+                         [class.rotate-180]="isExpanded(plan.name)"></fa-icon>
+              </div>
+              <div class="flex items-baseline gap-1 mb-1">
+                <span class="text-2xl font-extrabold text-hc-primary">${{ plan.priceMonthly }}</span>
+                <span class="text-xs text-hc-text-3">/{{ 'TENANTS.MONTH' | translate }}</span>
+                <span class="mx-1 text-hc-text-3">|</span>
+                <span class="text-2xl font-extrabold text-hc-text-2">${{ plan.priceYearly }}</span>
+                <span class="text-xs text-hc-text-3">/{{ 'TENANTS.YEAR' | translate }}</span>
+              </div>
+              <p class="text-xs text-hc-text-3 line-clamp-2">{{ plan.description }}</p>
+            </button>
+
+            <!-- Expanded edit panel -->
+            @if (isExpanded(plan.name) && isEditing(plan.name)) {
+              @let edit = edits()[plan.name];
+              @if (edit) {
+              <div class="px-6 pb-6 space-y-5 border-t border-hc-border pt-5 animate-in fade-in slide-in-from-top-2 duration-300">
+
+                <!-- Metadata section -->
+                <div>
+                  <h4 class="text-xs font-semibold text-hc-text-3 uppercase tracking-wider mb-3 flex items-center gap-2">
+                    <i class="fas fa-info-circle text-hc-primary"></i>
+                    {{ 'PLANS.SECTION_METADATA' | translate }}
+                  </h4>
+                  <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                      <label class="block text-[11px] font-medium text-hc-text-3 mb-1">{{ 'PLANS.FIELD_DISPLAY_NAME' | translate }}</label>
+                      <input type="text" [ngModel]="edit.displayName"
+                             (ngModelChange)="updateField(plan.name, 'displayName', $event)"
+                             class="block w-full rounded-lg border-hc-border bg-hc-input border py-2 px-3 text-sm text-hc-text focus:border-hc-primary focus:ring-1 focus:ring-hc-primary transition-colors" />
+                    </div>
+                    <div>
+                      <label class="block text-[11px] font-medium text-hc-text-3 mb-1">{{ 'PLANS.FIELD_CYCLE_DAYS' | translate }}</label>
+                      <input type="number" [ngModel]="edit.cycleDays"
+                             (ngModelChange)="updateField(plan.name, 'cycleDays', +$event)"
+                             class="block w-full rounded-lg border-hc-border bg-hc-input border py-2 px-3 text-sm text-hc-text focus:border-hc-primary focus:ring-1 focus:ring-hc-primary transition-colors" />
+                    </div>
+                    <div>
+                      <label class="block text-[11px] font-medium text-hc-text-3 mb-1">{{ 'PLANS.FIELD_PRICE_MONTHLY' | translate }}</label>
+                      <div class="relative">
+                        <span class="absolute left-3 top-1/2 -translate-y-1/2 text-hc-text-3 text-sm">$</span>
+                        <input type="number" step="0.01" [ngModel]="edit.priceMonthly"
+                               (ngModelChange)="updateField(plan.name, 'priceMonthly', +$event)"
+                               class="block w-full rounded-lg border-hc-border bg-hc-input border py-2 pl-7 pr-3 text-sm text-hc-text focus:border-hc-primary focus:ring-1 focus:ring-hc-primary transition-colors" />
+                      </div>
+                    </div>
+                    <div>
+                      <label class="block text-[11px] font-medium text-hc-text-3 mb-1">{{ 'PLANS.FIELD_PRICE_YEARLY' | translate }}</label>
+                      <div class="relative">
+                        <span class="absolute left-3 top-1/2 -translate-y-1/2 text-hc-text-3 text-sm">$</span>
+                        <input type="number" step="0.01" [ngModel]="edit.priceYearly"
+                               (ngModelChange)="updateField(plan.name, 'priceYearly', +$event)"
+                               class="block w-full rounded-lg border-hc-border bg-hc-input border py-2 pl-7 pr-3 text-sm text-hc-text focus:border-hc-primary focus:ring-1 focus:ring-hc-primary transition-colors" />
+                      </div>
+                    </div>
+                    <div>
+                      <label class="block text-[11px] font-medium text-hc-text-3 mb-1">{{ 'PLANS.FIELD_GRACE_DAYS' | translate }}</label>
+                      <input type="number" [ngModel]="edit.gracePeriodDays"
+                             (ngModelChange)="updateField(plan.name, 'gracePeriodDays', +$event)"
+                             class="block w-full rounded-lg border-hc-border bg-hc-input border py-2 px-3 text-sm text-hc-text focus:border-hc-primary focus:ring-1 focus:ring-hc-primary transition-colors" />
+                    </div>
+                    <div class="col-span-full">
+                      <label class="block text-[11px] font-medium text-hc-text-3 mb-1">{{ 'PLANS.FIELD_DESCRIPTION' | translate }}</label>
+                      <textarea rows="2" [ngModel]="edit.description"
+                                (ngModelChange)="updateField(plan.name, 'description', $event)"
+                                class="block w-full rounded-lg border-hc-border bg-hc-input border py-2 px-3 text-sm text-hc-text focus:border-hc-primary focus:ring-1 focus:ring-hc-primary transition-colors resize-none"></textarea>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Limits section -->
+                <div>
+                  <h4 class="text-xs font-semibold text-hc-text-3 uppercase tracking-wider mb-3 flex items-center gap-2">
+                    <i class="fas fa-sliders-h text-hc-primary"></i>
+                    {{ 'PLANS.SECTION_LIMITS' | translate }}
+                  </h4>
+                  <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+                    @for (entry of edit.limits | keyvalue; track entry.key) {
+                      @if (limitLabels[entry.key]) {
+                        <div class="flex items-center gap-3 p-2.5 rounded-xl bg-hc-card border border-hc-border">
+                          <span class="text-[11px] text-hc-text-2 flex-1 min-w-0 truncate">{{ limitLabels[entry.key] | translate }}</span>
+                          <input type="number" [ngModel]="entry.value"
+                                 (ngModelChange)="updateLimit(plan.name, entry.key, +$event)"
+                                 class="w-24 rounded-lg border-hc-border bg-hc-input border py-1.5 px-2.5 text-xs text-hc-text text-right focus:border-hc-primary focus:ring-1 focus:ring-hc-primary transition-colors"
+                                 title="{{ 'PLANS.USE_NEGATIVE_UNLIMITED' | translate }}" />
+                        </div>
+                      }
+                    }
+                  </div>
+                </div>
+
+                <!-- Features section -->
+                <div>
+                  <h4 class="text-xs font-semibold text-hc-text-3 uppercase tracking-wider mb-3 flex items-center gap-2">
+                    <i class="fas fa-toggle-on text-hc-primary"></i>
+                    {{ 'PLANS.SECTION_FEATURES' | translate }}
+                  </h4>
+                  <div class="grid grid-cols-1 md:grid-cols-2 gap-2">
+                    @for (entry of edit.features | keyvalue; track entry.key) {
+                      @if (featureLabels[entry.key]) {
+                        <div class="flex items-center justify-between p-2.5 rounded-xl bg-hc-card border border-hc-border cursor-pointer hover:border-hc-primary/30 transition-colors"
+                             (click)="toggleFeature(plan.name, entry.key)">
+                          <span class="text-[11px] text-hc-text-2">{{ featureLabels[entry.key] | translate }}</span>
+                          <div class="relative w-10 h-5 rounded-full transition-all duration-300 shrink-0"
+                               [class.bg-hc-primary]="entry.value"
+                               [class.bg-hc-border]="!entry.value">
+                            <div class="absolute top-0.5 w-4 h-4 rounded-full bg-white shadow transition-all duration-300"
+                                 [class.left-0.5]="!entry.value"
+                                 [class.left-[22px]]="entry.value"></div>
+                          </div>
+                        </div>
+                      }
+                    }
+                  </div>
+                </div>
+
+                <!-- Actions -->
+                <div class="flex justify-end gap-3 pt-3 border-t border-hc-border">
+                  <button (click)="cancelEdit(plan.name)"
+                          class="px-4 py-2.5 border border-hc-border text-hc-text font-medium rounded-xl hover:bg-hc-input transition-colors text-sm flex items-center gap-2">
+                    <fa-icon [icon]="faTimes" class="text-xs"></fa-icon>
+                    {{ 'COMMON.CANCEL' | translate }}
+                  </button>
+                  <button (click)="savePlan(plan.id, plan.name)"
+                          [disabled]="isSaving(plan.name)"
+                          class="px-5 py-2.5 bg-gradient-to-r from-hc-primary to-hc-primary-dark text-white font-bold rounded-xl hover:from-hc-primary-dark hover:to-hc-primary-dark active:scale-[0.98] transition-all shadow-lg disabled:opacity-50 disabled:shadow-none flex items-center gap-2 text-sm">
+                    @if (isSaving(plan.name)) {
+                      <fa-icon [icon]="faSpinner" [animation]="'spin'" class="text-xs"></fa-icon>
+                      {{ 'COMMON.SAVING' | translate }}
+                    } @else {
+                      <fa-icon [icon]="faSave" class="text-xs"></fa-icon>
+                      {{ 'COMMON.SAVE' | translate }}
+                    }
+                  </button>
+                </div>
+              </div>
+              }
+            }
+          </div>
+        }
+      </div>
+    }
+
+  </div>
+</div>

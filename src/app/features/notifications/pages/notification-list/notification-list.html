@@ -1,0 +1,104 @@
+<div class="space-y-6 max-w-3xl mx-auto">
+
+  <!-- Header -->
+  <div class="flex items-center justify-between">
+    <div class="flex items-center gap-3">
+      <fa-icon [icon]="faBell" class="text-hc-primary text-xl" />
+      <h2 class="hc-h2 text-hc-text">{{ 'NOTIFICATIONS.TITLE' | translate }}</h2>
+    </div>
+    @if (page()?.content?.length) {
+      <button (click)="markAllAsRead()"
+              [disabled]="markingAll()"
+              class="flex items-center gap-2 px-3 py-1.5 rounded-lg text-sm border border-hc-border hover:bg-hc-hover text-hc-text-2 disabled:opacity-50 transition-colors">
+        @if (markingAll()) {
+          <fa-icon [icon]="faSpinner" class="animate-spin" />
+        } @else {
+          <fa-icon [icon]="faCheck" />
+        }
+        {{ 'NOTIFICATIONS.MARK_ALL_READ' | translate }}
+      </button>
+    }
+  </div>
+
+  <!-- List -->
+  <div class="bg-hc-card rounded-xl border border-hc-border shadow-sm overflow-hidden">
+
+    @if (pageLoading()) {
+      <div class="flex items-center justify-center gap-2 py-14 text-hc-text-3 text-sm">
+        <fa-icon [icon]="faSpinner" class="animate-spin text-2xl text-hc-primary" />
+      </div>
+    } @else if (!page()?.content?.length) {
+      <div class="flex flex-col items-center gap-3 py-16 text-hc-text-3">
+        <fa-icon [icon]="faBell" class="text-4xl opacity-30" />
+        <p class="text-sm">{{ 'NOTIFICATIONS.EMPTY' | translate }}</p>
+      </div>
+    } @else {
+      <div class="divide-y divide-hc-border/50">
+        @for (n of page()!.content; track n.id) {
+          <div (click)="goToNotification(n)"
+               [class]="n.isRead ? 'px-5 py-4' : 'px-5 py-4 bg-hc-primary/[0.03] border-l-2 border-hc-primary'"
+               class="flex items-start gap-4 hover:bg-hc-hover transition-colors cursor-pointer group">
+
+            <!-- Icon -->
+            <div class="w-9 h-9 rounded-full bg-hc-muted border border-hc-border flex items-center justify-center shrink-0 mt-0.5">
+              <fa-icon [icon]="notifIcon(n.type)" [class]="notifIconClass(n.type)" />
+            </div>
+
+            <!-- Content -->
+            <div class="flex-1 min-w-0">
+              <div class="flex items-start justify-between gap-2">
+                <div class="flex-1 min-w-0">
+                  @if (n.title) {
+                    <p [class]="n.isRead ? 'text-sm text-hc-text' : 'text-sm font-semibold text-hc-text'">
+                      {{ n.title }}
+                    </p>
+                  } @else {
+                    <p [class]="n.isRead ? 'text-sm text-hc-text-2' : 'text-sm font-semibold text-hc-text'">
+                      {{ notifTypeLabel(n.type) }}
+                    </p>
+                  }
+                  @if (n.message) {
+                    <p class="text-sm text-hc-text-2 mt-0.5">{{ n.message }}</p>
+                  }
+                  <p class="text-xs text-hc-text-3 mt-1.5">{{ formatDate(n.createdAt) }}</p>
+                </div>
+                @if (!n.isRead) {
+                  <button (click)="markAsRead(n.id)"
+                          class="flex items-center gap-1 px-2.5 py-1 rounded-lg text-xs font-medium border border-hc-border hover:bg-hc-hover text-hc-text-2 transition-colors shrink-0">
+                    <fa-icon [icon]="faCheck" class="text-[10px]" />
+                    {{ 'NOTIFICATIONS.MARK_READ' | translate }}
+                  </button>
+                }
+              </div>
+            </div>
+
+          </div>
+        }
+      </div>
+    }
+
+  </div>
+
+  <!-- Pagination -->
+  @if (page() && page()!.totalPages > 1) {
+    <div class="flex items-center justify-between text-sm">
+      <p class="text-hc-text-3">
+        Página {{ currentPage() + 1 }} de {{ page()!.totalPages }}
+        · {{ page()!.totalElements }} notificaciones
+      </p>
+      <div class="flex items-center gap-2">
+        <button (click)="prevPage()"
+                [disabled]="currentPage() === 0 || pageLoading()"
+                class="px-3 py-1.5 rounded-lg border border-hc-border hover:bg-hc-hover text-hc-text-2 disabled:opacity-40 transition-colors">
+          ← Anterior
+        </button>
+        <button (click)="nextPage()"
+                [disabled]="page()!.last || pageLoading()"
+                class="px-3 py-1.5 rounded-lg border border-hc-border hover:bg-hc-hover text-hc-text-2 disabled:opacity-40 transition-colors">
+          Siguiente →
+        </button>
+      </div>
+    </div>
+  }
+
+</div>

@@ -37,9 +37,10 @@ export class DocumentEdit implements OnInit {
   readonly error    = signal<string | null>(null);
 
   readonly statuses: { value: DocumentStatus; label: string }[] = [
-    { value: 'DRAFT',             label: 'Borrador' },
-    { value: 'PENDING_SIGNATURE', label: 'Pendiente de firma' },
-    { value: 'COMPLETED',         label: 'Completado' },
+    { value: 'DRAFT',          label: 'Borrador' },
+    { value: 'PENDING_REVIEW', label: 'En revisión' },
+    { value: 'REJECTED',       label: 'Rechazado' },
+    { value: 'FINALIZED',      label: 'Finalizado' },
   ];
 
   form = this.fb.group({
@@ -105,12 +106,12 @@ export class DocumentEdit implements OnInit {
   }
 
   openInOnlyOffice(): void {
-    this.router.navigate(['/documentos/editor'], {
+    this.router.navigate(['/documents/editor'], {
       queryParams: { docId: this.docId },
     });
   }
 
   back(): void {
-    this.router.navigate(['/documentos/list']);
+    this.router.navigate(['/documents/list']);
   }
 }

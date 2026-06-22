@@ -13,8 +13,32 @@
         <p class="text-hc-text-3 mt-1 text-sm">{{ 'TENANTS.PAYMENT_SUBTITLE' | translate }}</p>
       </div>
 
-      <!-- Split Layout -->
-      <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-stretch mt-6">
+      <div class="bg-gradient-to-r from-hc-primary/5 to-transparent rounded-2xl border border-hc-border-i p-5 mb-6">
+        <div class="flex items-center justify-between py-2">
+          <span class="text-sm text-hc-text-3 flex items-center gap-2">
+            <i class="fas fa-layer-group text-hc-primary"></i>
+            {{ 'TENANTS.SELECTED_PLAN' | translate }}
+          </span>
+          <span class="px-3 py-1 bg-gradient-to-r from-hc-primary to-hc-primary-dark text-white rounded-full text-[10px] font-bold tracking-wider uppercase">
+            {{ planDisplayName() || selectedPlan() }}
+          </span>
+        </div>
+        <div class="flex items-center justify-between py-2">
+          <span class="text-sm text-hc-text-3 flex items-center gap-2">
+            <i class="fas fa-sync-alt text-hc-text-3"></i>
+            {{ 'SUBSCRIPTION.BILLING_CYCLE' | translate }}
+          </span>
+          <span class="text-sm font-medium text-hc-text-2">{{ billingCycleLabel() | translate }}</span>
+        </div>
+        <div class="flex items-center justify-between py-3 border-t border-hc-border-i mt-2">
+          <span class="text-base font-semibold text-hc-text">{{ 'TENANTS.TOTAL_PAY' | translate }}</span>
+          <span class="hc-h2 text-hc-primary">${{ planPrice() }}<span class="text-xs font-normal text-hc-text-3">/ {{ billingCycleLabel() | translate }}</span></span>
+        </div>
+      </div>
+
+      <div class="relative w-full max-w-md mx-auto h-56 bg-gradient-to-br from-blue-600 via-blue-500 to-blue-700 rounded-2xl p-6 shadow-2xl shadow-blue-500/30 overflow-hidden mb-8 group">
+        <div class="absolute -top-16 -right-16 w-56 h-56 bg-white/10 rounded-full blur-3xl group-hover:scale-150 transition-transform duration-1000"></div>
+        <div class="absolute -bottom-10 -left-10 w-40 h-40 bg-white/5 rounded-full blur-2xl"></div>
         
         <!-- Left Column: Order Summary (5 cols) -->
         <div class="lg:col-span-5 flex flex-col">

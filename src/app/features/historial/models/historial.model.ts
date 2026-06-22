@@ -14,7 +14,7 @@ export interface DocumentResponse {
   uploaderName: string;          // Nombre del usuario
   templateId: string | null;     // UUID de la plantilla (si tiene)
   templateName: string;          // Nombre de la plantilla o "Documento Externo"
-  status: 'DRAFT' | 'PENDING_SIGNATURE' | 'COMPLETED';   // Estado del documento
+  status: 'DRAFT' | 'PENDING_REVIEW' | 'REJECTED' | 'FINALIZED';   // Estado del documento
   clinicalContent: any;          // Contenido clínico en JSONB (datos variables según plantilla)
   issueDate: string;             // Fecha de emisión (ISO date)
   expiryDate: string | null;     // Fecha de caducidad (si aplica)
@@ -39,7 +39,7 @@ export interface Page<T> {
 export interface HistorialSearchParams {
   nombre?: string;               // Búsqueda parcial por nombre del paciente
   nroDoc?: string;               // Número de documento exacto
-  estado?: 'DRAFT' | 'PENDING_SIGNATURE' | 'COMPLETED'; // Estado del documento
+  estado?: 'DRAFT' | 'PENDING_REVIEW' | 'REJECTED' | 'FINALIZED'; // Estado del documento
   fechaDesde?: string;           // Fecha mínima (YYYY-MM-DD)
   fechaHasta?: string;           // Fecha máxima (YYYY-MM-DD)
   page: number;                  // Número de página (0-indexed)

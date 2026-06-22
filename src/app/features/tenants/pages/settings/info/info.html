@@ -231,7 +231,7 @@
           <p class="text-sm text-hc-text-3 mb-5">
             {{ 'SUBSCRIPTION.DESCRIPTION' | translate }}
           </p>
-          <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
             <div class="bg-hc-surface rounded-xl p-4 border border-hc-border">
               <p class="text-xs text-hc-text-3 font-medium mb-2">
                 {{ 'SUBSCRIPTION.PLAN' | translate }}
@@ -268,6 +268,14 @@
                 {{ 'SUBSCRIPTION.FIELD_START_DATE' | translate }}
               </p>
               <p class="text-base font-semibold text-hc-text">{{ tenantStartDate() || '—' }}</p>
+            </div>
+            <div class="bg-hc-surface rounded-xl p-4 border border-hc-border">
+              <p class="text-xs text-hc-text-3 font-medium mb-2">
+                {{ 'SUBSCRIPTION.BILLING_CYCLE' | translate }}
+              </p>
+              <p class="text-base font-semibold text-hc-text">
+                {{ tenantBillingCycle() === 'YEARLY' ? ('TENANTS.YEARLY' | translate) : ('TENANTS.MONTHLY' | translate) }}
+              </p>
             </div>
           </div>
         </div>
@@ -341,16 +349,61 @@
             </div>
             <div>
               <div class="flex justify-between text-xs mb-1.5">
-                <span class="text-hc-text-2">{{ 'SUBSCRIPTION.API_CALLS' | translate }}</span>
+                <span class="text-hc-text-2">{{ 'SUBSCRIPTION.PATIENTS' | translate }}</span>
                 <span class="font-medium text-hc-text"
-                  >{{ apiCalls() }}/{{ maxApiCalls() }}</span
+                  >{{ patientsCount() }}/{{ maxPatients() }}</span
                 >
               </div>
               <div class="w-full h-2 bg-hc-muted rounded-full overflow-hidden">
                 <div
                   class="h-full rounded-full transition-all"
-                  [style.width.%]="getUsagePercent(apiCalls(), maxApiCalls())"
+                  [style.width.%]="getUsagePercent(patientsCount(), maxPatients())"
                   [style.background-color]="brandingService.branding()?.tokens?.colors?.light?.warning || '#F59E0B'"
+                ></div>
+              </div>
+            </div>
+            <div>
+              <div class="flex justify-between text-xs mb-1.5">
+                <span class="text-hc-text-2">{{ 'SUBSCRIPTION.DOCUMENTS' | translate }}</span>
+                <span class="font-medium text-hc-text"
+                  >{{ documentsCount() }}/{{ maxDocuments() }}</span
+                >
+              </div>
+              <div class="w-full h-2 bg-hc-muted rounded-full overflow-hidden">
+                <div
+                  class="h-full rounded-full transition-all"
+                  [style.width.%]="getUsagePercent(documentsCount(), maxDocuments())"
+                  [style.background-color]="brandingService.branding()?.tokens?.colors?.light?.info || '#3B82F6'"
+                ></div>
+              </div>
+            </div>
+            <div>
+              <div class="flex justify-between text-xs mb-1.5">
+                <span class="text-hc-text-2">{{ 'SUBSCRIPTION.DICOM_STUDIES' | translate }}</span>
+                <span class="font-medium text-hc-text"
+                  >{{ dicomStudiesCount() }}/{{ maxDicomStudies() }}</span
+                >
+              </div>
+              <div class="w-full h-2 bg-hc-muted rounded-full overflow-hidden">
+                <div
+                  class="h-full rounded-full transition-all"
+                  [style.width.%]="getUsagePercent(dicomStudiesCount(), maxDicomStudies())"
+                  [style.background-color]="brandingService.branding()?.tokens?.colors?.light?.primary || '#0D9488'"
+                ></div>
+              </div>
+            </div>
+            <div>
+              <div class="flex justify-between text-xs mb-1.5">
+                <span class="text-hc-text-2">{{ 'SUBSCRIPTION.ROLES' | translate }}</span>
+                <span class="font-medium text-hc-text"
+                  >{{ rolesCount() }}/{{ maxRoles() }}</span
+                >
+              </div>
+              <div class="w-full h-2 bg-hc-muted rounded-full overflow-hidden">
+                <div
+                  class="h-full rounded-full transition-all"
+                  [style.width.%]="getUsagePercent(rolesCount(), maxRoles())"
+                  [style.background-color]="brandingService.branding()?.tokens?.colors?.light?.accent || '#259F94'"
                 ></div>
               </div>
             </div>

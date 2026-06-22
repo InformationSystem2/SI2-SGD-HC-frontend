@@ -1,13 +1,14 @@
-import { ChangeDetectionStrategy, Component, inject, OnInit, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed, inject, OnInit, signal } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import {
   faArrowLeft, faFileLines, faSpinner, faBookOpen,
-  faMagnifyingGlass, faRotateRight, faEdit
+  faMagnifyingGlass, faRotateRight, faEdit,
 } from '@fortawesome/free-solid-svg-icons';
 import { DocumentService } from '../../services/document.service';
 import { OcrService, OcrResult } from '../../services/ocr.service';
 import { Document } from '../../models/document.model';
+import { AuthService } from '../../../../core/auth/services/auth.service';
 import { environment } from '../../../../../environments/environment';
 import { TranslatePipe } from '@ngx-translate/core';
 import { AuthService } from '../../../../core/auth/services/auth.service';
@@ -39,15 +40,15 @@ export class DocumentDetail implements OnInit {
   readonly loading = signal(true);
   readonly error   = signal<string | null>(null);
 
+  // ── OCR state ────────────────────────────────────────────────────
   readonly ocrResult  = signal<OcrResult | null>(null);
   readonly ocrLoading = signal(false);
   readonly ocrError   = signal<string | null>(null);
-
   imgError = false;
 
   ngOnInit(): void {
-    const id = this.route.snapshot.paramMap.get('id')!;
-    this.docSvc.getById(id).subscribe({
+    const docId = this.route.snapshot.paramMap.get('id')!;
+    this.docSvc.getById(docId).subscribe({
       next: d => {
         this.doc.set(d);
         this.loading.set(false);
@@ -63,7 +64,7 @@ export class DocumentDetail implements OnInit {
   private loadOcr(docId: string): void {
     this.ocrSvc.getOcr(docId).subscribe({
       next:  r => this.ocrResult.set(r),
-      error: () => this.ocrResult.set(null), // 404 = sin OCR todavía, ok
+      error: () => this.ocrResult.set(null),
     });
   }
 
@@ -78,14 +79,11 @@ export class DocumentDetail implements OnInit {
     });
   }
 
-  /** Construye la URL completa del archivo para mostrar en <img>. */
   fileFullUrl(fileUrl: string): string {
-    // Esto quita el '/api' del final para que la imagen cargue bien
-    const baseUrl = environment.apiUrl.split('/api')[0]; 
+    const baseUrl = environment.apiUrl.split('/api')[0];
     return `${baseUrl}${fileUrl}`;
   }
 
-  /** True si la extensión del archivo es una imagen. */
   isImage(fileUrl: string): boolean {
     const ext = fileUrl.split('.').pop()?.toLowerCase() ?? '';
     return ['jpg', 'jpeg', 'png', 'webp', 'bmp', 'gif'].includes(ext);
@@ -119,8 +117,8 @@ export class DocumentDetail implements OnInit {
   contentEntries(): { key: string; value: any; isArray: boolean }[] {
     const content = this.doc()?.clinicalContent ?? {};
     return Object.entries(content).map(([key, value]) => ({
-      key:   key.replace(/_/g, ' '),
-      value: value,
+      key:     key.replace(/_/g, ' '),
+      value,
       isArray: Array.isArray(value),
     }));
   }
@@ -130,39 +128,39 @@ export class DocumentDetail implements OnInit {
     return Object.keys(arr[0]);
   }
 
-  isBoolean(val: any): boolean {
-    return typeof val === 'boolean';
-  }
+  isBoolean(val: any): boolean { return typeof val === 'boolean'; }
 
   statusLabel(status: string): string {
-    return { DRAFT: 'Borrador', PENDING_SIGNATURE: 'Pendiente de firma', COMPLETED: 'Completado' }[status] ?? status;
+    return ({
+      DRAFT:          'Borrador',
+      PENDING_REVIEW: 'En revisión',
+      REJECTED:       'Rechazado',
+      FINALIZED:      'Finalizado',
+    } as Record<string, string>)[status] ?? status;
   }
 
   statusClass(status: string): string {
-    return {
-      DRAFT:             'bg-yellow-100 text-yellow-700',
-      PENDING_SIGNATURE: 'bg-blue-100 text-blue-700',
-      COMPLETED:         'bg-green-100 text-green-700',
-    }[status] ?? 'bg-hc-muted text-hc-text-2';
+    return ({
+      DRAFT:          'bg-yellow-100 text-yellow-700',
+      PENDING_REVIEW: 'bg-blue-100   text-blue-700',
+      REJECTED:       'bg-red-100    text-red-700',
+      FINALIZED:      'bg-green-100  text-green-700',
+    } as Record<string, string>)[status] ?? 'bg-hc-muted text-hc-text-2';
   }
 
   openInViewer(): void {
-    this.router.navigate(['/documentos/editor'], {
+    this.router.navigate(['/documents/editor'], {
       queryParams: { docId: this.doc()!.id, mode: 'view' },
     });
   }
 
   edit(): void {
-    this.router.navigate(['/documentos/editor'], {
-      queryParams: { docId: this.doc()!.id },
-    });
-  }
-  objectKeys(obj: any): string[] {
-    return obj ? Object.keys(obj) : [];
+    this.router.navigate(['/documents/editor'], { queryParams: { docId: this.doc()!.id } });
   }
 
+  objectKeys(obj: any): string[] { return obj ? Object.keys(obj) : []; }
+
   datosKeys(obj: any): string[] {
-    // Muestra tipo_documento separado, el resto en orden
     return Object.keys(obj).filter(k => k !== 'tipo_documento');
   }
 
@@ -170,7 +168,5 @@ export class DocumentDetail implements OnInit {
     return val !== null && typeof val === 'object' && !Array.isArray(val);
   }
 
-  back(): void {
-    this.router.navigate(['/documentos/list']);
-  }
+  back(): void { this.router.navigate(['/documents/list']); }
 }

@@ -48,7 +48,7 @@ export class HistorialList implements OnInit {
     searchForm = this.fb.group({
         nombre: [''],        // Nombre parcial del paciente
         nroDoc: [''],        // Número de documento exacto
-        estado: [''],        // Estado: '', 'DRAFT', 'PENDING_SIGNATURE', 'COMPLETED'
+        estado: [''],        // Estado: '', 'DRAFT', 'PENDING_REVIEW', 'REJECTED', 'FINALIZED'
         fechaDesde: [''],    // Fecha mínima en formato YYYY-MM-DD
         fechaHasta: [''],    // Fecha máxima
     });
@@ -84,7 +84,7 @@ export class HistorialList implements OnInit {
 
         // Para estado, solo permitir valores válidos
         const estadoRaw = rawValue.estado;
-        if (estadoRaw === 'DRAFT' || estadoRaw === 'PENDING_SIGNATURE' || estadoRaw === 'COMPLETED') {
+        if (estadoRaw === 'DRAFT' || estadoRaw === 'PENDING_REVIEW' || estadoRaw === 'REJECTED' || estadoRaw === 'FINALIZED') {
             params.estado = estadoRaw;
         }
 
@@ -115,20 +115,21 @@ export class HistorialList implements OnInit {
 
     /** Navega a la vista de detalle del documento (ruta existente en el módulo de documentos) */
     viewDocument(id: string): void {
-        this.router.navigate(['/documentos/view', id]);
+        this.router.navigate(['/documents/view', id]);
     }
 
     /** Navega a la edición del documento (ruta existente) */
     editDocument(id: string): void {
-        this.router.navigate(['/documentos/edit', id]);
+        this.router.navigate(['/documents/edit', id]);
     }
 
     /** Devuelve las clases CSS para el badge de estado, según el estado del documento */
     statusClass(status: string): string {
         const classes: Record<string, string> = {
             DRAFT: 'bg-yellow-100 text-yellow-700 dark:bg-yellow-900/30 dark:text-yellow-400',
-            PENDING_SIGNATURE: 'bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400',
-            COMPLETED: 'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400',
+            PENDING_REVIEW: 'bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400',
+            REJECTED: 'bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400',
+            FINALIZED: 'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400',
         };
         return classes[status] ?? 'bg-gray-100 text-gray-700';
     }
@@ -137,8 +138,9 @@ export class HistorialList implements OnInit {
     statusLabel(status: string): string {
         const labels: Record<string, string> = {
             DRAFT: 'HISTORIAL.STATUS_DRAFT',
-            PENDING_SIGNATURE: 'HISTORIAL.STATUS_PENDING',
-            COMPLETED: 'HISTORIAL.STATUS_COMPLETED',
+            PENDING_REVIEW: 'HISTORIAL.STATUS_PENDING_REVIEW',
+            REJECTED: 'HISTORIAL.STATUS_REJECTED',
+            FINALIZED: 'HISTORIAL.STATUS_FINALIZED',
         };
         return labels[status] ?? status;
     }

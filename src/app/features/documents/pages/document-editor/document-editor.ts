@@ -98,8 +98,9 @@ export class DocumentEditorPage implements OnInit {
 
   readonly statuses: { value: DocumentStatus; label: string }[] = [
     { value: 'DRAFT',             label: 'Borrador' },
-    { value: 'PENDING_SIGNATURE', label: 'Pendiente de firma' },
-    { value: 'COMPLETED',         label: 'Completado' },
+    { value: 'PENDING_REVIEW',    label: 'Pendiente de revisión' },
+    { value: 'REJECTED',          label: 'Rechazado' },
+    { value: 'FINALIZED',         label: 'Finalizado' },
   ];
 
   metadataForm = this.fb.group({
@@ -342,7 +343,7 @@ export class DocumentEditorPage implements OnInit {
     if (window.history.length > 1) {
       window.history.back();
     } else {
-      this.router.navigate(['/documentos/list']);
+      this.router.navigate(['/documents/list']);
     }
   }
 

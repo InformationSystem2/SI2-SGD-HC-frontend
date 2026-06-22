@@ -1,9 +1,11 @@
 import { ChangeDetectionStrategy, Component, inject, OnInit, signal, computed } from '@angular/core';
 import { Router } from '@angular/router';
 import { TenantService } from '../../../services/tenant.service';
+import { PlanService } from '../../../../../core/services/plan.service';
 import { TranslatePipe, TranslateService } from '@ngx-translate/core';
 import { CommonModule } from '@angular/common';
 import { ProgressStepperComponent } from '../../../components/progress-stepper/progress-stepper';
+import { getBillingCycleLabel } from '../../../../../core/utils/plan.utils';
 import { PLAN_NAMES, PLAN_PRICES, PLANS } from '../../../../../core/utils/plan.utils';
 import { environment } from '../../../../../../environments/environment';
 
@@ -17,12 +19,16 @@ import { environment } from '../../../../../../environments/environment';
 export class Payment implements OnInit {
   private router = inject(Router);
   protected tenantService = inject(TenantService);
+  protected planService = inject(PlanService);
   protected translate = inject(TranslateService);
 
   readonly processing = signal(false);
 
   selectedPlan = signal<string>('BASIC');
   planPrice = signal<string>('0');
+  billingCycle = signal<string>('MONTHLY');
+  billingCycleLabel = signal<string>('');
+  planDisplayName = signal<string>('');
   adminName = signal<string>('');
   adminEmail = signal<string>('');
 
@@ -43,6 +49,13 @@ export class Payment implements OnInit {
     }
 
     this.selectedPlan.set(data.selectedPlan);
+    this.billingCycle.set(data.billingCycle || 'MONTHLY');
+    this.billingCycleLabel.set(getBillingCycleLabel(data.billingCycle || 'MONTHLY'));
+
+    this.planService.getPlan(data.selectedPlan).subscribe(plan => {
+      const price = data.billingCycle === 'YEARLY' ? plan.priceYearly : plan.priceMonthly;
+      this.planPrice.set(price.toString());
+      this.planDisplayName.set(plan.displayName);
     const price = PLAN_PRICES[data.selectedPlan as keyof typeof PLAN_PRICES] || '0';
     this.planPrice.set(price);
 

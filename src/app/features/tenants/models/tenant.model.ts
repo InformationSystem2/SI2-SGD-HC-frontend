@@ -34,6 +34,7 @@ export interface TenantInfo {
   subscriptionStatus: string;
   subscriptionStartDate: string;
   subscriptionEndDate: string;
+  billingCycle: string;
   adminFirstName?: string;
   adminLastName?: string;
   adminEmail?: string;
@@ -48,6 +49,14 @@ export interface TenantStats {
   maxStorageMB: number;
   apiCallsUsed: number;
   maxApiCalls: number;
+  patientCount: number;
+  maxPatients: number;
+  documentCount: number;
+  maxDocuments: number;
+  dicomStudyCount: number;
+  maxDicomStudies: number;
+  roleCount: number;
+  maxStaffRoles: number;
 }
 
 export interface TenantLimits {
@@ -107,9 +116,34 @@ export interface TenantDetail {
   subscriptionStatus: string;
   subscriptionStartDate: string;
   subscriptionEndDate: string;
+  billingCycle: string;
   settings: Record<string, unknown> | null;
   admin: TenantAdminInfo | null;
   stats: TenantStats;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface AdminInfoDto {
+  userId: string;
+  username: string;
+  firstName: string;
+  lastName: string;
+  email: string;
+  phone: string | null;
+}
+
+export interface TenantListItem {
+  id: string;
+  name: string;
+  slug: string;
+  subscriptionPlan: string;
+  subscriptionStatus: string;
+  subscriptionEndDate: string;
+  billingCycle: string;
+  adminName: string | null;
+  adminEmail: string | null;
+  userCount: number;
   createdAt: string;
   updatedAt: string;
 }

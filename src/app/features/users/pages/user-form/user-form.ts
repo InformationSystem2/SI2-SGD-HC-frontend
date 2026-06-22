@@ -155,11 +155,11 @@ export class UserForm implements OnInit {
     };
 
     this.userService.updateUser(this.editId()!, payload).subscribe(() => {
-      this.router.navigate(['/usuarios/list']);
+      this.router.navigate(['/users/list']);
     });
   }
 
   cancel(): void {
-    this.router.navigate(['/usuarios/list']);
+    this.router.navigate(['/users/list']);
   }
 }

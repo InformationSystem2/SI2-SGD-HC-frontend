@@ -2,7 +2,10 @@ import { ChangeDetectionStrategy, Component, inject, OnInit, signal, computed } 
 import { CommonModule, DatePipe } from '@angular/common';
 import { TranslatePipe, TranslateService } from '@ngx-translate/core';
 import { TenantService } from '../../../services/tenant.service';
+import { PlanService } from '../../../../../core/services/plan.service';
 import { TenantInfo } from '../../../models/tenant.model';
+import { PlanDto } from '../../../models/plan.model';
+import { toPlanOption, isDowngrade, formatStorageMB, formatLimitValue, getYearlySavings } from '../../../../../core/utils/plan.utils';
 import { PLANS, PLAN_LIMITS, PLAN_NAMES, PLAN_PRICES, PLAN_DESCRIPTIONS, PlanLimits, isDowngrade } from '../../../../../core/utils/plan.utils';
 import { environment } from '../../../../../../environments/environment';
 
@@ -10,6 +13,10 @@ interface UsageData {
   currentUsers: number;
   currentStorageMB: number;
   currentApiCalls: number;
+  currentPatients: number;
+  currentDocuments: number;
+  currentDicomStudies: number;
+  currentRoles: number;
 }
 
 @Component({
@@ -21,12 +28,17 @@ interface UsageData {
 })
 export class Subscription implements OnInit {
   private tenantService = inject(TenantService);
+  private planService = inject(PlanService);
   protected translate = inject(TranslateService);
 
   loading = signal(true);
   tenantInfo = signal<TenantInfo | null>(null);
-  usage = signal<UsageData>({ currentUsers: 0, currentStorageMB: 0, currentApiCalls: 0 });
-  planLimits = signal<PlanLimits>({ maxUsers: 10, maxStorageMB: 1000, maxApiCallsPerMonth: 1000 });
+  plans = signal<PlanDto[]>([]);
+  selectedBillingCycle = signal<'MONTHLY' | 'YEARLY'>('MONTHLY');
+  usage = signal<UsageData>({ currentUsers: 0, currentStorageMB: 0, currentApiCalls: 0, currentPatients: 0, currentDocuments: 0, currentDicomStudies: 0, currentRoles: 0 });
+
+  currentPlanLimits = signal<Record<string, number>>({});
+  currentPlanFeatures = signal<Record<string, boolean>>({});
 
   subscriptionEndDate = signal<Date | null>(null);
   daysUntilExpiration = signal(0);
@@ -63,21 +75,45 @@ export class Subscription implements OnInit {
   readonly plans = PLANS;
 
   userPercent = computed(() => {
-    const limit = this.planLimits().maxUsers;
-    if (limit >= 999999) return 0;
+    const limit = this.currentPlanLimits()['maxUsers'];
+    if (!limit || limit <= 0) return 0;
     return (this.usage().currentUsers / limit) * 100;
   });
 
   storagePercent = computed(() => {
-    const limit = this.planLimits().maxStorageMB;
-    if (limit >= 999999) return 0;
+    const limit = this.currentPlanLimits()['maxStorageMB'];
+    if (!limit || limit <= 0) return 0;
     return (this.usage().currentStorageMB / limit) * 100;
   });
 
   apiPercent = computed(() => {
-    const limit = this.planLimits().maxApiCallsPerMonth;
-    if (limit >= 999999) return 0;
+    const limit = this.currentPlanLimits()['maxApiCallsPerMonth'];
+    if (!limit || limit <= 0) return 0;
     return (this.usage().currentApiCalls / limit) * 100;
+  });
+
+  patientPercent = computed(() => {
+    const limit = this.currentPlanLimits()['maxPatients'];
+    if (!limit || limit <= 0) return 0;
+    return (this.usage().currentPatients / limit) * 100;
+  });
+
+  docPercent = computed(() => {
+    const limit = this.currentPlanLimits()['maxDocuments'];
+    if (!limit || limit <= 0) return 0;
+    return (this.usage().currentDocuments / limit) * 100;
+  });
+
+  dicomPercent = computed(() => {
+    const limit = this.currentPlanLimits()['maxDicomStudies'];
+    if (!limit || limit <= 0) return 0;
+    return (this.usage().currentDicomStudies / limit) * 100;
+  });
+
+  rolePercent = computed(() => {
+    const limit = this.currentPlanLimits()['maxStaffRoles'];
+    if (!limit || limit <= 0) return 0;
+    return (this.usage().currentRoles / limit) * 100;
   });
 
   expirationBadgeClass = computed(() => {
@@ -99,6 +135,7 @@ export class Subscription implements OnInit {
 
   ngOnInit() {
     this.loadData();
+    this.planService.getPlans().subscribe(plans => this.plans.set(plans));
   }
 
   loadData() {
@@ -106,9 +143,25 @@ export class Subscription implements OnInit {
     this.tenantService.getTenantInfo().subscribe({
       next: (data) => {
         this.tenantInfo.set(data);
+        if (data.billingCycle) {
+          this.selectedBillingCycle.set(data.billingCycle as 'MONTHLY' | 'YEARLY');
+        }
         const plan = data.subscriptionPlan || 'BASIC';
-        this.planLimits.set(PLAN_LIMITS[plan] || PLAN_LIMITS['BASIC']);
-        this.simulateUsage(plan);
+        this.loadPlanDetails(plan);
+
+        this.tenantService.getTenantStats().subscribe({
+          next: (stats) => {
+            this.usage.set({
+              currentUsers: stats.userCount,
+              currentStorageMB: stats.storageUsedMB,
+              currentApiCalls: stats.apiCallsUsed,
+              currentPatients: stats.patientCount,
+              currentDocuments: stats.documentCount,
+              currentDicomStudies: stats.dicomStudyCount,
+              currentRoles: stats.roleCount
+            });
+          }
+        });
 
         if (data.subscriptionEndDate) {
           const endDate = new Date(data.subscriptionEndDate + 'T00:00:00');
@@ -124,35 +177,17 @@ export class Subscription implements OnInit {
     });
   }
 
+  loadPlanDetails(planName: string) {
+    this.planService.getPlanLimits(planName).subscribe(limits => this.currentPlanLimits.set(limits));
+    this.planService.getPlanFeatures(planName).subscribe(features => this.currentPlanFeatures.set(features));
+  }
+
   private calculateDaysRemaining(endDate: Date): number {
     const now = new Date();
     now.setHours(0, 0, 0, 0);
     const end = new Date(endDate);
     end.setHours(0, 0, 0, 0);
     return Math.ceil((end.getTime() - now.getTime()) / (1000 * 60 * 60 * 24));
-  }
-
-  private simulateUsage(plan: string) {
-    const limits = PLAN_LIMITS[plan] || PLAN_LIMITS['BASIC'];
-    const seed = Date.now();
-
-    if (plan === 'ENTERPRISE') {
-      this.usage.set({
-        currentUsers: Math.floor(Math.random() * 500) + 100,
-        currentStorageMB: Math.floor(Math.random() * 50000) + 5000,
-        currentApiCalls: Math.floor(Math.random() * 500000) + 50000
-      });
-    } else {
-      const userSeed = (seed % 100) / 100;
-      const storageSeed = ((seed * 7) % 100) / 100;
-      const apiSeed = ((seed * 13) % 100) / 100;
-
-      this.usage.set({
-        currentUsers: Math.max(1, Math.floor(userSeed * limits.maxUsers * 0.7)),
-        currentStorageMB: Math.max(100, Math.floor(storageSeed * limits.maxStorageMB * 0.5)),
-        currentApiCalls: Math.max(50, Math.floor(apiSeed * limits.maxApiCallsPerMonth * 0.3))
-      });
-    }
   }
 
   getBarColor(percent: number): string {
@@ -170,20 +205,28 @@ export class Subscription implements OnInit {
   }
 
   formatNumber(n: number): string {
-    if (n >= 999999) return this.translate.instant('SUBSCRIPTION.INFINITY');
-    if (n >= 1000) return (n / 1000).toFixed(1) + 'K';
-    return n.toString();
+    return formatLimitValue(n);
   }
 
-  formatStorage(mb: number): string {
-    if (mb >= 999999) return this.translate.instant('SUBSCRIPTION.INFINITY');
-    if (mb >= 1000) return (mb / 1000).toFixed(1) + this.translate.instant('SUBSCRIPTION.GB_LABEL');
-    return mb + this.translate.instant('SUBSCRIPTION.MB_LABEL');
+  formatStorage(mb: number, isLimit: boolean = false): string {
+    return formatStorageMB(mb);
   }
 
   renewPlan(): void {
     const info = this.tenantInfo();
     if (!info) return;
+    this.renewing.set(true);
+    this.tenantService.renewSubscription(info.subscriptionPlan, this.selectedBillingCycle()).subscribe({
+      next: () => {
+        this.renewing.set(false);
+        this.loadData();
+        this.showMessage(this.translate.instant('SUBSCRIPTION.PLAN_RENEWED'), 'success');
+      },
+      error: () => {
+        this.renewing.set(false);
+        this.showMessage(this.translate.instant('SUBSCRIPTION.PLAN_RENEW_ERROR'), 'error');
+      }
+    });
 
     const plan = info.subscriptionPlan || 'BASIC';
     if (plan === 'BASIC') {
@@ -222,8 +265,6 @@ export class Subscription implements OnInit {
   }
 
   openChangePlanModal(): void {
-    const info = this.tenantInfo();
-    if (!info) return;
     this.selectedNewPlan.set('');
     this.showChangePlan.set(true);
   }
@@ -244,7 +285,7 @@ export class Subscription implements OnInit {
     const newPlan = this.selectedNewPlan();
     if (!info || !newPlan || newPlan === info.subscriptionPlan) return;
 
-    if (this.isDowngrade(info.subscriptionPlan, newPlan)) {
+    if (isDowngrade(info.subscriptionPlan, newPlan)) {
       const warnings = this.checkDowngradeWarnings(newPlan);
       if (warnings.length > 0) {
         this.downgradeWarnings.set(warnings);
@@ -284,6 +325,7 @@ export class Subscription implements OnInit {
         this.changingPlan.set(false);
         this.closeChangePlanModal();
         this.loadData();
+        this.planService.clearCache();
         this.showMessage(this.translate.instant('SUBSCRIPTION.PLAN_CHANGED'), 'success');
       },
       error: () => {
@@ -413,15 +455,17 @@ export class Subscription implements OnInit {
   }
 
   checkDowngradeWarnings(newPlan: string): string[] {
-    const limits = PLAN_LIMITS[newPlan];
+    const plan = this.plans().find(p => p.name === newPlan);
+    if (!plan) return [];
+    const limits = plan.limits;
     const usage = this.usage();
     const warnings: string[] = [];
 
-    if (limits.maxUsers < 999999 && usage.currentUsers > limits.maxUsers) {
-      warnings.push(this.translate.instant('SUBSCRIPTION.DOWNGRADE_WARNING_USERS', {current: usage.currentUsers, plan: this.translate.instant(PLAN_NAMES[newPlan]), max: limits.maxUsers}));
+    if (limits['maxUsers'] > 0 && usage.currentUsers > limits['maxUsers']) {
+      warnings.push(this.translate.instant('SUBSCRIPTION.DOWNGRADE_WARNING_USERS', {current: usage.currentUsers, plan: newPlan, max: limits['maxUsers']}));
     }
-    if (limits.maxStorageMB < 999999 && usage.currentStorageMB > limits.maxStorageMB) {
-      warnings.push(this.translate.instant('SUBSCRIPTION.DOWNGRADE_WARNING_STORAGE', {current: this.formatStorage(usage.currentStorageMB), max: this.formatStorage(limits.maxStorageMB)}));
+    if (limits['maxStorageMB'] > 0 && usage.currentStorageMB > limits['maxStorageMB']) {
+      warnings.push(this.translate.instant('SUBSCRIPTION.DOWNGRADE_WARNING_STORAGE', {current: formatStorageMB(usage.currentStorageMB), max: formatStorageMB(limits['maxStorageMB'])}));
     }
     return warnings;
   }
@@ -438,7 +482,32 @@ export class Subscription implements OnInit {
   }
 
   getTranslatedPlanName(planId: string): string {
-    const key = PLAN_NAMES[planId];
-    return key ? this.translate.instant(key) : planId;
+    const plan = this.plans().find(p => p.name === planId);
+    return plan?.displayName || planId;
+  }
+
+  getPlanOption(plan: PlanDto) {
+    return toPlanOption(plan);
+  }
+
+  getPlanPrice(plan: PlanDto): number {
+    return this.selectedBillingCycle() === 'YEARLY' ? plan.priceYearly : plan.priceMonthly;
+  }
+
+  getPlanSavings(plan: PlanDto): string {
+    if (plan.priceMonthly <= 0) return '';
+    return getYearlySavings(plan.priceMonthly, plan.priceYearly);
+  }
+
+  getDisplayPrice(planName: string): string {
+    const plan = this.plans().find(p => p.name === planName);
+    if (!plan) return '0';
+    return this.getPlanPrice(plan).toString();
+  }
+
+  getBillingCycleLabel(): string {
+    const info = this.tenantInfo();
+    const cycle = info?.billingCycle || 'MONTHLY';
+    return cycle === 'YEARLY' ? this.translate.instant('TENANTS.YEARLY') : this.translate.instant('TENANTS.MONTHLY');
   }
 }

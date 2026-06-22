@@ -1,5 +1,6 @@
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Injectable, inject } from '@angular/core';
+import { TranslateService } from '@ngx-translate/core';
 import { Observable, map } from 'rxjs';
 import { ChartConfiguration, ChartData } from 'chart.js';
 import { environment } from '../../../../environments/environment';
@@ -13,6 +14,27 @@ export interface StorageItem       { month:  string; total_documents: number; }
 export interface WorkflowItem      { status: string; total: number; }
 export interface MedicalStudies    { total_studies: number; }
 export interface CriticalAlertItem { id: string; status: string; issue_date: string; expiry_date: string; }
+
+export interface PlanUsage {
+  user_count: number;
+  patient_count: number;
+  document_count: number;
+  template_count: number;
+  dicom_count: number;
+  role_count: number;
+  storage_bytes: number;
+  api_calls: number;
+  ocr_pages: number;
+  max_users: number;
+  max_storage_mb: number;
+  max_patients: number;
+  max_documents: number;
+  max_templates: number;
+  max_dicom: number;
+  max_roles: number;
+  max_api_calls: number;
+  max_ocr_pages: number;
+}
 
 // ── Chart colour palette (robust for dark & light themes) ───────────────────
 
@@ -64,6 +86,7 @@ export function getChartDefaults(): Partial<ChartConfiguration['options']> {
 export class AnalyticsService {
   private http = inject(HttpClient);
   private auth = inject(AuthService);
+  private translate = inject(TranslateService);
 
   private readonly BASE = environment.fastApiUrl;
 
@@ -113,7 +136,7 @@ export class AnalyticsService {
           return {
             labels:   sorted.map(i => i.plan),
             datasets: [{
-              label:           'Clínicas',
+              label:           this.translate.instant('DASHBOARD.CHART_CLINICS'),
               data:            sorted.map(i => i.total),
               backgroundColor: CHART_PALETTE.plans,
               borderRadius:    6,
@@ -136,7 +159,7 @@ export class AnalyticsService {
           return {
             labels:   items.map(i => i.month),
             datasets: [{
-              label:           'Documentos',
+              label:           this.translate.instant('DASHBOARD.CHART_DOCUMENTS'),
               data:            items.map(i => i.total_documents),
               borderColor:     CHART_PALETTE.storage[0],
               backgroundColor: CHART_PALETTE.storage[0] + '33',
@@ -195,5 +218,15 @@ export class AnalyticsService {
         { headers: this.getHeaders() }
       )
       .pipe(map(res => res.data ?? []));
+  }
+
+  /** Plan usage summary for a clinic tenant */
+  getPlanUsage(tenantId: string): Observable<PlanUsage | null> {
+    return this.http
+      .get<{ data: PlanUsage }>(
+        `${this.BASE}/analytics/clinic/${tenantId}/plan-usage`,
+        { headers: this.getHeaders() }
+      )
+      .pipe(map(res => res.data ?? null));
   }
 }

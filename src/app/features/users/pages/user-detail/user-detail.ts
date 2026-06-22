@@ -57,6 +57,6 @@ export class UserDetail implements OnInit {
   }
 
   back(): void {
-    this.router.navigate(['/usuarios/list']);
+    this.router.navigate(['/users/list']);
   }
 }

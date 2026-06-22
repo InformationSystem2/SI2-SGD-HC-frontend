@@ -2,9 +2,9 @@
 
 import { Routes } from '@angular/router';
 import { authGuard } from './core/auth/guards/auth.guard';
-import { permissionGuard, moduleRoleGuard } from './core/auth/guards/role.guard';
+import { permissionGuard } from './core/auth/guards/role.guard';
 import { MainLayout } from './layout/main-layout/main-layout';
-import { ROLES } from './core/auth/services/role-policy.service';
+
 
 export const routes: Routes = [
 
@@ -19,7 +19,7 @@ export const routes: Routes = [
   {
     path: 'dashboard',
     component: MainLayout,
-    canActivate: [authGuard, moduleRoleGuard([ROLES.SUPERUSER, ROLES.ADMIN, ROLES.DIRECTOR, ROLES.MEDICO, ROLES.ARCHIVO])],
+    canActivate: [authGuard],
     loadChildren: () => import('./features/dashboard/dashboard.routes').then(m => m.dashboardRoutes),
   },
   {
@@ -30,31 +30,31 @@ export const routes: Routes = [
       import('./features/roles/roles.routes').then(m => m.rolesRoutes),
   },
   {
-    path: 'usuarios',
+    path: 'users',
     component: MainLayout,
     canActivate: [permissionGuard('user:read')],
     loadChildren: () => import('./features/users/users.routes').then(m => m.usersRoutes),
   },
   {
-    path: 'pacientes',
+    path: 'patients',
     component: MainLayout,
     canActivate: [permissionGuard('patient:read')],
     loadChildren: () => import('./features/patients/patients.routes').then(m => m.patientsRoutes),
   },
   {
-    path: 'documentos',
+    path: 'documents',
     component: MainLayout,
     canActivate: [permissionGuard('document:read')],
     loadChildren: () => import('./features/documents/documents.routes').then(m => m.documentsRoutes),
   },
   {
-    // El visor DICOM ocupa toda la pantalla (sin MainLayout)
+    // DICOM viewer takes the whole screen (no MainLayout)
     path: 'dicom',
     canActivate: [permissionGuard('dicom:read')],
     loadChildren: () => import('./features/dicom/dicom.routes').then(m => m.dicomRoutes),
   },
   {
-    path: 'reportes',
+    path: 'reports',
     component: MainLayout,
     canActivate: [permissionGuard('report:read')],
     loadChildren: () => import('./features/reports/reports.routes').then(m => m.reportsRoutes),
@@ -64,9 +64,8 @@ export const routes: Routes = [
     redirectTo: 'auth/login',
     pathMatch: 'full',
   },
-  // Dentro del array routes, agrega:
   {
-    path: 'historiales',
+    path: 'records',
     component: MainLayout,
     canActivate: [permissionGuard('document:read')],
     loadChildren: () => import('./features/historial/historial.routes').then(m => m.historialRoutes),
@@ -76,5 +75,17 @@ export const routes: Routes = [
     component: MainLayout,
     canActivate: [permissionGuard('ROLE_SUPERUSER')],
     loadChildren: () => import('./features/audit/audit.routes').then(m => m.auditRoutes),
-  }
+  },
+  {
+    path: 'tasks',
+    component: MainLayout,
+    canActivate: [permissionGuard('review-task:read')],
+    loadChildren: () => import('./features/workflow/workflow.routes').then(m => m.workflowRoutes),
+  },
+  {
+    path: 'notifications',
+    component: MainLayout,
+    canActivate: [authGuard],
+    loadChildren: () => import('./features/notifications/notifications.routes').then(m => m.notificationsRoutes),
+  },
 ];

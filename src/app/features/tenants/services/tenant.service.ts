@@ -30,6 +30,7 @@ export interface RegistrationData {
 export interface TenantFlowData {
   sessionToken: string;
   selectedPlan: string;
+  billingCycle: string;
   registrationData: RegistrationData;
   expiresAt: number;
 }
@@ -123,14 +124,15 @@ export class TenantService {
     return this.loadFromLocalStorage();
   }
 
-  initSession(selectedPlan: string) {
+  initSession(selectedPlan: string, billingCycle: string = 'MONTHLY') {
     this.loading.set(true);
-    return this.http.post<TenantSessionResponse>(`${environment.apiUrl}/tenants/public/init-session`, { selectedPlan }).pipe(
+    return this.http.post<TenantSessionResponse>(`${environment.apiUrl}/tenants/public/init-session`, { selectedPlan, billingCycle }).pipe(
       tap((res) => {
         this.loading.set(false);
         const flowData: TenantFlowData = {
           sessionToken: res.sessionToken,
           selectedPlan,
+          billingCycle,
           registrationData: {} as RegistrationData,
           expiresAt: Date.now() + (TTL_MINUTES * 60 * 1000)
         };

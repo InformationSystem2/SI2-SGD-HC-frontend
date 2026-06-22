@@ -1,13 +1,10 @@
 <div class="min-h-screen bg-hc-app flex items-center justify-center px-4 py-8">
   <div class="w-full max-w-3xl">
 
-    <!-- Card -->
     <div class="bg-hc-surface rounded-3xl shadow-2xl border border-hc-border p-6 md:p-10 animate-in fade-in slide-in-from-bottom-4 duration-700">
 
-      <!-- Progress Stepper -->
       <app-progress-stepper [currentStep]="1" />
 
-      <!-- Header -->
       <div class="mb-8 text-center">
         <div class="flex justify-center mb-4">
           <div class="w-14 h-14 rounded-2xl bg-gradient-to-br from-hc-primary to-hc-primary-dark flex items-center justify-center shadow-lg shadow-hc-primary/30">
@@ -20,7 +17,6 @@
         <p class="text-hc-text-3 mt-1 text-sm">{{ 'TENANTS.SELECT_PLAN_SUBTITLE' | translate }}</p>
       </div>
 
-      <!-- Error -->
       @if (tenantService.error()) {
         <div class="mb-6 p-4 bg-red-50 border border-red-200 rounded-2xl flex items-center gap-3 animate-in fade-in zoom-in duration-300">
           <i class="fas fa-exclamation-circle text-red-500"></i>
@@ -28,88 +24,133 @@
         </div>
       }
 
-      <!-- Plans Grid -->
-      <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
-        @for (plan of plans; track plan.id) {
-          <div
-            (click)="selectPlan(plan.id)"
-            class="relative cursor-pointer rounded-2xl border-2 p-5 transition-all duration-300 hover:-translate-y-1 group"
-            [class.ring-2]="selectedPlan() === plan.id"
-            [class.ring-hc-primary]="selectedPlan() === plan.id"
-            [class.border-hc-border]="selectedPlan() !== plan.id"
-            [class.bg-gradient-to-b]="selectedPlan() === plan.id"
-            [class.from-hc-primary/5]="selectedPlan() === plan.id"
-            [class.to-hc-surface]="selectedPlan() === plan.id"
-            [class.bg-hc-surface]="selectedPlan() !== plan.id"
-            [class.shadow-xl]="selectedPlan() === plan.id"
-            [class.shadow-hc-primary/20]="selectedPlan() === plan.id"
+      <!-- Billing cycle toggle -->
+      <div class="flex justify-center mb-6">
+        <div class="inline-flex bg-hc-muted rounded-xl p-1 gap-1">
+          <button
+            (click)="toggleBillingCycle('MONTHLY')"
+            class="px-5 py-2.5 rounded-lg text-sm font-semibold transition-all duration-300"
+            [class.bg-hc-surface]="billingCycle() === 'MONTHLY'"
+            [class.text-hc-primary]="billingCycle() === 'MONTHLY'"
+            [class.shadow-sm]="billingCycle() === 'MONTHLY'"
+            [class.text-hc-text-3]="billingCycle() !== 'MONTHLY'"
+          >{{ 'TENANTS.MONTHLY' | translate }}</button>
+          <button
+            (click)="toggleBillingCycle('YEARLY')"
+            class="px-5 py-2.5 rounded-lg text-sm font-semibold transition-all duration-300 relative"
+            [class.bg-hc-surface]="billingCycle() === 'YEARLY'"
+            [class.text-hc-primary]="billingCycle() === 'YEARLY'"
+            [class.shadow-sm]="billingCycle() === 'YEARLY'"
+            [class.text-hc-text-3]="billingCycle() !== 'YEARLY'"
           >
-            <!-- Popular Badge -->
-            @if (plan.popular) {
-              <div class="absolute -top-3 left-1/2 -translate-x-1/2">
-                <span class="bg-gradient-to-r from-hc-primary to-hc-primary-dark text-white text-[10px] font-bold px-3 py-1 rounded-full uppercase tracking-wider shadow-lg">
-                  {{ 'TENANTS.POPULAR' | translate }}
-                </span>
-              </div>
+            {{ 'TENANTS.YEARLY' | translate }}
+            @if (yearlySavings()) {
+              <span class="absolute -top-2 -right-2 text-[9px] bg-hc-success text-white px-1.5 py-0.5 rounded-full font-bold">
+                -{{ yearlySavings() }}
+              </span>
             }
-
-            <!-- Plan Icon -->
-            <div class="flex justify-center mb-3">
-              <div class="w-12 h-12 rounded-xl flex items-center justify-center text-2xl transition-transform group-hover:scale-110 duration-300"
-                   [class.bg-hc-primary]="selectedPlan() === plan.id"
-                   [class.bg-hc-muted]="selectedPlan() !== plan.id">
-                <fa-icon [icon]="getIcon(plan.id)" [class.text-white]="selectedPlan() === plan.id" [class.text-hc-text]="selectedPlan() !== plan.id" />
-              </div>
-            </div>
-
-            <!-- Plan Name -->
-            <h3 class="hc-h3 text-hc-text">
-              {{ plan.name | translate }}
-            </h3>
-
-            <!-- Price -->
-            <div class="text-center mb-3">
-              <span class="text-3xl font-extrabold text-hc-text">${{ plan.price }}</span>
-              <span class="text-hc-text-3 text-xs">/{{ 'TENANTS.MONTH' | translate }}</span>
-            </div>
-
-            <!-- Description -->
-            <p class="text-center text-xs text-hc-text-3 mb-3 min-h-[32px]">
-              {{ plan.description | translate }}
-            </p>
-
-            <!-- Features -->
-            <ul class="space-y-1.5 mb-3">
-              @for (feature of plan.features; track feature) {
-                <li class="flex items-center gap-2 text-[11px] text-hc-text-3">
-                  <svg class="w-3.5 h-3.5 text-hc-primary shrink-0" fill="currentColor" viewBox="0 0 20 20">
-                    <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd" />
-                  </svg>
-                  {{ feature | translate }}
-                </li>
-              }
-            </ul>
-
-            <!-- Selection Indicator -->
-            <div class="absolute top-3 right-3 w-5 h-5 rounded-full border-2 flex items-center justify-center transition-all"
-                 [class.border-hc-primary]="selectedPlan() === plan.id"
-                 [class.bg-hc-primary]="selectedPlan() === plan.id"
-                 [class.border-hc-border]="selectedPlan() !== plan.id">
-              @if (selectedPlan() === plan.id) {
-                <svg class="w-3 h-3 text-white" fill="currentColor" viewBox="0 0 20 20">
-                  <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd" />
-                </svg>
-              }
-            </div>
-          </div>
-        }
+          </button>
+        </div>
       </div>
 
-      <!-- Action -->
+      @if (loadingPlans()) {
+        <div class="flex justify-center py-8">
+          <div class="w-10 h-10 border-4 border-hc-primary/30 border-t-hc-primary rounded-full animate-spin"></div>
+        </div>
+      } @else if (plansError()) {
+        <div class="mb-6 p-4 bg-red-50 border border-red-200 rounded-2xl flex items-center gap-3 animate-in fade-in zoom-in duration-300">
+          <i class="fas fa-exclamation-circle text-red-500"></i>
+          <p class="text-sm font-medium text-red-600">{{ plansError()! | translate }}</p>
+          <button (click)="retryLoadPlans()" class="ml-auto text-sm font-semibold text-red-600 hover:text-red-800 underline">
+            {{ 'COMMON.RETRY' | translate }}
+          </button>
+        </div>
+      } @else if (!plans() || plans().length === 0) {
+        <div class="mb-6 p-4 bg-yellow-50 border border-yellow-200 rounded-2xl flex items-center gap-3 animate-in fade-in zoom-in duration-300">
+          <i class="fas fa-exclamation-triangle text-yellow-500"></i>
+          <p class="text-sm font-medium text-yellow-600">{{ 'TENANTS.PLANS_LOAD_ERROR' | translate }}</p>
+        </div>
+      } @else {
+        <!-- Plans Grid -->
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
+          @for (plan of plans(); track plan.id) {
+            <div
+              (click)="selectPlan(plan.name)"
+              class="relative cursor-pointer rounded-2xl border-2 p-5 transition-all duration-300 hover:-translate-y-1 group"
+              [class.ring-2]="selectedPlan() === plan.name"
+              [class.ring-hc-primary]="selectedPlan() === plan.name"
+              [class.border-hc-border]="selectedPlan() !== plan.name"
+              [class.bg-gradient-to-b]="selectedPlan() === plan.name"
+              [class.from-hc-primary/5]="selectedPlan() === plan.name"
+              [class.to-hc-surface]="selectedPlan() === plan.name"
+              [class.bg-hc-surface]="selectedPlan() !== plan.name"
+              [class.shadow-xl]="selectedPlan() === plan.name"
+              [class.shadow-hc-primary/20]="selectedPlan() === plan.name"
+            >
+              @if (plan.name === 'PRO') {
+                <div class="absolute -top-3 left-1/2 -translate-x-1/2">
+                  <span class="bg-gradient-to-r from-hc-primary to-hc-primary-dark text-white text-[10px] font-bold px-3 py-1 rounded-full uppercase tracking-wider shadow-lg">
+                    {{ 'TENANTS.POPULAR' | translate }}
+                  </span>
+                </div>
+              }
+
+              <div class="flex justify-center mb-3">
+                <div class="w-12 h-12 rounded-xl flex items-center justify-center text-2xl transition-transform group-hover:scale-110 duration-300"
+                     [class.bg-hc-primary]="selectedPlan() === plan.name"
+                     [class.bg-hc-muted]="selectedPlan() !== plan.name">
+                  <fa-icon [icon]="getIcon(plan.name)" [class.text-white]="selectedPlan() === plan.name" [class.text-hc-text]="selectedPlan() !== plan.name" />
+                </div>
+              </div>
+
+              <h3 class="hc-h3 text-hc-text">{{ plan.displayName }}</h3>
+
+              <div class="text-center mb-3">
+                <span class="text-3xl font-extrabold text-hc-text">
+                  ${{ billingCycle() === 'YEARLY' ? plan.priceYearly : plan.priceMonthly }}
+                </span>
+                <span class="text-hc-text-3 text-xs">/{{ billingCycle() === 'YEARLY' ? ('TENANTS.YEAR' | translate) : ('TENANTS.MONTH' | translate) }}</span>
+                @if (billingCycle() === 'YEARLY' && plan.priceMonthly > 0) {
+                  <div class="text-xs text-hc-success font-medium mt-0.5">
+                    {{ 'TENANTS.SAVE' | translate }} ${{ (plan.priceMonthly * 12 - plan.priceYearly).toFixed(0) }}/{{ 'TENANTS.YEAR' | translate }}
+                  </div>
+                }
+              </div>
+
+              <p class="text-center text-xs text-hc-text-3 mb-3 min-h-[32px]">
+                {{ plan.description }}
+              </p>
+
+              <ul class="space-y-1.5 mb-3">
+                @for (feature of getPlanOption(plan).features; track feature.key) {
+                  <li class="flex items-center gap-2 text-[11px] text-hc-text-3">
+                    <svg class="w-3.5 h-3.5 text-hc-primary shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                      <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd" />
+                    </svg>
+                    {{ feature.key | translate:feature.params }}
+                  </li>
+                }
+              </ul>
+
+              <div class="absolute top-3 right-3 w-5 h-5 rounded-full border-2 flex items-center justify-center transition-all"
+                   [class.border-hc-primary]="selectedPlan() === plan.name"
+                   [class.bg-hc-primary]="selectedPlan() === plan.name"
+                   [class.border-hc-border]="selectedPlan() !== plan.name">
+                @if (selectedPlan() === plan.name) {
+                  <svg class="w-3 h-3 text-white" fill="currentColor" viewBox="0 0 20 20">
+                    <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd" />
+                  </svg>
+                }
+              </div>
+            </div>
+          }
+        </div>
+      }
+
       <div class="flex gap-4">
         <button
           (click)="continue()"
-          [disabled]="loading()"
+          [disabled]="loading() || !selectedPlan()"
           class="flex-1 py-4 px-6 bg-gradient-to-r from-hc-primary to-hc-primary-dark text-white font-bold rounded-2xl
                  hover:from-hc-primary-dark hover:to-hc-primary-dark active:scale-[0.98] transition-all
                  shadow-lg shadow-hc-primary/30 disabled:opacity-50 disabled:shadow-none
@@ -125,7 +166,6 @@
         </button>
       </div>
 
-      <!-- Footer -->
       <div class="mt-6 pt-6 border-t border-hc-border text-center">
         <p class="text-hc-text-3 text-sm">
           {{ 'TENANTS.NO_CREDIT_CARD' | translate }}

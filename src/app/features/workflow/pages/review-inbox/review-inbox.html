@@ -1,0 +1,164 @@
+<div class="space-y-6 max-w-5xl mx-auto">
+
+  <!-- Header -->
+  <div class="flex items-center justify-between">
+    <div class="flex items-center gap-3">
+      <fa-icon [icon]="faInbox" class="text-hc-primary text-xl" />
+      <h2 class="hc-h2 text-hc-text">{{ 'REVIEW_TASKS.INBOX_TITLE' | translate }}</h2>
+    </div>
+    <button (click)="refresh()"
+            [disabled]="loading()"
+            class="flex items-center gap-2 px-3 py-1.5 rounded-lg text-sm border border-hc-border hover:bg-hc-hover text-hc-text-2 disabled:opacity-50 transition-colors">
+      <fa-icon [icon]="loading() ? faSpinner : faRotateRight" [class]="loading() ? 'animate-spin' : ''" />
+      {{ 'WORKFLOW.REFRESH' | translate }}
+    </button>
+  </div>
+
+  <!-- View Mode Toggle -->
+  <div class="flex gap-2">
+    <button (click)="toggleViewMode('ASSIGNED_TO_ME')"
+            [class]="viewMode() === 'ASSIGNED_TO_ME'
+              ? 'px-4 py-2 text-sm font-semibold rounded-lg bg-hc-primary text-white'
+              : 'px-4 py-2 text-sm font-medium rounded-lg border border-hc-border text-hc-text-2 hover:bg-hc-hover'">
+      {{ 'REVIEW_TASKS.TAB_PENDING' | translate }} (Asignadas a mí)
+    </button>
+    <button (click)="toggleViewMode('ASSIGNED_BY_ME')"
+            [class]="viewMode() === 'ASSIGNED_BY_ME'
+              ? 'px-4 py-2 text-sm font-semibold rounded-lg bg-hc-primary text-white'
+              : 'px-4 py-2 text-sm font-medium rounded-lg border border-hc-border text-hc-text-2 hover:bg-hc-hover'">
+      Mis Workflows (Asignadas por mí)
+    </button>
+  </div>
+
+  <!-- Shared Tabs and Table -->
+  <div class="bg-hc-card rounded-xl border border-hc-border shadow-sm overflow-hidden">
+    <div class="flex border-b border-hc-border">
+      <button
+        (click)="activeWfTab.set('PENDING')"
+        [class]="activeWfTab() === 'PENDING'
+          ? 'flex items-center gap-2 px-5 py-3 text-sm font-semibold text-hc-primary border-b-2 border-hc-primary -mb-px bg-hc-primary/5'
+          : 'flex items-center gap-2 px-5 py-3 text-sm font-medium text-hc-text-2 hover:text-hc-text hover:bg-hc-hover transition-colors'">
+        Pendientes
+        @if (wfPendingCount() > 0) {
+          <span class="inline-flex items-center justify-center min-w-[20px] h-5 px-1 rounded-full text-xs font-bold bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-400">
+            {{ wfPendingCount() }}
+          </span>
+        }
+      </button>
+      <button
+        (click)="activeWfTab.set('IN_PROGRESS')"
+        [class]="activeWfTab() === 'IN_PROGRESS'
+          ? 'flex items-center gap-2 px-5 py-3 text-sm font-semibold text-hc-primary border-b-2 border-hc-primary -mb-px bg-hc-primary/5'
+          : 'flex items-center gap-2 px-5 py-3 text-sm font-medium text-hc-text-2 hover:text-hc-text hover:bg-hc-hover transition-colors'">
+        En progreso
+        @if (wfInProgressCount() > 0) {
+          <span class="inline-flex items-center justify-center min-w-[20px] h-5 px-1 rounded-full text-xs font-bold bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400">
+            {{ wfInProgressCount() }}
+          </span>
+        }
+      </button>
+      <button
+        (click)="activeWfTab.set('COMPLETED')"
+        [class]="activeWfTab() === 'COMPLETED'
+          ? 'flex items-center gap-2 px-5 py-3 text-sm font-semibold text-hc-primary border-b-2 border-hc-primary -mb-px bg-hc-primary/5'
+          : 'flex items-center gap-2 px-5 py-3 text-sm font-medium text-hc-text-2 hover:text-hc-text hover:bg-hc-hover transition-colors'">
+        Completadas
+        @if (wfCompletedCount() > 0) {
+          <span class="inline-flex items-center justify-center min-w-[20px] h-5 px-1 rounded-full text-xs font-bold bg-hc-muted text-hc-text-3">
+            {{ wfCompletedCount() }}
+          </span>
+        }
+      </button>
+    </div>
+
+    <!-- Search -->
+    <div class="px-4 py-3 border-b border-hc-border">
+      <div class="relative">
+        <fa-icon [icon]="faSearch" class="absolute left-3 top-1/2 -translate-y-1/2 text-hc-text-3 text-sm" />
+        <input type="text"
+               [value]="searchQuery()"
+               (input)="searchQuery.set($any($event.target).value)"
+               placeholder="Buscar workflows..."
+               class="w-full pl-9 pr-3 py-2 rounded-lg border border-hc-border bg-hc-input text-hc-text text-sm placeholder:text-hc-text-3 focus:outline-none focus:ring-1 focus:ring-hc-primary" />
+      </div>
+    </div>
+
+    <!-- Table -->
+    <div class="overflow-x-auto">
+      @if (loading()) {
+        <div class="flex items-center justify-center gap-2 py-12 text-hc-text-3 text-sm">
+          <fa-icon [icon]="faSpinner" class="animate-spin text-lg text-hc-primary" />
+          {{ 'REVIEW_TASKS.LOADING' | translate }}
+        </div>
+      } @else if (!filteredWorkflows().length) {
+        <div class="flex flex-col items-center gap-2 py-14 text-hc-text-3">
+          <fa-icon [icon]="faInbox" class="text-4xl opacity-30" />
+          <p class="text-sm">{{ searchQuery() ? ('REVIEW_TASKS.NO_RESULTS' | translate) : ('REVIEW_TASKS.EMPTY' | translate) }}</p>
+        </div>
+      } @else {
+        <table class="w-full text-sm">
+          <thead class="bg-hc-muted/60">
+            <tr>
+              <th class="px-4 py-3 text-left text-xs font-semibold text-hc-text-2 uppercase tracking-wide">
+                {{ 'WORKFLOWS.TITLE' | translate }}
+              </th>
+              <th class="px-4 py-3 text-left text-xs font-semibold text-hc-text-2 uppercase tracking-wide">
+                {{ viewMode() === 'ASSIGNED_TO_ME' ? ('WORKFLOWS.CREATOR' | translate) : ('WORKFLOWS.ASSIGNEE' | translate) }}
+              </th>
+              <th class="px-4 py-3 text-left text-xs font-semibold text-hc-text-2 uppercase tracking-wide">
+                {{ 'WORKFLOWS.DUE_DATE' | translate }}
+              </th>
+              <th class="px-4 py-3 text-left text-xs font-semibold text-hc-text-2 uppercase tracking-wide">
+                {{ 'WORKFLOWS.STATUS' | translate }}
+              </th>
+              <th class="px-4 py-3 text-left text-xs font-semibold text-hc-text-2 uppercase tracking-wide">
+                {{ 'WORKFLOWS.ACTIONS' | translate }}
+              </th>
+            </tr>
+          </thead>
+          <tbody class="divide-y divide-hc-border/50">
+            @for (wf of filteredWorkflows(); track wf.id) {
+              <tr class="hover:bg-hc-hover/50 transition-colors">
+                <td class="px-4 py-3">
+                  <p class="font-medium text-hc-text">{{ wf.title }}</p>
+                  <p class="text-xs text-hc-text-3 mt-0.5">{{ formatDate(wf.createdAt) }}</p>
+                </td>
+                <td class="px-4 py-3 text-hc-text">
+                  {{ viewMode() === 'ASSIGNED_TO_ME' ? wf.creatorName : wf.assigneeName }}
+                </td>
+                <td class="px-4 py-3 text-xs text-hc-text-2">
+                  @if (wf.dueDate) {
+                    {{ formatDate(wf.dueDate) }}
+                  } @else {
+                    <span class="text-hc-text-3">{{ 'WORKFLOWS.NO_DUE' | translate }}</span>
+                  }
+                </td>
+                <td class="px-4 py-3">
+                  <span [class]="
+                    (wf.status === 'ACTIVE' ? 'bg-blue-100 text-blue-700' :
+                     wf.status === 'COMPLETED' ? 'bg-green-100 text-green-700' :
+                     'bg-hc-muted text-hc-text-3') + ' px-2 py-0.5 rounded-full text-xs font-medium'">
+                    {{ 'WORKFLOWS.STATUS_' + wf.status | translate }}
+                  </span>
+                  @if (wf.status === 'ACTIVE') {
+                    <p class="text-[10px] text-hc-text-3 mt-1 ml-1">
+                      {{ wf.completedTaskCount }} / {{ wf.pendingTaskCount + wf.completedTaskCount }} tareas
+                    </p>
+                  }
+                </td>
+                <td class="px-4 py-3">
+                  <button (click)="viewWorkflow(wf.id)"
+                          class="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium border border-hc-border hover:bg-hc-hover text-hc-text transition-colors">
+                    <fa-icon [icon]="faEye" />
+                    {{ 'WORKFLOWS.VIEW' | translate }}
+                  </button>
+                </td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      }
+    </div>
+  </div>
+
+</div>

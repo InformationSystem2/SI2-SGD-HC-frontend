@@ -59,7 +59,7 @@ export class DicomHome implements OnInit {
   private cdr         = inject(ChangeDetectorRef);
 
   back(): void {
-    this.router.navigate(['/documentos/list']);
+    this.router.navigate(['/documents/list']);
   }
 
   // ── Iconos ────────────────────────────────────────────────────────────────

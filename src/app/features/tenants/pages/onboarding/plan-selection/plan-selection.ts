@@ -1,12 +1,14 @@
-import { ChangeDetectionStrategy, Component, inject, OnInit, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, inject, OnInit, signal, computed } from '@angular/core';
 import { Router } from '@angular/router';
 import { TenantService } from '../../../services/tenant.service';
+import { PlanService } from '../../../../../core/services/plan.service';
 import { TranslatePipe } from '@ngx-translate/core';
 import { CommonModule } from '@angular/common';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { faSeedling, faRocket, faBuilding } from '@fortawesome/free-solid-svg-icons';
 import { ProgressStepperComponent } from '../../../components/progress-stepper/progress-stepper';
-import { PLANS } from '../../../../../core/utils/plan.utils';
+import { PlanDto } from '../../../models/plan.model';
+import { toPlanOption, getYearlySavings } from '../../../../../core/utils/plan.utils';
 
 @Component({
   selector: 'app-plan-selection',
@@ -18,15 +20,31 @@ import { PLANS } from '../../../../../core/utils/plan.utils';
 export class PlanSelection implements OnInit {
   private router = inject(Router);
   protected tenantService = inject(TenantService);
+  protected planService = inject(PlanService);
 
   readonly selectedPlan = signal<string>('BASIC');
+  readonly billingCycle = signal<'MONTHLY' | 'YEARLY'>('MONTHLY');
   readonly loading = signal(false);
   readonly hasExistingSession = signal(false);
+  readonly plans = signal<PlanDto[]>([]);
+  readonly loadingPlans = signal(true);
+  readonly plansError = signal<string | null>(null);
 
-  readonly plans = PLANS;
   readonly faSeedling = faSeedling;
   readonly faRocket = faRocket;
   readonly faBuilding = faBuilding;
+
+  readonly displayPrice = computed(() => {
+    const plan = this.plans().find(p => p.name === this.selectedPlan());
+    if (!plan) return '0';
+    return this.billingCycle() === 'YEARLY' ? plan.priceYearly.toString() : plan.priceMonthly.toString();
+  });
+
+  readonly yearlySavings = computed(() => {
+    const plan = this.plans().find(p => p.name === this.selectedPlan());
+    if (!plan || plan.priceYearly <= 0 || plan.priceMonthly <= 0) return '';
+    return getYearlySavings(plan.priceMonthly, plan.priceYearly);
+  });
 
   getIcon(planId: string) {
     switch (planId) {
@@ -37,11 +55,31 @@ export class PlanSelection implements OnInit {
     }
   }
 
+  getPlanOption(plan: PlanDto) {
+    return toPlanOption(plan);
+  }
+
   ngOnInit(): void {
+    this.planService.clearCache();
+    this.planService.getPlans().subscribe({
+      next: (plans) => {
+        this.plans.set(plans);
+        this.loadingPlans.set(false);
+      },
+      error: (err) => {
+        console.error('Error loading plans:', err);
+        this.plansError.set('TENANTS.PLANS_LOAD_ERROR');
+        this.loadingPlans.set(false);
+      }
+    });
+
     const flowData = this.tenantService.getFlowData();
     if (flowData) {
       if (flowData.selectedPlan) {
         this.selectedPlan.set(flowData.selectedPlan);
+      }
+      if (flowData.billingCycle) {
+        this.billingCycle.set(flowData.billingCycle as 'MONTHLY' | 'YEARLY');
       }
       if (flowData.registrationData?.tenantName) {
         this.hasExistingSession.set(true);
@@ -57,36 +95,52 @@ export class PlanSelection implements OnInit {
     }
   }
 
+  toggleBillingCycle(cycle: 'MONTHLY' | 'YEARLY'): void {
+    this.billingCycle.set(cycle);
+  }
+
+  retryLoadPlans(): void {
+    this.planService.clearCache();
+    this.plansError.set(null);
+    this.loadingPlans.set(true);
+    this.planService.getPlans().subscribe({
+      next: (plans) => {
+        this.plans.set(plans);
+        this.loadingPlans.set(false);
+      },
+      error: (err) => {
+        console.error('Error loading plans:', err);
+        this.plansError.set('TENANTS.PLANS_LOAD_ERROR');
+        this.loadingPlans.set(false);
+      }
+    });
+  }
+
   continue(): void {
     const existingFlow = this.tenantService.getFlowData();
     const selectedPlan = this.selectedPlan();
+    const cycle = this.billingCycle();
 
-    if (existingFlow) {
-      const needsPlanUpdate = selectedPlan !== existingFlow.selectedPlan;
+    const needsNewSession = !existingFlow
+        || existingFlow.selectedPlan !== selectedPlan
+        || existingFlow.billingCycle !== cycle;
 
-      if (needsPlanUpdate) {
-        this.loading.set(true);
-        this.tenantService.updatePlanInFlow(selectedPlan).subscribe({
-          next: () => {
-            this.loading.set(false);
-            this.router.navigate(['/tenants/register']);
-          },
-          error: () => this.loading.set(false)
-        });
-      } else {
-        this.router.navigate(['/tenants/register']);
-      }
-    } else {
+    if (needsNewSession) {
       this.loading.set(true);
-      this.tenantService.initSession(selectedPlan).subscribe({
+      this.tenantService.initSession(selectedPlan, cycle).subscribe({
         next: () => {
           this.loading.set(false);
           this.router.navigate(['/tenants/register']);
         },
         error: () => {
           this.loading.set(false);
+        },
+        complete: () => {
+          this.loading.set(false);
         }
       });
+    } else {
+      this.router.navigate(['/tenants/register']);
     }
   }
 }

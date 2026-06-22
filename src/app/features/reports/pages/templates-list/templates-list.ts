@@ -75,7 +75,7 @@ export class ReportTemplatesList implements OnInit {
   }
 
   useTemplate(tpl: ReportTemplate): void {
-    this.router.navigate(['/reportes/designer'], { queryParams: { templateId: tpl.id } });
+    this.router.navigate(['/reports/designer'], { queryParams: { templateId: tpl.id } });
   }
 
   deleteTemplate(tpl: ReportTemplate, event: Event): void {
@@ -93,6 +93,6 @@ export class ReportTemplatesList implements OnInit {
   }
 
   goToDesigner(): void {
-    this.router.navigate(['/reportes/designer']);
+    this.router.navigate(['/reports/designer']);
   }
 }

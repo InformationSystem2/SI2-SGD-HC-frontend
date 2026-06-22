@@ -100,7 +100,7 @@ import { DocumentVersionService } from '../../services/document-version.service'
                 </button>
 
                 @if (v.fileUrl) {
-                  <a [routerLink]="['/documentos/editor']"
+                  <a [routerLink]="['/documents/editor']"
                      [queryParams]="{ docId: documentId(), versionId: v.id, mode: 'view' }"
                      class="inline-flex items-center gap-1 rounded border border-hc-border
                             px-2 py-0.5 text-xs text-hc-primary hover:bg-hc-muted">
@@ -206,8 +206,9 @@ export class DocumentVersionHistoryComponent {
   protected iconFor(status: DocumentStatus): LucideIconData {
     switch (status) {
       case 'DRAFT':          return FileEdit;
-      case 'PENDING_SIGNATURE': return Send;
-      case 'COMPLETED':         return CheckCircle2;
+      case 'PENDING_REVIEW': return Send;
+      case 'REJECTED':       return XCircle;
+      case 'FINALIZED':      return CheckCircle2;
       default:               return FileText;
     }
   }
@@ -215,8 +216,9 @@ export class DocumentVersionHistoryComponent {
   protected dotBg(status: DocumentStatus): string {
     switch (status) {
       case 'DRAFT':          return 'bg-zinc-500';
-      case 'PENDING_SIGNATURE': return 'bg-amber-500';
-      case 'COMPLETED':         return 'bg-emerald-600';
+      case 'PENDING_REVIEW': return 'bg-amber-500';
+      case 'REJECTED':       return 'bg-red-500';
+      case 'FINALIZED':      return 'bg-emerald-600';
       default: return 'bg-zinc-500';
     }
   }
@@ -224,8 +226,9 @@ export class DocumentVersionHistoryComponent {
   protected badgeClass(status: DocumentStatus): string {
     switch (status) {
       case 'DRAFT':          return 'hc-badge-muted';
-      case 'PENDING_SIGNATURE': return 'hc-badge-warning';
-      case 'COMPLETED':         return 'hc-badge-success';
+      case 'PENDING_REVIEW': return 'hc-badge-warning';
+      case 'REJECTED':       return 'hc-badge-danger';
+      case 'FINALIZED':      return 'hc-badge-success';
       default: return 'hc-badge-muted';
     }
   }

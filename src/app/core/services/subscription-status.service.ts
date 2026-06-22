@@ -1,4 +1,5 @@
 import { inject, Injectable, signal } from '@angular/core';
+import { TranslateService } from '@ngx-translate/core';
 import { TenantService } from '../../features/tenants/services/tenant.service';
 import { TenantInfo } from '../../features/tenants/models/tenant.model';
 
@@ -11,6 +12,7 @@ export interface SubscriptionWarning {
 @Injectable({ providedIn: 'root' })
 export class SubscriptionStatusService {
   private tenantService = inject(TenantService);
+  private translate = inject(TranslateService);
 
   readonly warning = signal<SubscriptionWarning | null>(null);
   readonly status = signal<string>('ACTIVE');
@@ -37,20 +39,20 @@ export class SubscriptionStatusService {
           if (absDays > 3) {
             this.warning.set({
               type: 'EXPIRED',
-              message: 'Tu plan ha expirado. Renueva para continuar usando el sistema.',
+              message: this.translate.instant('SUBSCRIPTION.WARNING_EXPIRED'),
               severity: 'critical'
             });
           } else {
             this.warning.set({
               type: 'GRACE',
-              message: `Período de gracia: ${absDays} día(s) restante(s). Renueva tu suscripción.`,
+              message: this.translate.instant('SUBSCRIPTION.WARNING_GRACE', { days: absDays }),
               severity: 'warning'
             });
           }
         } else if (days <= 7) {
           this.warning.set({
             type: 'EXPIRING',
-            message: `Tu plan vence en ${days} día(s). Renueva para evitar interrupciones.`,
+            message: this.translate.instant('SUBSCRIPTION.WARNING_EXPIRING', { days }),
             severity: 'warning'
           });
         }

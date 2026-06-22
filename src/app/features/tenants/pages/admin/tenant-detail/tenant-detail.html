@@ -124,7 +124,7 @@
 
     <div class="hc-card p-5">
       <h3 class="hc-section-label mb-4">{{ 'TENANTS.USAGE' | translate }}</h3>
-      <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
         <div class="space-y-2">
           <div class="flex justify-between text-sm">
             <span class="flex items-center gap-1.5 text-hc-text-2">
@@ -181,6 +181,82 @@
                  [class.bg-hc-error]="getApiPercent() >= 95"></div>
           </div>
           <span class="text-xs text-hc-text-3">{{ getApiPercent() }}%</span>
+        </div>
+        <div class="space-y-2">
+          <div class="flex justify-between text-sm">
+            <span class="flex items-center gap-1.5 text-hc-text-2">
+              <i class="fas fa-procedures text-hc-primary"></i>
+              {{ 'TENANTS.PATIENTS' | translate }}
+            </span>
+            <span class="font-semibold text-hc-text">
+              {{ tenantService.currentTenant()!.stats.patientCount }} / {{ tenantService.currentTenant()!.stats.maxPatients }}
+            </span>
+          </div>
+          <div class="w-full bg-hc-muted rounded-full h-2.5 overflow-hidden">
+            <div class="h-full rounded-full transition-all duration-500"
+                 [style.width.%]="getPatientPercent()"
+                 [class.bg-hc-success]="getPatientPercent() < 80"
+                 [class.bg-hc-warning]="getPatientPercent() >= 80 && getPatientPercent() < 95"
+                 [class.bg-hc-error]="getPatientPercent() >= 95"></div>
+          </div>
+          <span class="text-xs text-hc-text-3">{{ getPatientPercent() }}%</span>
+        </div>
+        <div class="space-y-2">
+          <div class="flex justify-between text-sm">
+            <span class="flex items-center gap-1.5 text-hc-text-2">
+              <i class="fas fa-file-alt text-hc-primary"></i>
+              {{ 'TENANTS.DOCUMENTS' | translate }}
+            </span>
+            <span class="font-semibold text-hc-text">
+              {{ tenantService.currentTenant()!.stats.documentCount }} / {{ tenantService.currentTenant()!.stats.maxDocuments }}
+            </span>
+          </div>
+          <div class="w-full bg-hc-muted rounded-full h-2.5 overflow-hidden">
+            <div class="h-full rounded-full transition-all duration-500"
+                 [style.width.%]="getDocPercent()"
+                 [class.bg-hc-info]="getDocPercent() < 80"
+                 [class.bg-hc-warning]="getDocPercent() >= 80 && getDocPercent() < 95"
+                 [class.bg-hc-error]="getDocPercent() >= 95"></div>
+          </div>
+          <span class="text-xs text-hc-text-3">{{ getDocPercent() }}%</span>
+        </div>
+        <div class="space-y-2">
+          <div class="flex justify-between text-sm">
+            <span class="flex items-center gap-1.5 text-hc-text-2">
+              <i class="fas fa-x-ray text-hc-primary"></i>
+              {{ 'TENANTS.DICOM' | translate }}
+            </span>
+            <span class="font-semibold text-hc-text">
+              {{ tenantService.currentTenant()!.stats.dicomStudyCount }} / {{ tenantService.currentTenant()!.stats.maxDicomStudies }}
+            </span>
+          </div>
+          <div class="w-full bg-hc-muted rounded-full h-2.5 overflow-hidden">
+            <div class="h-full rounded-full transition-all duration-500"
+                 [style.width.%]="getDicomPercent()"
+                 [class.bg-hc-primary]="getDicomPercent() < 80"
+                 [class.bg-hc-warning]="getDicomPercent() >= 80 && getDicomPercent() < 95"
+                 [class.bg-hc-error]="getDicomPercent() >= 95"></div>
+          </div>
+          <span class="text-xs text-hc-text-3">{{ getDicomPercent() }}%</span>
+        </div>
+        <div class="space-y-2">
+          <div class="flex justify-between text-sm">
+            <span class="flex items-center gap-1.5 text-hc-text-2">
+              <i class="fas fa-user-shield text-hc-primary"></i>
+              {{ 'TENANTS.ROLES' | translate }}
+            </span>
+            <span class="font-semibold text-hc-text">
+              {{ tenantService.currentTenant()!.stats.roleCount }} / {{ tenantService.currentTenant()!.stats.maxStaffRoles }}
+            </span>
+          </div>
+          <div class="w-full bg-hc-muted rounded-full h-2.5 overflow-hidden">
+            <div class="h-full rounded-full transition-all duration-500"
+                 [style.width.%]="getRolePercent()"
+                 [class.bg-hc-accent]="getRolePercent() < 80"
+                 [class.bg-hc-warning]="getRolePercent() >= 80 && getRolePercent() < 95"
+                 [class.bg-hc-error]="getRolePercent() >= 95"></div>
+          </div>
+          <span class="text-xs text-hc-text-3">{{ getRolePercent() }}%</span>
         </div>
       </div>
     </div>

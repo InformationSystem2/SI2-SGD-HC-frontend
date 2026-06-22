@@ -6,6 +6,7 @@ import {
   faArrowLeft, faBan, faBuilding, faCalendar, faCheck,
   faDatabase, faExclamationTriangle, faPhone,
   faRocket, faSpinner, faUsers, faXmark,
+  faProcedures, faFileAlt, faXRay, faUserShield,
 } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { DatePipe, DecimalPipe } from '@angular/common';
@@ -113,13 +114,17 @@ export class TenantDetail implements OnInit {
     this.closeHardDelete();
   }
 
-  getPercent(type: 'users' | 'storage' | 'api'): number {
+  getPercent(type: 'users' | 'storage' | 'api' | 'patients' | 'documents' | 'dicom' | 'roles'): number {
     const t = this.tenantService.currentTenant();
     if (!t) return 0;
     switch (type) {
       case 'users': return t.stats.maxUsers ? Math.round((t.stats.userCount / t.stats.maxUsers) * 100) : 0;
       case 'storage': return t.stats.maxStorageMB ? Math.round((t.stats.storageUsedMB / t.stats.maxStorageMB) * 100) : 0;
       case 'api': return t.stats.maxApiCalls ? Math.round((t.stats.apiCallsUsed / t.stats.maxApiCalls) * 100) : 0;
+      case 'patients': return t.stats.maxPatients ? Math.round((t.stats.patientCount / t.stats.maxPatients) * 100) : 0;
+      case 'documents': return t.stats.maxDocuments ? Math.round((t.stats.documentCount / t.stats.maxDocuments) * 100) : 0;
+      case 'dicom': return t.stats.maxDicomStudies ? Math.round((t.stats.dicomStudyCount / t.stats.maxDicomStudies) * 100) : 0;
+      case 'roles': return t.stats.maxStaffRoles ? Math.round((t.stats.roleCount / t.stats.maxStaffRoles) * 100) : 0;
     }
   }
 
@@ -157,6 +162,22 @@ export class TenantDetail implements OnInit {
 
   getApiPercent(): number {
     return this.getPercent('api');
+  }
+
+  getPatientPercent(): number {
+    return this.getPercent('patients');
+  }
+
+  getDocPercent(): number {
+    return this.getPercent('documents');
+  }
+
+  getDicomPercent(): number {
+    return this.getPercent('dicom');
+  }
+
+  getRolePercent(): number {
+    return this.getPercent('roles');
   }
 
   private showError(msg: string) {

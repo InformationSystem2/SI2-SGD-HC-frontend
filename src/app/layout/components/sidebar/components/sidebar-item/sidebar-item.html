@@ -15,6 +15,11 @@
     <!-- Icono -->
     <fa-icon [icon]="getIcon(item().icon)" class="w-5 text-center shrink-0"></fa-icon>
 
+    <!-- Badge dot (sidebar colapsado) -->
+    @if (!sidebarService.expanded() && item().badge) {
+      <span class="absolute top-1 right-1 w-2 h-2 rounded-full bg-red-500 ring-2 ring-hc-sidebar"></span>
+    }
+
     <!-- Label (solo en sidebar expandido) -->
     <span
       class="overflow-hidden transition-all whitespace-nowrap flex-1"
@@ -22,6 +27,13 @@
     >
       {{ item().label | translate }}
     </span>
+
+    <!-- Badge (count de pendientes) -->
+    @if (sidebarService.expanded() && item().badge) {
+      <span class="ml-1 px-1.5 py-0.5 text-[10px] font-bold leading-none rounded-full bg-red-500 text-white">
+        {{ item().badge! > 99 ? '99+' : item().badge }}
+      </span>
+    }
 
     <!-- Chevron acordeón (solo expandido + tiene sub-items) -->
     @if (sidebarService.expanded() && hasSubItems()) {

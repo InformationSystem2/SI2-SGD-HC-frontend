@@ -52,7 +52,7 @@ export class DocumentForm implements OnInit {
   ngOnInit(): void {
     const templateId = this.route.snapshot.paramMap.get('templateId');
     if (!templateId) {
-      this.router.navigate(['/documentos/templates']);
+      this.router.navigate(['/documents/templates']);
       return;
     }
 
@@ -106,7 +106,7 @@ export class DocumentForm implements OnInit {
       clinicalContent: this.auth.hasPermission('document:create:clinical_content') ? clinicalContent : {},
       issueDate:      this.auth.hasPermission('document:create:issue_date') ? (h.issueDate || '') : '',
     }).subscribe(() => {
-      this.router.navigate(['/documentos/templates']);
+      this.router.navigate(['/documents/templates']);
     });
   }
 
@@ -115,6 +115,6 @@ export class DocumentForm implements OnInit {
   }
 
   back(): void {
-    this.router.navigate(['/documentos/templates']);
+    this.router.navigate(['/documents/templates']);
   }
 }

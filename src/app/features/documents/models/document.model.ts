@@ -1,4 +1,4 @@
-export type DocumentStatus = 'DRAFT' | 'PENDING_SIGNATURE' | 'COMPLETED' | 'PENDING_REVIEW' | 'REJECTED' | 'FINALIZED';
+export type DocumentStatus = 'DRAFT' | 'PENDING_REVIEW' | 'REJECTED' | 'FINALIZED';
 
 
 // { fieldName: fieldType }  — ej. { "medicamento": "text", "dosis": "number" }
@@ -81,4 +81,15 @@ export interface ExternalDocumentRequest {
   fileUrl: string;
   issueDate: string;
   notes?: string;
+}
+
+export interface VersionHistoryResponseDto {
+  id: string;
+  versionNumber: number;
+  authorId?: string;
+  status: DocumentStatus;
+  changeReason?: string;
+  clinicalContent?: Record<string, unknown>;
+  createdAt: string;
+  fileUrl?: string;
 }

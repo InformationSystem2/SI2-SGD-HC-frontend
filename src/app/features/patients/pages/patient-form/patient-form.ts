@@ -98,11 +98,11 @@ export class PatientForm implements OnInit {
     };
 
     this.patientService.updatePatient(this.patientId, payload).subscribe(() => {
-      this.router.navigate(['/pacientes/list']);
+      this.router.navigate(['/patients/list']);
     });
   }
 
   cancel(): void {
-    this.router.navigate(['/pacientes/list']);
+    this.router.navigate(['/patients/list']);
   }
 }

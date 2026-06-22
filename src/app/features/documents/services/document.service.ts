@@ -158,6 +158,10 @@ export class DocumentService {
   openOnlyofficeVersionViewSession(docId: string, versionId: string) {
     return this.http.post<OoSession>(`${this.BASE}/${docId}/versions/${versionId}/onlyoffice-view-session`, {});
   }
+
+  getVersions(docId: string) {
+    return this.http.get<import('../models/document.model').VersionHistoryResponseDto[]>(`${this.BASE}/${docId}/versions`);
+  }
 }
 
 interface OoSession {
