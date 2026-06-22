@@ -1,187 +1,181 @@
-# SGD-HC Frontend — Cliente Angular del Sistema de Gestión Documental y Clínico
+# SGD-HC — Frontend · Angular
 
-**Sistemas de Información II — Universidad Autónoma Gabriel René Moreno (UAGRM)**
-
-## Entregables
+**Sistema de Gestión Documental y Clínico**  
+Sistemas de Información II · Universidad Autónoma Gabriel René Moreno (UAGRM)
 
 | Recurso | Enlace |
 |---|---|
-| Documentación de Permisos (Frontend) | [`docs/refactor_granular_permissions.md`](docs/refactor_granular_permissions.md) |
 | Repositorio público | https://github.com/InformationSystem2/SI2-SGD-HC-frontend |
+| Documentación de permisos | [`docs/refactor_granular_permissions.md`](docs/refactor_granular_permissions.md) |
 
 ---
 
-## Información del Proyecto
+## Descripción
 
-Este directorio contiene la aplicación cliente de **SGD-HC (Sistema de Gestión Documental y Clínico)**, desarrollada utilizando **Angular 21** con **Signals** para una reactividad moderna, y estilizada con **Vanilla CSS** personalizado para un diseño limpio, premium y responsive.
+Cliente SPA de SGD-HC desarrollado con **Angular 21** y **Signals** para reactividad moderna. Estilizado con **Vanilla CSS** sin frameworks adicionales para control total sobre el diseño.
 
-El frontend integra características avanzadas tales como:
-* **Visualización DICOM**: Visor interactivo a nivel local y en servidor mediante CornerstoneJS.
-* **Multitenancy Estético (Dynamic Branding)**: Carga dinámica de logotipos, colores (primario, fondo, tarjetas, etc.), tipografía y estilos por Tenant en tiempo real.
-* **Control de Acceso Granular (Funcionalidad y Atributos)**: Ocultación de campos sensibles a nivel de lectura e inhabilitación/readonly para campos sin permisos de actualización.
+Capacidades destacadas:
 
----
-
-## Arquitectura de Flujo de Permisos
-
-```
-   Usuario (Login) 
-          │  
-          ▼
-   AuthService (login()) ──► Llama a /auth/login y obtiene JWT
-          │
-          ▼
-   AuthService (fetchPermissions()) ──► Consulta /auth/me/permissions (Backend)
-          │
-          ├─ LocalStorage ──► Guarda tokens y lista de permisos
-          │
-          ├─ BrandingService ──► Carga y aplica tokens CSS del Tenant (colores y logo)
-          │
-          ▼
-   guards / components ──► Evalúan visibilidad y acceso mediante auth.hasPermission()
-          │
-   onSubmit() ──► Mapea valores omitiendo (null) campos sin permisos de edición
-```
+- **Visor DICOM** — renderizado interactivo de imágenes médicas con CornerstoneJS.
+- **Dynamic Branding (Multitenancy estético)** — colores, logo, tipografía y variables CSS cargadas por tenant en tiempo real.
+- **Control de acceso granular (RBAC)** — ocultación y deshabilitación de campos según permisos del rol.
+- **Notificaciones push** — integración FCM para alertas en tiempo real.
+- **Workflows** — seguimiento visual de flujos de revisión y tareas asignadas.
 
 ---
 
-## Estructura del Proyecto
+## Flujo de autenticación y permisos
 
 ```
-sgd_angular/
-├── src/
-│   ├── app/
-│   │   ├── core/                   # Módulos globales del sistema
-│   │   │   ├── auth/               # Autenticación, guardias, interceptores y estado
-│   │   │   │   ├── guards/         # auth.guard, role.guard (superuser, permissionGuard)
-│   │   │   │   ├── interceptors/   # auth.interceptor (envío de token JWT y X-Tenant-ID)
-│   │   │   │   ├── models/         # auth.models (AuthState)
-│   │   │   │   └── services/       # auth.service (hasPermission, login, logout)
-│   │   │   └── services/           # branding.service (carga y aplica tokens CSS del Tenant)
-│   │   │
-│   │   ├── features/               # Módulos funcionales de negocio (Lazy Loaded)
-│   │   │   ├── auth/               # Páginas de Login
-│   │   │   ├── dicom/              # Visor y cargador de imágenes DICOM
-│   │   │   ├── documents/          # Gestión de documentos y plantillas
-│   │   │   ├── patients/           # Historial clínico y registro de pacientes
-│   │   │   ├── reports/            # Diseñador y visualizador de reportes
-│   │   │   ├── roles/              # Gestión de roles y asignación de permisos
-│   │   │   ├── tenants/            # Gestión de Clínicas, apariencia y suscripciones
-│   │   │   └── users/              # Gestión de usuarios del sistema (listado, registro, edición)
-│   │   │
-│   │   ├── layout/                 # Layouts globales
-│   │   │   └── components/         # sidebar, navbar
-│   │   │
-│   │   ├── app.component.ts        # Componente raíz
-│   │   ├── app.config.ts           # Proveedores globales de Angular
-│   │   └── app.routes.ts           # Definición de rutas globales y guardias de módulos
+Usuario (Login)
+      │
+      ▼
+AuthService.login()          → POST /auth/login → JWT
+      │
+      ▼
+AuthService.fetchPermissions() → GET /auth/me/permissions
+      │
+      ├─ localStorage          → accessToken, expiresAt, permissions
+      ├─ BrandingService       → inyecta variables CSS del tenant en :root
+      │
+      ▼
+Guards / Componentes           → auth.hasPermission() / auth.hasAnyPermission()
+      │
+      ▼
+Formularios                    → campos condicionales según permisos de lectura/edición
+```
+
+---
+
+## Estructura del proyecto
+
+```
+src/
+├── app/
+│   ├── core/
+│   │   ├── auth/
+│   │   │   ├── guards/        # authGuard, roleGuard, permissionGuard
+│   │   │   ├── models/        # AuthState, LoginRequest, LoginResponse
+│   │   │   └── services/      # AuthService (login, logout, hasPermission, fetchPermissions)
+│   │   ├── interceptors/      # auth.interceptor (Bearer token + X-Tenant-ID)
+│   │   ├── services/          # BrandingService, PushNotificationService
+│   │   └── utils/             # Utilidades compartidas
 │   │
-│   ├── assets/                     # Archivos estáticos y traducciones i18n
-│   ├── environments/               # Configuraciones por entorno (dev, docker, prod)
-│   └── styles.css                  # Hoja de estilos global y variables CSS base
+│   ├── features/              # Módulos de negocio (Lazy Loaded)
+│   │   ├── auth/              # Login, recuperación y restablecimiento de contraseña
+│   │   ├── audit/             # Visor de logs de auditoría
+│   │   ├── backups/           # Gestión y descarga de respaldos
+│   │   ├── dashboard/         # Panel principal con métricas
+│   │   ├── dicom/             # Cargador y visor DICOM (CornerstoneJS)
+│   │   ├── documents/         # Listado, carga y edición de documentos clínicos
+│   │   ├── historial/         # Historial clínico por paciente
+│   │   ├── notifications/     # Centro de notificaciones push
+│   │   ├── patients/          # Registro y detalle de pacientes
+│   │   ├── permissions/       # Gestión de permisos del sistema
+│   │   ├── reports/           # Diseñador QBE y exportación PDF/Excel/HTML
+│   │   ├── roles/             # Creación y edición de roles + asignación de permisos
+│   │   ├── tenants/           # Perfil de clínica, branding y suscripción
+│   │   ├── users/             # Listado, registro y edición de usuarios
+│   │   └── workflow/          # Flujos de revisión, tareas y comentarios
+│   │
+│   ├── layout/
+│   │   └── components/        # Sidebar, Navbar, layout raíz
+│   │
+│   ├── app.component.ts
+│   ├── app.config.ts          # Proveedores globales (HTTP, Router, i18n)
+│   └── app.routes.ts          # Rutas globales y guards de módulo
 │
-├── docs/
-│   └── refactor_granular_permissions.md # Guía para implementar permisos de atributos
-├── angular.json                    # Configuración del CLI de Angular
-├── package.json                    # Scripts del proyecto y dependencias
-└── README.md
+├── assets/                    # Imágenes estáticas y ficheros de traducción (i18n)
+├── environments/              # environment.ts · environment.docker.ts · environment.prod.ts
+└── styles.css                 # Variables CSS globales y reset
 ```
 
 ---
 
 ## Tecnologías
 
-### Frontend & Core
-| Tecnología | Versión | Uso |
+| Tecnología | Versión | Rol |
 |---|---|---|
-| Angular | 21.x | Framework SPA de desarrollo frontend con Signals |
-| TypeScript | 5.x | Lenguaje de desarrollo fuertemente tipado |
-| RxJS | 7.x | Manejo de flujos de datos asíncronos y reactivos |
-| Vanilla CSS | CSS3 | Estructuración y diseño responsivo sin frameworks adicionales |
-
-### Librerías Especializadas e Integraciones
-| Tecnología | Versión | Uso |
-|---|---|---|
-| CornerstoneJS | 2.x | Renderizado y manipulación interactiva de archivos médicos DICOM |
-| OnlyOffice SDK | — | Integración para la co-edición y visualización de plantillas en tiempo real |
-| Canvas / Web Workers | — | Procesamiento en segundo plano de imágenes médicas complejas |
+| Angular | 21.x | Framework SPA con Signals |
+| TypeScript | 5.x | Tipado estático |
+| RxJS | 7.x | Streams asíncronos y HTTP |
+| Vanilla CSS | CSS3 | Diseño sin frameworks externos |
+| CornerstoneJS | 2.x | Renderizado DICOM |
+| OnlyOffice SDK | — | Co-edición de plantillas en tiempo real |
+| Firebase (FCM) | — | Notificaciones push |
 
 ---
 
-## Instalación y Ejecución
+## Puesta en marcha
 
-### 1. Requisitos Previos
-* Node.js (v18 o superior recomendado)
-* Angular CLI instalado de forma global (`npm install -g @angular/cli`)
+### Requisitos previos
 
-### 2. Configurar Variables de Entorno
-Las variables de entorno se definen en `src/environments/`:
+- Node.js 18+
+- Angular CLI (`npm install -g @angular/cli`)
+
+### Variables de entorno
+
+Editar `src/environments/environment.ts`:
 
 ```typescript
-// src/environments/environment.ts (Desarrollo local)
 export const environment = {
   production: false,
-  apiUrl: 'http://localhost:8080/api',                  // API del Backend principal (Spring Boot)
-  reportsApiUrl: 'http://localhost:8001/api/reports',    // API del Microservicio de Reportes (Python)
-  micservApiUrl: 'http://localhost:8001/api',            // API general del microservicio
-  onlyofficeDocServerUrl: 'http://localhost:8088/',      // Servidor OnlyOffice
+  apiUrl: 'http://localhost:8080/api',          // Spring Boot
+  reportsApiUrl: 'http://localhost:8001/api/reports', // FastAPI
+  micservApiUrl: 'http://localhost:8001/api',
+  onlyofficeDocServerUrl: 'http://localhost:8088/',
 };
 ```
 
-### 3. Compilar e Iniciar la Aplicación
+### Instalar y ejecutar
 
-Instalar las dependencias del proyecto:
 ```bash
 npm install
-```
-
-Iniciar el servidor de desarrollo local:
-```bash
 npm start
 ```
-*Nota: El script de pre-arranque compilará automáticamente los web workers necesarios para CornerstoneJS (DICOM).*
 
-La aplicación estará disponible en: `http://localhost:4200`
+La aplicación queda disponible en `http://localhost:4200`.
+
+> El script `prestart` compila automáticamente los Web Workers de CornerstoneJS.
 
 ---
 
-## Pantallas Principales
+## Pantallas principales
 
-| Componente / Ruta | Flujo / Vista | Descripción |
+| Ruta | Módulo | Descripción |
 |---|---|---|
-| `/login` | Inicio de Sesión | Autenticación de usuarios por tenant, cargando la personalización del sistema |
-| `/documents` | Panel de Documentos | Búsqueda, filtrado y previsualización de documentos clínicos autorizados |
-| `/document-upload` | Carga de Documentos | Formulario con procesamiento OCR y carga de imágenes clínicas |
-| `/patients` | Historias Clínicas | Visualización y registro de pacientes e historiales (control granular por campo) |
-| `/reports` | Diseñador QBE | Interfaz interactiva de reportes con filtros y descarga de archivos PDF/Excel/HTML |
-| `/roles` | Control de Acceso (RBAC) | Configuración granular de permisos de lectura y edición de atributos para roles |
+| `/auth/login` | auth | Inicio de sesión con branding del tenant |
+| `/dashboard` | dashboard | Panel con métricas y accesos rápidos |
+| `/documents` | documents | Búsqueda, filtrado y previsualización de documentos |
+| `/patients` | patients | Registro y detalle de pacientes |
+| `/historial` | historial | Historial clínico por paciente |
+| `/dicom` | dicom | Carga y visualización de imágenes DICOM |
+| `/reports` | reports | Diseñador QBE y exportación de informes |
+| `/roles` | roles | Gestión de roles y asignación de permisos RBAC |
+| `/users` | users | Administración de usuarios del tenant |
+| `/tenants` | tenants | Configuración de clínica, branding y suscripción |
+| `/workflows` | workflow | Flujos de revisión y bandeja de tareas |
+| `/notifications` | notifications | Centro de notificaciones push |
+| `/audit` | audit | Registro de auditoría de acciones |
+| `/backups` | backups | Gestión de respaldos |
 
 ---
 
-## Módulo de Seguridad: algoritmos y políticas
+## Seguridad en el cliente
 
-### Multitenancy Estético (Dynamic Branding)
-El frontend consume la API de inquilinos durante el inicio de sesión. Una vez resuelto el tenant del usuario, `BrandingService` inyecta dinámicamente variables CSS personalizadas (`--primary-color`, `--logo-url`, `--font-family`) directamente en la raíz del documento (`:root`). Esto permite un aislamiento estético absoluto entre clínicas sin requerir builds separadas.
+### Dynamic Branding
+Al autenticarse, `BrandingService` consume `/tenants/current/branding` e inyecta variables CSS (`--primary-color`, `--bg-color`, `--logo-url`, etc.) directamente en `:root`. El cambio es instantáneo y no requiere builds separadas por clínica.
 
-### Control de Acceso por Atributos (Field-Level Security)
-* **Directiva de Permisos**: Los componentes y campos de formularios utilizan directivas y condicionales reactivos (`auth.hasPermission('PATIENT_READ_DIAGNOSIS')`).
-* **Visualización Restringida**: Si el rol del usuario no tiene permisos de lectura para un atributo sensible (p. ej. el diagnóstico de un paciente), el frontend oculta la celda o la reemplaza por caracteres enmascarados.
-* **Formularios de Edición Controlados**: Si un usuario tiene permiso de lectura pero no de edición sobre un campo, este se renderiza en estado `readonly` o `disabled`, evitando solicitudes de edición inválidas.
-
----
-
-## Por qué control de accesos a nivel de atributos y no de endpoints simple
-
-| Tipo de Control | Permite ocultar campos sensibles | Flexibilidad por Rol | Complejidad de UI |
-|---|---|---|---|
-| **Control por Endpoint (`/paciente/{id}`)** | No (Muestra la pantalla completa o nada) | Baja | Baja |
-| **Control a nivel de Atributo (SGD-HC)** | **Sí** (Oculta dirección, diagnóstico, etc.) | **Alta** (Granular por permiso) | Media (Renderizado condicional) |
+### RBAC en el frontend
+- **Guards**: `authGuard` protege rutas autenticadas; `permissionGuard` restringe módulos según permisos del rol.
+- **`hasPermission()`**: método reactivo de `AuthService` consultado en templates para mostrar u ocultar secciones.
+- **Campos condicionales**: los formularios deshabilitan o eliminan campos según los permisos de lectura/edición del rol activo.
 
 ---
 
-## Documentación Técnica
+## Documentación técnica
 
-- [`docs/refactor_granular_permissions.md`](docs/refactor_granular_permissions.md) — Guía detallada para el uso de directivas y control de visibilidad de campos de formulario.
+- [`docs/refactor_granular_permissions.md`](docs/refactor_granular_permissions.md) — Guía de implementación de permisos granulares en el frontend.
 
 ---
 
@@ -190,9 +184,7 @@ El frontend consume la API de inquilinos durante el inicio de sesión. Una vez r
 | Integrante | Rol |
 |---|---|
 | **Evert Rodríguez Araúz** | Backend Developer / Arquitecto de Software |
-| *[Integrante 2]* | *[Rol]* |
-| *[Integrante 3]* | *[Rol]* |
 
 ---
 
-*Proyecto desarrollado para la materia de Sistemas de Información II — UAGRM*
+*Sistemas de Información II · UAGRM*
