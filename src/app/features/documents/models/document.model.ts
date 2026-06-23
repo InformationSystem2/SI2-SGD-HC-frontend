@@ -57,6 +57,8 @@ export interface Document {
   fileUrl?: string;
   isExternalSource: boolean;
   versionNumber?: number;
+  clinicalHistoryId?: string;
+  clinicalHistoryCode?: string;
 }
 
 export interface UpdateDocumentRequest {

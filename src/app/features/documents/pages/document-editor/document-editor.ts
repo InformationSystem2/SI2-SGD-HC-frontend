@@ -142,6 +142,13 @@ export class DocumentEditorPage implements OnInit {
     } else {
       this.mode.set('create');
       this.patientService.getPatients().subscribe();
+
+      // Si llegamos desde la Historia Clínica de un paciente, preseleccionarlo.
+      const patientId = this.route.snapshot.queryParamMap.get('patientId');
+      if (patientId) {
+        this.form.patchValue({ patientId });
+        this.uploadForm.patchValue({ patientId });
+      }
     }
   }
 

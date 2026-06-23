@@ -35,6 +35,12 @@ export class DocumentUpload implements OnInit {
   readonly uploading     = signal(false);
   readonly uploadError   = signal<string | null>(null);
 
+  /** Formatos aceptados. Las imágenes DICOM se manejan en su propio apartado. */
+  readonly acceptedFormats = '.pdf,.doc,.docx,.xls,.xlsx,.ppt,.pptx,.png,.jpg,.jpeg,.gif,.txt,.csv';
+
+  /** Extensiones DICOM que NO se aceptan aquí. */
+  private readonly dicomExtensions = ['.dcm', '.dicom'];
+
   form = this.fb.group({
     patientId: ['', Validators.required],
     issueDate: [new Date().toISOString().split('T')[0], Validators.required],
@@ -48,8 +54,24 @@ export class DocumentUpload implements OnInit {
   onFileChange(event: Event): void {
     const input = event.target as HTMLInputElement;
     const file  = input.files?.[0] ?? null;
-    this.selectedFile.set(file);
     this.uploadError.set(null);
+
+    if (file && this.isDicom(file)) {
+      input.value = '';
+      this.selectedFile.set(null);
+      this.uploadError.set('Las imágenes DICOM no se suben aquí. Usa el apartado de Imágenes DICOM.');
+      return;
+    }
+
+    this.selectedFile.set(file);
+  }
+
+  /** Detecta archivos DICOM por extensión o tipo MIME. */
+  private isDicom(file: File): boolean {
+    const name = file.name.toLowerCase();
+    const byExt  = this.dicomExtensions.some(ext => name.endsWith(ext));
+    const byMime = file.type === 'application/dicom';
+    return byExt || byMime;
   }
 
   clearFile(): void {
@@ -70,6 +92,10 @@ export class DocumentUpload implements OnInit {
     const file = this.selectedFile();
     if (!file) {
       this.uploadError.set('Selecciona un archivo');
+      return;
+    }
+    if (this.isDicom(file)) {
+      this.uploadError.set('Las imágenes DICOM no se suben aquí. Usa el apartado de Imágenes DICOM.');
       return;
     }
 

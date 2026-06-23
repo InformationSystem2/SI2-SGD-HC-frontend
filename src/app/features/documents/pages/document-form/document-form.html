@@ -53,7 +53,7 @@
 
       <form [formGroup]="headerForm" class="grid grid-cols-1 sm:grid-cols-2 gap-4">
 
-        @if (auth.hasPermission('document:create:patient')) {
+        @if (auth.hasPermission('document:create')) {
           <div class="flex flex-col gap-1">
             <label for="patientId" class="text-sm font-medium text-hc-text-2">
               {{ 'DOCUMENTS.FIELD_PATIENT' | translate }}
@@ -86,7 +86,7 @@
           </div>
         }
 
-        @if (auth.hasPermission('document:create:issue_date')) {
+        @if (auth.hasPermission('document:create')) {
           <div class="flex flex-col gap-1">
             <label for="issueDate" class="text-sm font-medium text-hc-text-2">
               {{ 'DOCUMENTS.FIELD_ISSUE_DATE' | translate }}

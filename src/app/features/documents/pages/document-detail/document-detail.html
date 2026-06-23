@@ -75,6 +75,14 @@
             <p class="text-xs text-hc-text-3 uppercase tracking-wide font-medium">{{ 'DOCUMENT_LIST.PATIENT_ID' | translate }}</p>
             <p class="text-hc-text-2 font-mono text-xs mt-0.5 break-all">{{ d.patientId }}</p>
           </div>
+          @if (d.clinicalHistoryCode) {
+            <div>
+              <p class="text-xs text-hc-text-3 uppercase tracking-wide font-medium">Expediente Historia Clínica</p>
+              <a [routerLink]="['/patients/clinical-history', d.patientId]" class="text-hc-primary hover:underline text-sm font-semibold flex items-center gap-1 mt-0.5">
+                {{ d.clinicalHistoryCode }}
+              </a>
+            </div>
+          }
           @if (d.fileUrl) {
             <div class="space-y-2">
               <div>

@@ -1,5 +1,5 @@
 import { ChangeDetectionStrategy, Component, computed, inject, OnInit, signal } from '@angular/core';
-import { ActivatedRoute, Router } from '@angular/router';
+import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import {
   faArrowLeft, faFileLines, faSpinner, faBookOpen,
@@ -15,7 +15,7 @@ import { DocumentVersionHistoryComponent } from '../../components/document-versi
 
 @Component({
   selector: 'app-document-detail',
-  imports: [FontAwesomeModule, TranslatePipe, DocumentVersionHistoryComponent],
+  imports: [FontAwesomeModule, TranslatePipe, DocumentVersionHistoryComponent, RouterLink],
   templateUrl: './document-detail.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })

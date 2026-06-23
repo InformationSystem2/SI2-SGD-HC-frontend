@@ -39,6 +39,7 @@
           id="fileInput"
           type="file"
           class="hidden"
+          [accept]="acceptedFormats"
           (change)="onFileChange($event)"
         />
       </label>

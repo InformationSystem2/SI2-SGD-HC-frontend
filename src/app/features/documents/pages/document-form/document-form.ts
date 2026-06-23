@@ -72,12 +72,12 @@ export class DocumentForm implements OnInit {
       next: list => this.patients.set(list),
     });
 
-    if (!this.auth.hasPermission('document:create:patient')) {
+    if (!this.auth.hasPermission('document:create')) {
       this.headerForm.get('patientId')?.disable();
       this.headerForm.get('patientId')?.clearValidators();
       this.headerForm.get('patientId')?.updateValueAndValidity();
     }
-    if (!this.auth.hasPermission('document:create:issue_date')) {
+    if (!this.auth.hasPermission('document:create')) {
       this.headerForm.get('issueDate')?.disable();
       this.headerForm.get('issueDate')?.clearValidators();
       this.headerForm.get('issueDate')?.updateValueAndValidity();
@@ -101,10 +101,10 @@ export class DocumentForm implements OnInit {
     if (!t) return;
 
     this.documentService.create({
-      patientId:      this.auth.hasPermission('document:create:patient') ? (h.patientId || '') : '',
+      patientId:      this.auth.hasPermission('document:create') ? (h.patientId || '') : '',
       templateId:     t.id,
       clinicalContent: this.auth.hasPermission('document:create:clinical_content') ? clinicalContent : {},
-      issueDate:      this.auth.hasPermission('document:create:issue_date') ? (h.issueDate || '') : '',
+      issueDate:      this.auth.hasPermission('document:create') ? (h.issueDate || '') : '',
     }).subscribe(() => {
       this.router.navigate(['/documents/templates']);
     });
