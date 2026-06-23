@@ -1,0 +1,244 @@
+<div class="max-w-4xl mx-auto px-4 py-6">
+
+  <!-- Header -->
+  <div class="hc-page-header mb-8 flex items-center justify-between">
+    <div>
+      <h2 class="hc-page-title text-3xl font-extrabold flex items-center gap-3">
+        <fa-icon [icon]="faUser" class="text-hc-primary" />
+        {{ 'PROFILE.TITLE' | translate }}
+      </h2>
+      <p class="text-sm text-hc-text-3 mt-1">{{ 'PROFILE.SUBTITLE' | translate }}</p>
+    </div>
+  </div>
+
+  <div class="grid grid-cols-1 md:grid-cols-4 gap-6">
+
+    <!-- Tab navigation sidebar -->
+    <div class="md:col-span-1 space-y-2">
+      <button 
+        type="button" 
+        (click)="setTab('info')"
+        [class]="'w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-semibold transition-all duration-200 ' + 
+                 (activeTab() === 'info' 
+                   ? 'bg-hc-primary text-white shadow-lg shadow-hc-primary/20 translate-x-1' 
+                   : 'bg-hc-card hover:bg-hc-muted text-hc-text-2 border border-hc-border/50')"
+      >
+        <fa-icon [icon]="faUser" />
+        {{ 'PROFILE.TAB_INFO' | translate }}
+      </button>
+
+      <button 
+        type="button" 
+        (click)="setTab('password')"
+        [class]="'w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-semibold transition-all duration-200 ' + 
+                 (activeTab() === 'password' 
+                   ? 'bg-hc-primary text-white shadow-lg shadow-hc-primary/20 translate-x-1' 
+                   : 'bg-hc-card hover:bg-hc-muted text-hc-text-2 border border-hc-border/50')"
+      >
+        <fa-icon [icon]="faKey" />
+        {{ 'PROFILE.TAB_PASSWORD' | translate }}
+      </button>
+    </div>
+
+    <!-- Tab Content -->
+    <div class="md:col-span-3">
+
+      <!-- Loading State -->
+      <div *ngIf="loading()" class="hc-card p-12 flex flex-col items-center justify-center space-y-4">
+        <fa-icon [icon]="faSpinner" class="animate-spin text-4xl text-hc-primary" />
+        <p class="text-sm text-hc-text-3 font-medium">{{ 'PROFILE.LOADING' | translate }}</p>
+      </div>
+
+      <div *ngIf="!loading()">
+        <!-- Success Alert -->
+        <div *ngIf="successMessage()" class="mb-4 p-4 rounded-xl bg-emerald-500/10 border border-emerald-500/20 text-emerald-600 dark:text-emerald-400 flex items-start gap-3 animate-fade-in">
+          <fa-icon [icon]="faCheckCircle" class="text-xl mt-0.5" />
+          <div>
+            <p class="font-bold text-sm">{{ 'PROFILE.SUCCESS_TITLE' | translate }}</p>
+            <p class="text-xs opacity-90">{{ successMessage() }}</p>
+          </div>
+        </div>
+
+        <!-- Error Alert -->
+        <div *ngIf="errorMessage()" class="mb-4 p-4 rounded-xl bg-red-500/10 border border-red-500/20 text-red-600 dark:text-red-400 flex items-start gap-3 animate-fade-in">
+          <fa-icon [icon]="faExclamationTriangle" class="text-xl mt-0.5" />
+          <div>
+            <p class="font-bold text-sm">{{ 'PROFILE.ERROR_TITLE' | translate }}</p>
+            <p class="text-xs opacity-90">{{ errorMessage() }}</p>
+          </div>
+        </div>
+
+        <!-- Tab 1: Profile Info -->
+        <div *ngIf="activeTab() === 'info'" class="hc-card overflow-hidden">
+          <div class="px-6 py-4 bg-hc-muted border-b border-hc-border">
+            <h3 class="font-bold text-hc-text-1 text-base">{{ 'PROFILE.SECTION_PERSONAL' | translate }}</h3>
+          </div>
+
+          <form [formGroup]="profileForm" (ngSubmit)="onSubmitInfo()" class="p-6 space-y-6">
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
+              <!-- First Name -->
+              <div>
+                <label class="hc-label flex items-center gap-1">
+                  {{ 'USERS.FIELD_FIRST_NAME' | translate }} <span class="text-hc-error">*</span>
+                </label>
+                <input formControlName="firstName" type="text" class="hc-input" />
+                <p *ngIf="profileForm.get('firstName')?.invalid && profileForm.get('firstName')?.touched" class="text-hc-error text-xs mt-1">
+                  {{ 'USERS.VAL_REQUIRED' | translate }}
+                </p>
+              </div>
+
+              <!-- Last Name -->
+              <div>
+                <label class="hc-label flex items-center gap-1">
+                  {{ 'USERS.FIELD_LAST_NAME' | translate }} <span class="text-hc-error">*</span>
+                </label>
+                <input formControlName="lastName" type="text" class="hc-input" />
+                <p *ngIf="profileForm.get('lastName')?.invalid && profileForm.get('lastName')?.touched" class="text-hc-error text-xs mt-1">
+                  {{ 'USERS.VAL_REQUIRED' | translate }}
+                </p>
+              </div>
+            </div>
+
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
+              <!-- Email -->
+              <div>
+                <label class="hc-label flex items-center gap-1">
+                  {{ 'USERS.FIELD_EMAIL' | translate }} <span class="text-hc-error">*</span>
+                </label>
+                <input formControlName="email" type="email" class="hc-input" />
+                <p *ngIf="profileForm.get('email')?.hasError('required') && profileForm.get('email')?.touched" class="text-hc-error text-xs mt-1">
+                  {{ 'USERS.VAL_REQUIRED' | translate }}
+                </p>
+                <p *ngIf="profileForm.get('email')?.hasError('email') && profileForm.get('email')?.touched" class="text-hc-error text-xs mt-1">
+                  {{ 'USERS.VAL_EMAIL' | translate }}
+                </p>
+              </div>
+
+              <!-- Phone -->
+              <div>
+                <label class="hc-label">{{ 'USERS.FIELD_PHONE' | translate }}</label>
+                <input formControlName="phone" type="tel" class="hc-input" />
+              </div>
+            </div>
+
+            <div class="grid grid-cols-1 sm:grid-cols-3 gap-6">
+              <!-- Document Type -->
+              <div>
+                <label class="hc-label flex items-center gap-1">
+                  {{ 'USERS.FIELD_DOC_TYPE' | translate }} <span class="text-hc-error">*</span>
+                </label>
+                <select formControlName="documentType" class="hc-select">
+                  <option value="">{{ 'USERS.PH_SELECT' | translate }}</option>
+                  <option *ngFor="let dt of documentTypes" [value]="dt">{{ dt }}</option>
+                </select>
+                <p *ngIf="profileForm.get('documentType')?.invalid && profileForm.get('documentType')?.touched" class="text-hc-error text-xs mt-1">
+                  {{ 'USERS.VAL_REQUIRED' | translate }}
+                </p>
+              </div>
+
+              <!-- Document Number -->
+              <div>
+                <label class="hc-label flex items-center gap-1">
+                  {{ 'USERS.FIELD_DOC_NUMBER' | translate }} <span class="text-hc-error">*</span>
+                </label>
+                <input formControlName="documentNumber" type="text" class="hc-input" />
+                <p *ngIf="profileForm.get('documentNumber')?.invalid && profileForm.get('documentNumber')?.touched" class="text-hc-error text-xs mt-1">
+                  {{ 'USERS.VAL_REQUIRED' | translate }}
+                </p>
+              </div>
+
+              <!-- Gender -->
+              <div>
+                <label class="hc-label">{{ 'USERS.FIELD_GENDER' | translate }}</label>
+                <select formControlName="gender" class="hc-select">
+                  <option value="">{{ 'USERS.PH_SELECT' | translate }}</option>
+                  <option *ngFor="let g of genders" [value]="g.value">{{ g.label }}</option>
+                </select>
+              </div>
+            </div>
+
+            <!-- Action Button -->
+            <div class="pt-4 border-t border-hc-border flex justify-end">
+              <button type="submit" [disabled]="saving()" class="hc-btn-primary px-6 py-2.5 flex items-center gap-2">
+                <fa-icon [icon]="saving() ? faSpinner : faFloppyDisk" [class.animate-spin]="saving()" />
+                {{ (saving() ? 'USERS.SAVING' : 'USERS.SAVE_CHANGES') | translate }}
+              </button>
+            </div>
+          </form>
+        </div>
+
+        <!-- Tab 2: Change Password -->
+        <div *ngIf="activeTab() === 'password'" class="hc-card overflow-hidden">
+          <div class="px-6 py-4 bg-hc-muted border-b border-hc-border">
+            <h3 class="font-bold text-hc-text-1 text-base">{{ 'PROFILE.SECTION_PASSWORD' | translate }}</h3>
+          </div>
+
+          <form [formGroup]="passwordForm" (ngSubmit)="onSubmitPassword()" class="p-6 space-y-6">
+            <!-- Current Password -->
+            <div>
+              <label class="hc-label flex items-center gap-1">
+                {{ 'PROFILE.FIELD_CURRENT_PASSWORD' | translate }} <span class="text-hc-error">*</span>
+              </label>
+              <div class="relative">
+                <span class="absolute inset-y-0 left-0 pl-3 flex items-center text-hc-text-3">
+                  <fa-icon [icon]="faLock" />
+                </span>
+                <input formControlName="currentPassword" type="password" class="hc-input pl-10" />
+              </div>
+              <p *ngIf="passwordForm.get('currentPassword')?.invalid && passwordForm.get('currentPassword')?.touched" class="text-hc-error text-xs mt-1">
+                {{ 'USERS.VAL_REQUIRED' | translate }}
+              </p>
+            </div>
+
+            <!-- New Password -->
+            <div>
+              <label class="hc-label flex items-center gap-1">
+                {{ 'PROFILE.FIELD_NEW_PASSWORD' | translate }} <span class="text-hc-error">*</span>
+              </label>
+              <div class="relative">
+                <span class="absolute inset-y-0 left-0 pl-3 flex items-center text-hc-text-3">
+                  <fa-icon [icon]="faLock" class="text-hc-primary/70" />
+                </span>
+                <input formControlName="newPassword" type="password" class="hc-input pl-10" />
+              </div>
+              <div *ngIf="passwordForm.get('newPassword')?.invalid && passwordForm.get('newPassword')?.touched" class="text-hc-error text-xs mt-2 space-y-1">
+                <p *ngIf="passwordForm.get('newPassword')?.hasError('required')">{{ 'USERS.VAL_REQUIRED' | translate }}</p>
+                <p *ngIf="passwordForm.get('newPassword')?.hasError('minlength')">{{ 'USERS.VAL_MIN_PW' | translate }}</p>
+                <p *ngIf="passwordForm.get('newPassword')?.hasError('uppercase')">{{ 'USERS.VAL_UPPERCASE' | translate }}</p>
+                <p *ngIf="passwordForm.get('newPassword')?.hasError('number')">{{ 'USERS.VAL_NUMBER' | translate }}</p>
+              </div>
+            </div>
+
+            <!-- Confirm Password -->
+            <div>
+              <label class="hc-label flex items-center gap-1">
+                {{ 'PROFILE.FIELD_CONFIRM_PASSWORD' | translate }} <span class="text-hc-error">*</span>
+              </label>
+              <div class="relative">
+                <span class="absolute inset-y-0 left-0 pl-3 flex items-center text-hc-text-3">
+                  <fa-icon [icon]="faLock" />
+                </span>
+                <input formControlName="confirmPassword" type="password" class="hc-input pl-10" />
+              </div>
+              <p *ngIf="passwordForm.hasError('passwordsMismatch') && passwordForm.get('confirmPassword')?.touched" class="text-hc-error text-xs mt-1">
+                {{ 'USERS.VAL_PW_MISMATCH' | translate }}
+              </p>
+            </div>
+
+            <!-- Action Button -->
+            <div class="pt-4 border-t border-hc-border flex justify-end">
+              <button type="submit" [disabled]="saving()" class="hc-btn-primary px-6 py-2.5 flex items-center gap-2">
+                <fa-icon [icon]="saving() ? faSpinner : faFloppyDisk" [class.animate-spin]="saving()" />
+                {{ (saving() ? 'USERS.SAVING' : 'USERS.SAVE_CHANGES') | translate }}
+              </button>
+            </div>
+          </form>
+        </div>
+
+      </div>
+
+    </div>
+
+  </div>
+
+</div>
