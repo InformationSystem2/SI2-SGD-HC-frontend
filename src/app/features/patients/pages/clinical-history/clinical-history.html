@@ -1,0 +1,414 @@
+<div class="max-w-4xl mx-auto space-y-4">
+
+  <!-- Back button -->
+  <button (click)="back()"
+          class="flex items-center gap-2 text-sm text-hc-text-3 hover:text-hc-primary transition-colors">
+    <fa-icon [icon]="faArrowLeft" />
+    {{ 'PATIENTS.BACK' | translate }}
+  </button>
+
+  @if (loading()) {
+    <div class="flex justify-center py-12">
+      <fa-icon [icon]="faSpinner" class="animate-spin text-2xl text-hc-primary" />
+    </div>
+  }
+
+  @if (notFound()) {
+    <div class="p-4 rounded-lg bg-hc-error-bg border border-hc-error/30 text-hc-error text-sm">
+      {{ 'PATIENTS.NOT_FOUND' | translate }}
+    </div>
+  }
+
+  @if (patient(); as p) {
+    <!-- Header card (contexto del paciente) -->
+    <div class="bg-hc-card rounded-xl border border-hc-border shadow-sm p-6 flex items-center gap-4">
+      <div class="w-14 h-14 rounded-full bg-hc-primary/10 flex items-center justify-center">
+        <fa-icon [icon]="faFileMedical" class="text-2xl text-hc-primary" />
+      </div>
+      <div>
+        <h2 class="text-xl font-semibold text-hc-text">
+          @if (auth.hasPermission('patient:read:first_name')) { {{ p.firstName }} }
+          @if (auth.hasPermission('patient:read:last_name')) { {{ p.lastName }} }
+        </h2>
+        @if (auth.hasPermission('patient:read:document_type') || auth.hasPermission('patient:read:document_number')) {
+          <p class="text-sm text-hc-text-3">
+            @if (auth.hasPermission('patient:read:document_type')) { {{ p.documentType }} }
+            @if (auth.hasPermission('patient:read:document_number')) { {{ p.documentNumber }} }
+          </p>
+        }
+      </div>
+    </div>
+
+    <!-- Módulo de Historia Clínica -->
+    <div class="bg-hc-card rounded-xl border border-hc-border shadow-sm p-6 space-y-4">
+      <div class="flex items-center justify-between">
+        <div class="flex items-center gap-2">
+          <fa-icon [icon]="faFileMedical" class="text-hc-primary text-lg" />
+          <h3 class="text-sm font-semibold text-hc-text-3 uppercase tracking-wide">
+            Historia Clínica
+          </h3>
+        </div>
+
+        @if (clinicalHistory(); as hc) {
+          @if (!isEditing() && auth.hasPermission('patient:update')) {
+            <button (click)="startEditing()" class="flex items-center gap-1 text-xs text-hc-primary hover:underline">
+              <fa-icon [icon]="faEdit" />
+              Editar Historia
+            </button>
+          }
+        }
+      </div>
+
+      <!-- Cargando Historia -->
+      @if (loadingHistory()) {
+        <div class="flex justify-center py-6">
+          <fa-icon [icon]="faSpinner" class="animate-spin text-xl text-hc-primary" />
+        </div>
+      } @else {
+
+        <!-- Sin Historia Abierta -->
+        @if (!clinicalHistory() && !isEditing()) {
+          <div class="flex flex-col items-center justify-center py-8 space-y-3 border border-dashed border-hc-border rounded-lg bg-hc-surface/50">
+            <p class="text-sm text-hc-text-3">El paciente no tiene una Historia Clínica abierta.</p>
+            @if (auth.hasPermission('patient:create')) {
+              <button (click)="startEditing()" class="flex items-center gap-1.5 px-4 py-2 bg-hc-primary text-white rounded-lg text-xs font-semibold hover:bg-hc-primary-dark transition-colors shadow-sm">
+                <fa-icon [icon]="faPlus" />
+                Abrir Historia Clínica
+              </button>
+            }
+          </div>
+        }
+
+        <!-- Formulario (Creación y Edición) -->
+        @if (isEditing()) {
+          <form [formGroup]="historyForm" (ngSubmit)="saveHistory()" class="space-y-4">
+
+            @if (saveError()) {
+              <div class="p-3 rounded-lg bg-hc-error-bg border border-hc-error/30 text-hc-error text-xs">
+                {{ saveError() }}
+              </div>
+            }
+
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div class="flex flex-col gap-1">
+                <label for="code" class="text-xs font-semibold text-hc-text-2">Código de Expediente *</label>
+                <input id="code" type="text" formControlName="code" [readonly]="!!clinicalHistory()"
+                       class="rounded-lg border border-hc-border bg-hc-input px-3 py-2 text-sm text-hc-text focus:outline-none focus:ring-2 focus:ring-hc-primary/50 disabled:opacity-50" />
+              </div>
+
+              <div class="flex flex-col gap-1">
+                <label for="bloodType" class="text-xs font-semibold text-hc-text-2">Grupo Sanguíneo</label>
+                <select id="bloodType" formControlName="bloodType"
+                        class="rounded-lg border border-hc-border bg-hc-input px-3 py-2 text-sm text-hc-text focus:outline-none focus:ring-2 focus:ring-hc-primary/50">
+                  <option value="">Desconocido</option>
+                  <option value="O+">O Positivo (O+)</option>
+                  <option value="O-">O Negativo (O-)</option>
+                  <option value="A+">A Positivo (A+)</option>
+                  <option value="A-">A Negativo (A-)</option>
+                  <option value="B+">B Positivo (B+)</option>
+                  <option value="B-">B Negativo (B-)</option>
+                  <option value="AB+">AB Positivo (AB+)</option>
+                  <option value="AB-">AB Negativo (AB-)</option>
+                </select>
+              </div>
+            </div>
+
+            <!-- Alergias (dinámico) -->
+            <div class="flex flex-col gap-2 p-3 rounded-lg border border-hc-error/30 bg-hc-error-bg/10">
+              <div class="flex items-center justify-between">
+                <label class="text-xs font-semibold text-hc-error">Alergias Conocidas</label>
+                <button type="button" (click)="addAllergy()"
+                        class="flex items-center gap-1 text-xs text-hc-primary hover:underline">
+                  <fa-icon [icon]="faPlus" />
+                  Agregar alergia
+                </button>
+              </div>
+
+              @if (allergies.length === 0) {
+                <p class="text-xs text-hc-text-3 italic py-1">Sin alergias registradas. Usa "Agregar alergia" para añadir una.</p>
+              }
+
+              <div formArrayName="allergies" class="space-y-2">
+                @for (row of allergies.controls; track row; let i = $index) {
+                  <div [formGroupName]="i" class="grid grid-cols-1 sm:grid-cols-[1fr_1fr_1fr_auto] gap-2 items-start">
+                    <div class="flex flex-col gap-1 min-w-0">
+                      <input type="text" formControlName="allergen" placeholder="Alérgeno * (Ej: Penicilina)"
+                             class="w-full min-w-0 rounded-lg border border-hc-border bg-hc-input px-3 py-2 text-sm text-hc-text focus:outline-none focus:ring-2 focus:ring-hc-primary/50" />
+                    </div>
+                    <div class="flex flex-col gap-1 min-w-0">
+                      <input type="text" formControlName="severity" placeholder="Severidad * (Alta, Media, Baja)"
+                             class="w-full min-w-0 rounded-lg border border-hc-border bg-hc-input px-3 py-2 text-sm text-hc-text focus:outline-none focus:ring-2 focus:ring-hc-primary/50" />
+                    </div>
+                    <div class="flex flex-col gap-1 min-w-0">
+                      <input type="text" formControlName="reaction" placeholder="Reacción *"
+                             class="w-full min-w-0 rounded-lg border border-hc-border bg-hc-input px-3 py-2 text-sm text-hc-text focus:outline-none focus:ring-2 focus:ring-hc-primary/50" />
+                    </div>
+                    <button type="button" (click)="removeAllergy(i)"
+                            class="p-2 rounded-lg text-hc-text-3 hover:text-hc-error hover:bg-hc-error-bg transition-colors self-start sm:mt-0.5" title="Quitar alergia">
+                      <fa-icon [icon]="faTrash" />
+                    </button>
+                  </div>
+                }
+              </div>
+            </div>
+
+            <div class="flex flex-col gap-1">
+              <label for="pathologicalAntecedents" class="text-xs font-semibold text-hc-text-2">Antecedentes Patológicos (Enfermedades, cirugías, traumas)</label>
+              <textarea id="pathologicalAntecedents" formControlName="pathologicalAntecedents" rows="3"
+                        class="w-full rounded-lg border border-hc-border bg-hc-input px-3 py-2 text-sm text-hc-text focus:outline-none focus:ring-2 focus:ring-hc-primary/50 resize-none"></textarea>
+            </div>
+
+            <div class="flex flex-col gap-1">
+              <label for="nonPathologicalAntecedents" class="text-xs font-semibold text-hc-text-2">Antecedentes No Patológicos (Estilo de vida, hábitos)</label>
+              <textarea id="nonPathologicalAntecedents" formControlName="nonPathologicalAntecedents" rows="2"
+                        class="w-full rounded-lg border border-hc-border bg-hc-input px-3 py-2 text-sm text-hc-text focus:outline-none focus:ring-2 focus:ring-hc-primary/50 resize-none"></textarea>
+            </div>
+
+            <div class="flex flex-col gap-1">
+              <label for="familyAntecedents" class="text-xs font-semibold text-hc-text-2">Antecedentes Familiares (Diabetes, hipertensión, cáncer)</label>
+              <textarea id="familyAntecedents" formControlName="familyAntecedents" rows="2"
+                        class="w-full rounded-lg border border-hc-border bg-hc-input px-3 py-2 text-sm text-hc-text focus:outline-none focus:ring-2 focus:ring-hc-primary/50 resize-none"></textarea>
+            </div>
+
+            <div class="flex flex-col gap-1">
+              <label for="chronicConditions" class="text-xs font-semibold text-hc-text-2">Condiciones Crónicas</label>
+              <textarea id="chronicConditions" formControlName="chronicConditions" rows="2"
+                        class="w-full rounded-lg border border-hc-border bg-hc-input px-3 py-2 text-sm text-hc-text focus:outline-none focus:ring-2 focus:ring-hc-primary/50 resize-none"></textarea>
+            </div>
+
+            <!-- Medicamentos actuales (dinámico) -->
+            <div class="flex flex-col gap-2 p-3 rounded-lg border border-hc-border bg-hc-surface/50">
+              <div class="flex items-center justify-between">
+                <label class="text-xs font-semibold text-hc-text-2">Medicamentos Actuales</label>
+                <button type="button" (click)="addMedication()"
+                        class="flex items-center gap-1 text-xs text-hc-primary hover:underline">
+                  <fa-icon [icon]="faPlus" />
+                  Agregar medicamento
+                </button>
+              </div>
+
+              @if (medications.length === 0) {
+                <p class="text-xs text-hc-text-3 italic py-1">Sin medicamentos registrados. Usa "Agregar medicamento" para añadir uno.</p>
+              }
+
+              <div formArrayName="currentMedications" class="space-y-2">
+                @for (row of medications.controls; track row; let i = $index) {
+                  <div [formGroupName]="i" class="grid grid-cols-1 sm:grid-cols-[1fr_1fr_1fr_auto] gap-2 items-start">
+                    <div class="flex flex-col gap-1 min-w-0">
+                      <input type="text" formControlName="medication" placeholder="Medicamento * (Ej: Metformina)"
+                             class="w-full min-w-0 rounded-lg border border-hc-border bg-hc-input px-3 py-2 text-sm text-hc-text focus:outline-none focus:ring-2 focus:ring-hc-primary/50" />
+                    </div>
+                    <div class="flex flex-col gap-1 min-w-0">
+                      <input type="text" formControlName="dose" placeholder="Dosis * (Ej: 500mg)"
+                             class="w-full min-w-0 rounded-lg border border-hc-border bg-hc-input px-3 py-2 text-sm text-hc-text focus:outline-none focus:ring-2 focus:ring-hc-primary/50" />
+                    </div>
+                    <div class="flex flex-col gap-1 min-w-0">
+                      <input type="text" formControlName="frequency" placeholder="Frecuencia *"
+                             class="w-full min-w-0 rounded-lg border border-hc-border bg-hc-input px-3 py-2 text-sm text-hc-text focus:outline-none focus:ring-2 focus:ring-hc-primary/50" />
+                    </div>
+                    <button type="button" (click)="removeMedication(i)"
+                            class="p-2 rounded-lg text-hc-text-3 hover:text-hc-error hover:bg-hc-error-bg transition-colors self-start sm:mt-0.5" title="Quitar medicamento">
+                      <fa-icon [icon]="faTrash" />
+                    </button>
+                  </div>
+                }
+              </div>
+            </div>
+
+            <div class="flex flex-col gap-1">
+              <label for="observations" class="text-xs font-semibold text-hc-text-2">Observaciones Generales</label>
+              <textarea id="observations" formControlName="observations" rows="2"
+                        class="w-full rounded-lg border border-hc-border bg-hc-input px-3 py-2 text-sm text-hc-text focus:outline-none focus:ring-2 focus:ring-hc-primary/50 resize-none"></textarea>
+            </div>
+
+            <div class="flex items-center justify-end gap-2 pt-2">
+              <button type="button" (click)="cancelEditing()"
+                      class="flex items-center gap-1.5 px-4 py-2 border border-hc-border rounded-lg text-xs font-semibold text-hc-text hover:bg-hc-hover transition-colors">
+                <fa-icon [icon]="faTimes" />
+                Cancelar
+              </button>
+              <button type="submit"
+                      class="flex items-center gap-1.5 px-4 py-2 bg-hc-primary text-white rounded-lg text-xs font-semibold hover:bg-hc-primary-dark transition-colors shadow-sm">
+                <fa-icon [icon]="faSave" />
+                Guardar Expediente
+              </button>
+            </div>
+          </form>
+        }
+
+        <!-- Vista Detalle de la Historia Clínica -->
+        @if (clinicalHistory(); as hc) {
+          @if (!isEditing()) {
+            <div class="space-y-4">
+              <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div>
+                  <dt class="text-xs text-hc-text-3 font-semibold">Código de Expediente</dt>
+                  <dd class="text-sm font-mono text-hc-text mt-0.5">{{ hc.code }}</dd>
+                </div>
+                <div>
+                  <dt class="text-xs text-hc-text-3 font-semibold">Grupo Sanguíneo</dt>
+                  <dd class="text-sm text-hc-text mt-0.5">
+                    @if (hc.bloodType) {
+                      <span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-semibold bg-hc-error-bg text-hc-error border border-hc-error/20">
+                        {{ hc.bloodType }}
+                      </span>
+                    } @else {
+                      <span class="text-hc-text-3 italic">No registrado</span>
+                    }
+                  </dd>
+                </div>
+              </div>
+
+              @if (hc.allergies && hc.allergies.length > 0) {
+                <div class="p-3 bg-hc-error-bg/20 border border-hc-error/20 rounded-lg space-y-2">
+                  <dt class="text-xs font-bold text-hc-error">ALERGIAS CONOCIDAS</dt>
+                  <dd class="space-y-2">
+                    @for (allergy of hc.allergies; track allergy) {
+                      <div class="flex flex-wrap items-center gap-x-3 gap-y-1 text-sm">
+                        <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold bg-hc-error text-white">
+                          {{ allergy.allergen }}
+                        </span>
+                        @if (allergy.severity) {
+                          <span class="text-xs text-hc-error"><span class="text-hc-text-3">Severidad:</span> {{ allergy.severity }}</span>
+                        }
+                        @if (allergy.reaction) {
+                          <span class="text-xs text-hc-text-2"><span class="text-hc-text-3">Reacción:</span> {{ allergy.reaction }}</span>
+                        }
+                      </div>
+                    }
+                  </dd>
+                </div>
+              }
+
+              <div class="space-y-3">
+                <hr class="border-hc-border" />
+
+                <div>
+                  <dt class="text-xs text-hc-text-3 font-semibold">Antecedentes Patológicos</dt>
+                  <dd class="text-sm text-hc-text mt-1 whitespace-pre-line">{{ hc.pathologicalAntecedents || 'Ninguno' }}</dd>
+                </div>
+
+                <hr class="border-hc-border" />
+
+                <div>
+                  <dt class="text-xs text-hc-text-3 font-semibold">Antecedentes No Patológicos</dt>
+                  <dd class="text-sm text-hc-text mt-1 whitespace-pre-line">{{ hc.nonPathologicalAntecedents || 'Ninguno' }}</dd>
+                </div>
+
+                <hr class="border-hc-border" />
+
+                <div>
+                  <dt class="text-xs text-hc-text-3 font-semibold">Antecedentes Familiares</dt>
+                  <dd class="text-sm text-hc-text mt-1 whitespace-pre-line">{{ hc.familyAntecedents || 'Ninguno' }}</dd>
+                </div>
+
+                <hr class="border-hc-border" />
+
+                <div>
+                  <dt class="text-xs text-hc-text-3 font-semibold">Condiciones Crónicas</dt>
+                  <dd class="text-sm text-hc-text mt-1 whitespace-pre-line">{{ hc.chronicConditions || 'Ninguna' }}</dd>
+                </div>
+
+                <hr class="border-hc-border" />
+
+                <div>
+                  <dt class="text-xs text-hc-text-3 font-semibold">Medicamentos Actuales</dt>
+                  @if (hc.currentMedications && hc.currentMedications.length > 0) {
+                    <dd class="mt-1 overflow-x-auto">
+                      <table class="min-w-full text-sm">
+                        <thead>
+                          <tr class="text-left text-xs text-hc-text-3">
+                            <th class="py-1 pr-4 font-semibold">Medicamento</th>
+                            <th class="py-1 pr-4 font-semibold">Dosis</th>
+                            <th class="py-1 font-semibold">Frecuencia</th>
+                          </tr>
+                        </thead>
+                        <tbody class="divide-y divide-hc-border/50">
+                          @for (med of hc.currentMedications; track med) {
+                            <tr>
+                              <td class="py-1.5 pr-4 text-hc-text">{{ med.medication }}</td>
+                              <td class="py-1.5 pr-4 text-hc-text-2">{{ med.dose }}</td>
+                              <td class="py-1.5 text-hc-text-2">{{ med.frequency }}</td>
+                            </tr>
+                          }
+                        </tbody>
+                      </table>
+                    </dd>
+                  } @else {
+                    <dd class="text-sm text-hc-text mt-1">Ninguno</dd>
+                  }
+                </div>
+
+                <hr class="border-hc-border" />
+
+                <div>
+                  <dt class="text-xs text-hc-text-3 font-semibold">Observaciones</dt>
+                  <dd class="text-sm text-hc-text mt-1 whitespace-pre-line">{{ hc.observations || 'Ninguna' }}</dd>
+                </div>
+              </div>
+            </div>
+          }
+        }
+
+      }
+    </div>
+
+    <!-- Documentos asociados a la Historia Clínica -->
+    <div class="bg-hc-card rounded-xl border border-hc-border shadow-sm p-6 space-y-4">
+      <div class="flex items-center justify-between">
+        <div class="flex items-center gap-2">
+          <fa-icon [icon]="faFileLines" class="text-hc-primary text-lg" />
+          <h3 class="text-sm font-semibold text-hc-text-3 uppercase tracking-wide">
+            Documentos de la Historia Clínica
+          </h3>
+        </div>
+
+        @if (auth.hasPermission('document:create')) {
+          <button (click)="newDocument()"
+                  class="flex items-center gap-1.5 px-3 py-1.5 bg-hc-primary text-white rounded-lg text-xs font-semibold hover:bg-hc-primary-dark transition-colors shadow-sm whitespace-nowrap">
+            <fa-icon [icon]="faPlus" />
+            Nuevo documento
+          </button>
+        }
+      </div>
+
+      @if (loadingDocs()) {
+        <div class="flex justify-center py-6">
+          <fa-icon [icon]="faSpinner" class="animate-spin text-xl text-hc-primary" />
+        </div>
+      } @else {
+        @if (documents().length === 0) {
+          <div class="flex flex-col items-center justify-center py-8 space-y-2 border border-dashed border-hc-border rounded-lg bg-hc-surface/50">
+            <fa-icon [icon]="faFileLines" class="text-2xl text-hc-text-3" />
+            <p class="text-sm text-hc-text-3">No hay documentos asociados a esta historia clínica.</p>
+          </div>
+        } @else {
+          <ul class="divide-y divide-hc-border">
+            @for (doc of documents(); track doc.id) {
+              <li class="flex items-center justify-between gap-3 py-3">
+                <div class="min-w-0">
+                  <p class="text-sm font-medium text-hc-text truncate">{{ doc.templateName }}</p>
+                  <p class="text-xs text-hc-text-3">
+                    {{ doc.issueDate }}
+                    @if (doc.isExternalSource) { · Externo }
+                  </p>
+                </div>
+                <div class="flex items-center gap-2 shrink-0">
+                  <span class="px-2 py-0.5 rounded-full text-xs font-medium" [class]="statusClass(doc.status)">
+                    {{ statusLabel(doc.status) }}
+                  </span>
+                  <button (click)="viewDocument(doc.id)"
+                          class="hc-btn-icon-primary"
+                          title="Ver documento">
+                    <fa-icon [icon]="faEye" />
+                  </button>
+                </div>
+              </li>
+            }
+          </ul>
+        }
+      }
+    </div>
+  }
+
+</div>
