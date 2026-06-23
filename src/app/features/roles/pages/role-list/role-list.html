@@ -1,5 +1,6 @@
 <div class="space-y-4">
 
+  <!-- Header -->
   <div class="hc-page-header">
     <h2 class="hc-page-title">
       <fa-icon [icon]="faShieldHalved" class="text-hc-primary" />
@@ -12,6 +13,66 @@
       </button>
     }
   </div>
+
+  <!-- Búsqueda + filtros -->
+  <div class="flex flex-col sm:flex-row gap-2">
+
+    <!-- Buscador -->
+    <div class="relative flex-1">
+      <fa-icon [icon]="faMagnifyingGlass"
+               class="absolute left-3 top-1/2 -translate-y-1/2 text-hc-text-3 text-sm pointer-events-none" />
+      <input
+        type="search"
+        [value]="search()"
+        (input)="onSearch($any($event.target).value)"
+        placeholder="{{ 'ROLES.SEARCH_PLACEHOLDER' | translate }}"
+        class="hc-input pl-9 pr-9"
+      />
+      @if (search()) {
+        <button (click)="clearSearch()"
+                class="absolute right-3 top-1/2 -translate-y-1/2 text-hc-text-3 hover:text-hc-text transition-colors">
+          <fa-icon [icon]="faXmark" />
+        </button>
+      }
+    </div>
+
+    <!-- Filtro estado -->
+    <select
+      class="hc-input w-auto min-w-[130px]"
+      [value]="filterStatus()"
+      (change)="onStatusChange($any($event.target).value)"
+    >
+      <option value="all">{{ 'ROLES.FILTER_ALL' | translate }}</option>
+      <option value="active">{{ 'ROLES.STATUS_ACTIVE' | translate }}</option>
+      <option value="inactive">{{ 'ROLES.STATUS_INACTIVE' | translate }}</option>
+    </select>
+
+    <!-- Filtro Tenant (Superusuario) -->
+    @if (isSuperuser()) {
+      <select
+        class="hc-input w-auto min-w-[160px] border-amber-500/50 focus:border-amber-500 focus:ring-amber-500"
+        [value]="filterTenant()"
+        (change)="onTenantChange($any($event.target).value)"
+      >
+        <option value="">{{ 'ROLES.FILTER_ALL_TENANTS' | translate }}</option>
+        @for (tenant of availableTenants(); track tenant.id) {
+          <option [value]="tenant.slug">{{ tenant.name }}</option>
+        }
+      </select>
+    }
+
+    @if (hasActiveFilters()) {
+      <button (click)="clearFilters()"
+              class="hc-btn-ghost flex items-center gap-1.5 whitespace-nowrap text-sm">
+        <fa-icon [icon]="faXmark" />
+        {{ 'COMMON.CLEAR_FILTERS' | translate }}
+      </button>
+    }
+  </div>
+
+  @if (hasActiveFilters()) {
+    <p class="text-xs text-hc-text-3">{{ totalItems() }} {{ 'COMMON.RESULTS' | translate }}</p>
+  }
 
   @if (rolesService.error()) {
     <div class="hc-alert-error">{{ rolesService.error() }}</div>
@@ -35,7 +96,7 @@
           </tr>
         </thead>
         <tbody>
-          @for (role of visibleRoles(); track role.id) {
+          @for (role of paged(); track role.id) {
             <tr>
               <td class="font-medium text-hc-text">{{ role.name }}</td>
               <td class="text-hc-text-2 max-w-[240px] truncate">{{ role.description }}</td>
@@ -67,11 +128,34 @@
             </tr>
           } @empty {
             <tr>
-              <td colspan="4" class="hc-table-empty">{{ 'ROLES.EMPTY' | translate }}</td>
+              <td colspan="4" class="hc-table-empty">
+                @if (hasActiveFilters()) {
+                  {{ 'ROLES.SEARCH_EMPTY' | translate }}
+                } @else {
+                  {{ 'ROLES.EMPTY' | translate }}
+                }
+              </td>
             </tr>
           }
         </tbody>
       </table>
+
+      @if (totalPages() > 1) {
+        <div class="hc-pagination">
+          <span class="text-xs text-hc-text-3">
+            {{ page() * PAGE_SIZE + 1 }}–{{ page() * PAGE_SIZE + paged().length }} de {{ totalItems() }}
+          </span>
+          <div class="flex items-center gap-1">
+            <button (click)="prevPage()" [disabled]="page() === 0" class="hc-page-btn">‹</button>
+            @for (p of visiblePages(); track p) {
+              <button (click)="goToPage(p)" [class]="p === page() ? 'hc-page-btn-active' : 'hc-page-btn'">
+                {{ p + 1 }}
+              </button>
+            }
+            <button (click)="nextPage()" [disabled]="page() === totalPages() - 1" class="hc-page-btn">›</button>
+          </div>
+        </div>
+      }
     </div>
   }
 
