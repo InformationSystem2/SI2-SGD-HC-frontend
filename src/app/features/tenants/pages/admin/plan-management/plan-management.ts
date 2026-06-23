@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, inject, OnInit, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed, inject, OnInit, signal } from '@angular/core';
 import { PlanService, PlanUpdateDto } from '../../../../../core/services/plan.service';
 import { PlanDto } from '../../../models/plan.model';
 import { TranslatePipe, TranslateService } from '@ngx-translate/core';
@@ -30,6 +30,7 @@ export class PlanManagement implements OnInit {
   readonly messageType = signal<'success' | 'error'>('success');
 
   readonly edits = signal<Record<string, PlanUpdateDto>>({});
+  readonly activePlan = computed(() => this.plans().find(p => p.name === this.expandedPlan()));
 
   readonly faCrown = faCrown;
   readonly faSave = faSave;
