@@ -26,7 +26,7 @@
           </div>
         </div>
         <div class="flex items-baseline gap-2 mb-2">
-          <span class="text-4xl font-extrabold text-hc-primary">${{ getDisplayPrice(info.subscriptionPlan) }}</span>
+          <span class="text-4xl font-extrabold text-hc-primary">Bs {{ getDisplayPrice(info.subscriptionPlan) }}</span>
           <span class="text-sm text-hc-text-3">/{{ getBillingCycleLabel() }}</span>
         </div>
         <p class="text-xs text-hc-text-3">{{ info.subscriptionPlan | translate }}</p>
@@ -499,7 +499,7 @@
 
               <div class="text-center mb-5">
                 <div class="flex items-baseline justify-center gap-1">
-                  <span class="text-4xl font-extrabold" [class.text-hc-primary]="selectedNewPlan() === plan.name" [class.text-hc-text]="selectedNewPlan() !== plan.name">${{ selectedBillingCycle() === 'YEARLY' ? plan.priceYearly : plan.priceMonthly }}</span>
+                  <span class="text-4xl font-extrabold" [class.text-hc-primary]="selectedNewPlan() === plan.name" [class.text-hc-text]="selectedNewPlan() !== plan.name">Bs {{ selectedBillingCycle() === 'YEARLY' ? plan.priceYearly : plan.priceMonthly }}</span>
                   <span class="text-sm text-hc-text-3">/{{ selectedBillingCycle() === 'YEARLY' ? ('TENANTS.YEAR' | translate) : ('TENANTS.MONTH' | translate) }}</span>
                 </div>
                 @if (plan.priceMonthly === 0) {

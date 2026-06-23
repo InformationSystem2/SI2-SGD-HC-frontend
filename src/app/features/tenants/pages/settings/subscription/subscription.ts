@@ -210,23 +210,11 @@ export class Subscription implements OnInit {
   renewPlan(): void {
     const info = this.tenantInfo();
     if (!info) return;
-    this.renewing.set(true);
-    this.tenantService.renewSubscription(info.subscriptionPlan, this.selectedBillingCycle()).subscribe({
-      next: () => {
-        this.renewing.set(false);
-        this.loadData();
-        this.showMessage(this.translate.instant('SUBSCRIPTION.PLAN_RENEWED'), 'success');
-      },
-      error: () => {
-        this.renewing.set(false);
-        this.showMessage(this.translate.instant('SUBSCRIPTION.PLAN_RENEW_ERROR'), 'error');
-      }
-    });
 
     const plan = info.subscriptionPlan || 'BASIC';
+    this.renewing.set(true);
+
     if (plan === 'BASIC') {
-      // Renovar plan gratis de forma directa
-      this.renewing.set(true);
       this.tenantService.renewSubscription(plan).subscribe({
         next: () => {
           this.renewing.set(false);
@@ -239,8 +227,7 @@ export class Subscription implements OnInit {
         }
       });
     } else {
-      // Renovar plan de pago -> Stripe
-      this.renewing.set(true);
+      // Planes de pago -> crear Payment Intent en Stripe primero
       this.tenantService.createChangePlanPaymentIntent(plan).subscribe({
         next: (res) => {
           this.renewing.set(false);

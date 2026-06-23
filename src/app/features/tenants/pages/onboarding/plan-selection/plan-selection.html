@@ -107,12 +107,12 @@
 
               <div class="text-center mb-3">
                 <span class="text-3xl font-extrabold text-hc-text">
-                  ${{ billingCycle() === 'YEARLY' ? plan.priceYearly : plan.priceMonthly }}
+                  Bs {{ billingCycle() === 'YEARLY' ? plan.priceYearly : plan.priceMonthly }}
                 </span>
                 <span class="text-hc-text-3 text-xs">/{{ billingCycle() === 'YEARLY' ? ('TENANTS.YEAR' | translate) : ('TENANTS.MONTH' | translate) }}</span>
                 @if (billingCycle() === 'YEARLY' && plan.priceMonthly > 0) {
                   <div class="text-xs text-hc-success font-medium mt-0.5">
-                    {{ 'TENANTS.SAVE' | translate }} ${{ (plan.priceMonthly * 12 - plan.priceYearly).toFixed(0) }}/{{ 'TENANTS.YEAR' | translate }}
+                    {{ 'TENANTS.SAVE' | translate }} Bs {{ (plan.priceMonthly * 12 - plan.priceYearly).toFixed(0) }}/{{ 'TENANTS.YEAR' | translate }}
                   </div>
                 }
               </div>
