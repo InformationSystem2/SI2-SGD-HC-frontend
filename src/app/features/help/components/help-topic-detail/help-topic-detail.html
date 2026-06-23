@@ -8,12 +8,12 @@
           class="flex items-center space-x-2 bg-white/10 hover:bg-white/20 rounded-md px-3 py-1.5 transition-colors cursor-pointer"
         >
           <app-help-icon name="arrow-left" class="w-4 h-4"></app-help-icon>
-          <span class="text-xs font-semibold uppercase tracking-wider">Volver</span>
+          <span class="text-xs font-semibold uppercase tracking-wider">{{ 'HELP.UI.BACK' | translate }}</span>
         </button>
         <button
           (click)="close.emit()"
           class="hover:bg-white/20 rounded-full p-2 transition-colors cursor-pointer"
-          aria-label="Cerrar"
+          [attr.aria-label]="'COMMON.CLOSE' | translate"
         >
           <app-help-icon name="x" class="w-5 h-5"></app-help-icon>
         </button>
@@ -25,10 +25,10 @@
         </div>
         <div class="flex-1 min-w-0">
           <span class="inline-block px-2.5 py-0.5 bg-white/20 rounded-full text-xs font-semibold mb-2">
-            {{ topic()!.category }}
+            {{ topic()!.category | translate }}
           </span>
-          <h2 class="text-xl md:text-2xl font-bold leading-tight mb-2 truncate-2-lines">{{ topic()!.title }}</h2>
-          <p class="text-white/80 text-sm leading-relaxed">{{ topic()!.description }}</p>
+          <h2 class="text-xl md:text-2xl font-bold leading-tight mb-2 truncate-2-lines">{{ topic()!.title | translate }}</h2>
+          <p class="text-white/80 text-sm leading-relaxed">{{ topic()!.description | translate }}</p>
         </div>
       </div>
     </div>
@@ -37,7 +37,7 @@
     <div class="flex-1 overflow-y-auto p-6 space-y-6 scrollbar-hide">
       <div class="flex items-center space-x-2 text-hc-primary font-bold border-b border-hc-border pb-3 mb-4">
         <app-help-icon name="book" class="w-5 h-5"></app-help-icon>
-        <h3 class="text-base uppercase tracking-wider">Pasos a seguir ({{ topic()!.steps.length }})</h3>
+        <h3 class="text-base uppercase tracking-wider">{{ 'HELP.UI.STEPS_HEADER' | translate }} ({{ topic()!.steps.length }})</h3>
       </div>
 
       <div class="space-y-6">
@@ -57,9 +57,9 @@
             <div class="flex-1 bg-hc-card border border-hc-border br-radius-md p-4 shadow-sm hover:shadow-md transition-shadow">
               <div class="flex items-center space-x-2 mb-2 text-hc-primary">
                 <app-help-icon [name]="step.iconName" class="w-5 h-5"></app-help-icon>
-                <h4 class="font-bold text-hc-text leading-snug">{{ step.title }}</h4>
+                <h4 class="font-bold text-hc-text leading-snug">{{ step.title | translate }}</h4>
               </div>
-              <p class="text-hc-text-2 text-sm leading-relaxed">{{ step.description }}</p>
+              <p class="text-hc-text-2 text-sm leading-relaxed">{{ step.description | translate }}</p>
             </div>
           </div>
         }
@@ -72,16 +72,16 @@
             <app-help-icon name="info" class="w-5 h-5"></app-help-icon>
           </div>
           <div>
-            <h4 class="font-bold text-hc-text mb-1">¿Necesitas ayuda adicional?</h4>
+            <h4 class="font-bold text-hc-text mb-1">{{ 'HELP.UI.EXTRA_HELP_TITLE' | translate }}</h4>
             <p class="text-hc-text-2 text-xs md:text-sm mb-4 leading-relaxed">
-              Si la guía no responde tus dudas, puedes ponerte en contacto con el soporte técnico o con tu supervisor de área.
+              {{ 'HELP.UI.EXTRA_HELP_DESC' | translate }}
             </p>
             <button
               (click)="contactSupport()"
               class="px-4 py-2 bg-hc-primary hover:bg-hc-primary-dark text-white text-xs font-semibold br-radius-md shadow-sm transition-colors cursor-pointer flex items-center space-x-2"
             >
               <app-help-icon name="message" class="w-4 h-4"></app-help-icon>
-              <span>Contactar Soporte</span>
+              <span>{{ 'HELP.UI.CONTACT_SUPPORT' | translate }}</span>
             </button>
           </div>
         </div>
@@ -89,9 +89,9 @@
     </div>
   } @else {
     <div class="p-8 text-center bg-hc-surface">
-      <p class="text-hc-error font-medium">Tema no encontrado</p>
+      <p class="text-hc-error font-medium">{{ 'HELP.UI.NOT_FOUND' | translate }}</p>
       <button (click)="back.emit()" class="mt-4 hc-btn-primary">
-        Volver
+        {{ 'HELP.UI.BACK' | translate }}
       </button>
     </div>
   }

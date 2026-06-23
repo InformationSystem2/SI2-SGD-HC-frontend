@@ -20,6 +20,12 @@ import { CommonModule } from '@angular/common';
       <svg:path *ngIf="name() === 'file'" d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z" />
       <svg:path *ngIf="name() === 'file'" d="M14 2v4a2 2 0 0 0 2 2h4" />
 
+      <!-- file-medical -->
+      <svg:path *ngIf="name() === 'file-medical'" d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z" />
+      <svg:path *ngIf="name() === 'file-medical'" d="M14 2v4a2 2 0 0 0 2 2h4" />
+      <svg:line *ngIf="name() === 'file-medical'" x1="12" x2="12" y1="11" y2="17" />
+      <svg:line *ngIf="name() === 'file-medical'" x1="9" x2="15" y1="14" y2="14" />
+
       <!-- upload -->
       <svg:path *ngIf="name() === 'upload'" d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
       <svg:polyline *ngIf="name() === 'upload'" points="17 8 12 3 7 8" />
