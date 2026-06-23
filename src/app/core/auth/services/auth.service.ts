@@ -190,4 +190,17 @@ export class AuthService {
       })
     );
   }
+
+  getProfile() {
+    return this.http.get<any>(`${environment.apiUrl}/auth/profile`);
+  }
+
+  updateProfile(data: any) {
+    return this.http.put<any>(`${environment.apiUrl}/auth/profile`, data);
+  }
+
+  changePassword(data: any) {
+    return this.http.put<any>(`${environment.apiUrl}/auth/profile/password`, data);
+  }
 }
+

@@ -36,6 +36,17 @@ export const routes: Routes = [
     loadChildren: () => import('./features/users/users.routes').then(m => m.usersRoutes),
   },
   {
+    path: 'profile',
+    component: MainLayout,
+    canActivate: [authGuard],
+    children: [
+      {
+        path: '',
+        loadComponent: () => import('./features/users/pages/profile/profile').then(m => m.Profile),
+      }
+    ]
+  },
+  {
     path: 'patients',
     component: MainLayout,
     canActivate: [permissionGuard('patient:read')],

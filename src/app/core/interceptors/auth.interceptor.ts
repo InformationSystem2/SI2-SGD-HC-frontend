@@ -36,7 +36,12 @@ export const authInterceptor: HttpInterceptorFn = (req, next) => {
   if (accessToken) {
     headers['Authorization'] = `Bearer ${accessToken}`;
     const payload = decodeJwt(accessToken);
-    if (payload?.tenantSlug) {
+    const impersonatedTenant = typeof localStorage !== 'undefined' ? localStorage.getItem('impersonatedTenantSlug') : null;
+    const isSuperuser = payload?.roles?.includes('ROLE_SUPERUSER');
+
+    if (impersonatedTenant) {
+      headers['X-Tenant-ID'] = impersonatedTenant;
+    } else if (payload?.tenantSlug && !isSuperuser) {
       headers['X-Tenant-ID'] = payload.tenantSlug;
     }
   }
