@@ -19,7 +19,9 @@ Capacidades destacadas:
 - **Visor DICOM** — renderizado interactivo de imágenes médicas con CornerstoneJS.
 - **Dynamic Branding (Multitenancy estético)** — colores, logo, tipografía y variables CSS cargadas por tenant en tiempo real.
 - **Control de acceso granular (RBAC)** — ocultación y deshabilitación de campos según permisos del rol.
-- **Notificaciones push** — integración FCM para alertas en tiempo real.
+- **Perfil de Usuario** — edición de datos personales e información del perfil, con soporte para cambio seguro de contraseña.
+- **Asistente Inteligente (Chat)** — chat interactivo para ayuda técnica, consulta de guías de uso y resolución de dudas sobre el sistema.
+- **Notificaciones y Recordatorios** — integración de alertas en tiempo real y alertas de límites de plan de recursos (60%-100%), con indicadores de recordatorio visual (punto amarillo) en el dropdown de navegación y en el listado general para elementos no leídos.
 - **Workflows** — seguimiento visual de flujos de revisión y tareas asignadas.
 
 ---
@@ -153,9 +155,10 @@ La aplicación queda disponible en `http://localhost:4200`.
 | `/reports` | reports | Diseñador QBE y exportación de informes |
 | `/roles` | roles | Gestión de roles y asignación de permisos RBAC |
 | `/users` | users | Administración de usuarios del tenant |
+| `/profile` | users | Perfil personal de usuario y cambio de contraseña |
 | `/tenants` | tenants | Configuración de clínica, branding y suscripción |
 | `/workflows` | workflow | Flujos de revisión y bandeja de tareas |
-| `/notifications` | notifications | Centro de notificaciones push |
+| `/notifications` | notifications | Centro de notificaciones y alertas |
 | `/audit` | audit | Registro de auditoría de acciones |
 | `/backups` | backups | Gestión de respaldos |
 
