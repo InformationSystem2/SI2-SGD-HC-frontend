@@ -156,7 +156,7 @@
         @if (rolesService.loading()) {
         <span class="text-hc-text-3 text-sm">{{ 'USERS.LOADING_ROLES' | translate }}</span>
         }
-        @for (role of rolesService.roles(); track role.id) {
+        @for (role of availableRoles(); track role.id) {
         <button type="button" (click)="toggleRole(role.id)"
           [class]="'px-3 py-1.5 rounded-lg text-sm font-medium border transition-colors ' +
                      (isRoleSelected(role.id)

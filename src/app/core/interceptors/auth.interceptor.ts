@@ -38,8 +38,10 @@ export const authInterceptor: HttpInterceptorFn = (req, next) => {
     const payload = decodeJwt(accessToken);
     const impersonatedTenant = typeof localStorage !== 'undefined' ? localStorage.getItem('impersonatedTenantSlug') : null;
     const isSuperuser = payload?.roles?.includes('ROLE_SUPERUSER');
+    // Los endpoints de administración global de tenants nunca deben ir filtrados por tenant
+    const isAdminTenantEndpoint = req.url.includes('/tenants/admin/') || req.url.includes('/tenants/admin');
 
-    if (impersonatedTenant) {
+    if (impersonatedTenant && !isAdminTenantEndpoint) {
       headers['X-Tenant-ID'] = impersonatedTenant;
     } else if (payload?.tenantSlug && !isSuperuser) {
       headers['X-Tenant-ID'] = payload.tenantSlug;
