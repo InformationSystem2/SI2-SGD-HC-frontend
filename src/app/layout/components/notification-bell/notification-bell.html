@@ -46,7 +46,10 @@
           @for (n of notifications(); track n.id) {
             <div (click)="goToNotification(n, $event)"
                  [class]="n.isRead ? 'px-4 py-3' : 'px-4 py-3 bg-hc-primary/3'"
-                 class="flex items-start gap-3 hover:bg-hc-hover transition-colors cursor-pointer">
+                 class="flex items-start gap-3 hover:bg-hc-hover transition-colors cursor-pointer relative">
+              @if (!n.isRead) {
+                <span class="absolute left-1.5 top-1/2 -translate-y-1/2 w-2.5 h-2.5 rounded-full bg-yellow-500"></span>
+              }
               <!-- Icon -->
               <div class="w-7 h-7 rounded-full bg-hc-muted border border-hc-border flex items-center justify-center shrink-0 mt-0.5">
                 <fa-icon [icon]="notifIcon(n.type)" [class]="notifIconClass(n.type)" class="text-xs" />

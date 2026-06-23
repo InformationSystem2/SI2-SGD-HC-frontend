@@ -37,7 +37,11 @@
         @for (n of page()!.content; track n.id) {
           <div (click)="goToNotification(n)"
                [class]="n.isRead ? 'px-5 py-4' : 'px-5 py-4 bg-hc-primary/[0.03] border-l-2 border-hc-primary'"
-               class="flex items-start gap-4 hover:bg-hc-hover transition-colors cursor-pointer group">
+               class="flex items-start gap-4 hover:bg-hc-hover transition-colors cursor-pointer group relative">
+
+            @if (!n.isRead) {
+              <span class="absolute left-1.5 top-1/2 -translate-y-1/2 w-2.5 h-2.5 rounded-full bg-yellow-500"></span>
+            }
 
             <!-- Icon -->
             <div class="w-9 h-9 rounded-full bg-hc-muted border border-hc-border flex items-center justify-center shrink-0 mt-0.5">
