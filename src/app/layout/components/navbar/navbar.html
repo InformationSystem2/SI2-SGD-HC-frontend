@@ -62,7 +62,11 @@
     <div class="hidden md:block w-px h-5 bg-hc-border mx-0.5"></div>
 
     <!-- User pill -->
-    <div class="hidden md:flex items-center gap-2 px-2.5 py-1.5 rounded-lg bg-hc-muted border border-hc-border">
+    <a
+      routerLink="/profile"
+      class="hidden md:flex items-center gap-2 px-2.5 py-1.5 rounded-lg bg-hc-muted hover:bg-hc-hover border border-hc-border cursor-pointer transition-colors"
+      [title]="'NAVBAR.VIEW_PROFILE' | translate"
+    >
       <div class="w-5 h-5 rounded-full bg-hc-primary/20 flex items-center justify-center">
         <span class="text-hc-primary text-xs font-bold leading-none">
           {{ (authService.username() ?? '?')[0].toUpperCase() }}
@@ -71,7 +75,7 @@
       <span class="text-hc-text-2 text-sm truncate max-w-28 font-medium">
         {{ authService.username() }}
       </span>
-    </div>
+    </a>
 
     <!-- Logout -->
     <button

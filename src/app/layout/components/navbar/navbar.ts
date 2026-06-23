@@ -1,5 +1,5 @@
 import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
-import { Router } from '@angular/router';
+import { Router, RouterLink } from '@angular/router';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { faBars, faRightFromBracket, faMoon, faSun, faLanguage } from '@fortawesome/free-solid-svg-icons';
 import { AuthService } from '../../../core/auth/services/auth.service';
@@ -13,7 +13,7 @@ import { NotificationBell } from '../notification-bell/notification-bell';
 
 @Component({
   selector: 'app-navbar',
-  imports: [FontAwesomeModule, TranslatePipe, NotificationBell],
+  imports: [FontAwesomeModule, TranslatePipe, NotificationBell, RouterLink],
   templateUrl: './navbar.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })

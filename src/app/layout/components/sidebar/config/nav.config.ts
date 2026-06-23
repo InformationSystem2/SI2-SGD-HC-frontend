@@ -9,26 +9,6 @@ export const NAV_ITEMS: NavItem[] = [
     roles: [ROLES.SUPERUSER, ROLES.ADMIN, ROLES.DIRECTOR, ROLES.MEDICO, ROLES.ARCHIVO],
   },
   {
-    label: 'NAV.DOCUMENTS',
-    path: '/documents/list',
-    icon: 'file-text',
-    permissions: ['document:read'],
-    subItems: [
-      { label: 'NAV.DOCUMENT_LIST', path: '/documents/list' },
-      { label: 'NAV.DOCUMENT_UPLOAD', path: '/documents/upload' },
-      { label: 'NAV.DOCUMENT_TEMPLATES', path: '/documents/templates' },
-      { label: 'NAV.DOCUMENT_TEMPLATE_NEW', path: '/documents/templates/new' },
-      { label: 'NAV.DOCUMENT_EDITOR', path: '/documents/editor' },
-      { label: 'NAV.DOCUMENT_VERSIONS', path: '/documents/versions' },
-    ],
-  },
-  {
-    label: 'NAV.ROLES',
-    path: '/roles/list',
-    icon: 'shield',
-    permissions: ['role:read'],
-  },
-  {
     label: 'NAV.USERS',
     path: '/users/list',
     icon: 'users',
@@ -39,6 +19,12 @@ export const NAV_ITEMS: NavItem[] = [
     ],
   },
   {
+    label: 'NAV.ROLES',
+    path: '/roles/list',
+    icon: 'shield',
+    permissions: ['role:read'],
+  },
+  {
     label: 'NAV.PATIENTS',
     path: '/patients/list',
     icon: 'heart-pulse',
@@ -46,24 +32,42 @@ export const NAV_ITEMS: NavItem[] = [
     subItems: [
       { label: 'NAV.PATIENT_LIST', path: '/patients/list' },
       { label: 'NAV.PATIENT_REGISTER', path: '/patients/register' },
+      { label: 'NAV.CLINICAL_HISTORY', path: '/patients/clinical-history' },
+      { label: 'NAV.HISTORIAL', path: '/records' },
     ],
   },
+  // ── Archivos ──────────────────────────────────────────────────────────────
+  {
+    label: 'NAV.DOCUMENTS',
+    path: '/documents/list',
+    icon: 'folder-open',
+    permissions: ['document:read'],
+    subItems: [
+      { label: 'NAV.DOCUMENT_EXPLORER', path: '/documents/list' },
+      { label: 'NAV.DOCUMENT_NEW', path: '/documents/editor' },
+      { label: 'NAV.DOCUMENT_VERSIONS', path: '/documents/versions' },
+    ],
+  },
+  // ── Plantillas ────────────────────────────────────────────────────────────
+  {
+    label: 'NAV.TEMPLATES',
+    path: '/documents/templates',
+    icon: 'file-template',
+    permissions: ['document:read'],
+    subItems: [
+      { label: 'NAV.DOCUMENT_TEMPLATES', path: '/documents/templates' },
+      { label: 'NAV.DOCUMENT_TEMPLATE_NEW', path: '/documents/templates/new' },
+    ],
+  },
+
   {
     label: 'NAV.DICOM',
     path: '/dicom/viewer',
     icon: 'scan',
     permissions: ['dicom:read'],
-    subItems: [
-      { label: 'NAV.DICOM_VIEWER', path: '/dicom/viewer' },
-    ],
+    subItems: [{ label: 'NAV.DICOM_VIEWER', path: '/dicom/viewer' }],
+  },
 
-  },
-  {
-    label: 'NAV.HISTORIAL',
-    path: '/records',
-    icon: 'search',
-    permissions: ['document:read'],
-  },
   {
     label: 'NAV.TASKS',
     path: '/tasks',
@@ -87,8 +91,8 @@ export const NAV_ITEMS: NavItem[] = [
     permissions: ['report:read'],
     subItems: [
       { label: 'NAV.REPORTS_DESIGNER', path: '/reports/designer' },
-      { label: 'NAV.REPORTS_TEMPLATES', path: '/reports/templates' }
-    ]
+      { label: 'NAV.REPORTS_TEMPLATES', path: '/reports/templates' },
+    ],
   },
   {
     label: 'NAV.CONFIG',
@@ -96,10 +100,10 @@ export const NAV_ITEMS: NavItem[] = [
     icon: 'settings',
     roles: [ROLES.SUPERUSER, ROLES.ADMIN, ROLES.DIRECTOR],
     subItems: [
-      { label: 'NAV.INFO',          path: '/dashboard/tenant/info' },
-      { label: 'NAV.APPEARANCE',    path: '/dashboard/tenant/appearance' },
-      { label: 'NAV.PREFERENCES',   path: '/dashboard/tenant/preferences' },
-      { label: 'NAV.SUBSCRIPTION',  path: '/dashboard/tenant/subscription' },
+      { label: 'NAV.INFO', path: '/dashboard/tenant/info' },
+      { label: 'NAV.APPEARANCE', path: '/dashboard/tenant/appearance' },
+      { label: 'NAV.PREFERENCES', path: '/dashboard/tenant/preferences' },
+      { label: 'NAV.SUBSCRIPTION', path: '/dashboard/tenant/subscription' },
     ],
   },
   {
@@ -110,8 +114,8 @@ export const NAV_ITEMS: NavItem[] = [
     subItems: [
       { label: 'NAV.TENANTS', path: '/dashboard/admin/tenants' },
       { label: 'NAV.PLANS', path: '/dashboard/admin/plans' },
-      { label: 'NAV.AUDIT', path: '/audit'},
+      { label: 'NAV.AUDIT', path: '/audit' },
       { label: 'Backups', path: '/dashboard/admin/backups' },
     ],
-  },  
+  },
 ];
