@@ -39,14 +39,17 @@
   },
   "NAV": {
     "DASHBOARD": "Dashboard",
-    "DOCUMENTS": "Documents",
+    "DOCUMENTS": "Files",
+    "DOCUMENT_EXPLORER": "Document explorer",
     "DOCUMENT_LIST": "All documents",
+    "DOCUMENT_NEW": "New document",
     "DOCUMENT_UPLOAD": "Upload document",
     "DOCUMENT_TEMPLATES": "View templates",
     "DOCUMENT_TEMPLATE_NEW": "New template",
     "DOCUMENT_WORKFLOW": "Review inbox",
     "DOCUMENT_EDITOR": "OnlyOffice Editor",
     "DOCUMENT_VERSIONS": "Version history",
+    "TEMPLATES": "Templates",
     "ROLES": "Roles",
     "USERS": "Users",
     "SETTINGS": "Settings",
@@ -55,12 +58,13 @@
     "PATIENTS": "Patients",
     "PATIENT_LIST": "List",
     "PATIENT_REGISTER": "Register",
+    "CLINICAL_HISTORY": "Clinical History",
+    "HISTORIAL": "Medical Records",
     "DICOM": "DICOM Images",
     "DICOM_VIEWER": "Image viewer",
     "REPORTS": "Reports",
     "REPORTS_DESIGNER": "Designer",
     "REPORTS_TEMPLATES": "Saved Templates",
-    "HISTORIAL": "Medical Records",
     "CONFIG": "Configuration",
     "ADMIN": "Administration",
     "TENANTS": "Tenants",
@@ -226,7 +230,22 @@
     "LOGOUT": "Logout",
     "TOGGLE_THEME": "Toggle theme",
     "TOGGLE_LANG": "ES",
-    "SYSTEM_ONLINE": "Online"
+    "SYSTEM_ONLINE": "Online",
+    "VIEW_PROFILE": "View Profile"
+  },
+  "PROFILE": {
+    "TITLE": "My Profile",
+    "SUBTITLE": "Manage your user account details and security settings",
+    "TAB_INFO": "Personal Details",
+    "TAB_PASSWORD": "Security",
+    "LOADING": "Loading data...",
+    "SUCCESS_TITLE": "Success",
+    "ERROR_TITLE": "Request Error",
+    "SECTION_PERSONAL": "Personal Information",
+    "SECTION_PASSWORD": "Change Password",
+    "FIELD_CURRENT_PASSWORD": "Current Password",
+    "FIELD_NEW_PASSWORD": "New Password",
+    "FIELD_CONFIRM_PASSWORD": "Confirm New Password"
   },
   "USERS": {
     "TITLE": "Users",
@@ -290,7 +309,12 @@
     "PASSWORD_TITLE": "Change password",
     "PASSWORD_FOR": "New password for",
     "PASSWORD_SAVE": "Save password",
-    "FIELD_NEW_PASSWORD": "New password"
+    "FIELD_NEW_PASSWORD": "New password",
+    "SEARCH_PLACEHOLDER": "Search by name, email or document...",
+    "FILTER_ALL": "All statuses",
+    "FILTER_ALL_ROLES": "All roles",
+    "SEARCH_EMPTY": "No results for your search.",
+    "FILTER_ALL_TENANTS": "All Clinics"
   },
   "PATIENTS": {
     "TITLE": "Patients",
@@ -332,7 +356,11 @@
     "BACK": "Back to list",
     "PH_FIRST_NAME": "First Name",
     "PH_LAST_NAME": "Last Name",
-    "PH_DOC_NUMBER": "Document number"
+    "PH_DOC_NUMBER": "Document number",
+    "FILTER_ALL_GENDERS": "All genders",
+    "GENDER_MALE": "Male",
+    "GENDER_FEMALE": "Female",
+    "FILTER_ALL_TENANTS": "All Clinics"
   },
   "DOCUMENTS": {
     "LIST_TITLE": "Documents",
@@ -641,7 +669,11 @@
     "FIELD_PERMISSIONS": "Permissions",
     "LOADING_PERMISSIONS": "Loading permissions...",
     "NO_PERMISSIONS": "No permissions available.",
-    "PERMISSIONS_SELECTED": "permission(s) selected"
+    "PERMISSIONS_SELECTED": "permission(s) selected",
+    "SEARCH_PLACEHOLDER": "Search by name or description...",
+    "FILTER_ALL": "All statuses",
+    "SEARCH_EMPTY": "No results for your search.",
+    "FILTER_ALL_TENANTS": "All Clinics"
   },
   "TENANTS": {
     "REGISTER_TITLE": "Clinic Registration",
@@ -744,11 +776,11 @@
     "PLAN_ENTERPRISE_DESC": "Complete solution for large institutions",
     "FEATURE_USERS_10": "Up to 10 users",
     "FEATURE_STORAGE_1GB": "1 GB storage",
-    "FEATURE_SUPPORT_EMAIL": "Email support",
+    "FEATURE_SUPPORT_EMAIL": "Email Support",
     "FEATURE_USERS_50": "Up to 50 users",
     "FEATURE_STORAGE_10GB": "10 GB storage",
     "FEATURE_SUPPORT_PRIORITY": "Priority support",
-    "FEATURE_ADVANCED_ANALYTICS": "Advanced analytics",
+    "FEATURE_ADVANCED_ANALYTICS": "Advanced Analytics",
     "FEATURE_USERS_UNLIMITED": "Unlimited users",
     "FEATURE_STORAGE_UNLIMITED": "Unlimited storage",
     "FEATURE_SUPPORT_24_7": "24/7 support",
@@ -794,14 +826,10 @@
     "FEATURE_DICOM": "DICOM Imaging",
     "FEATURE_OCR": "OCR Scanning",
     "FEATURE_CUSTOM_BRANDING": "Custom Branding",
-    "FEATURE_ADVANCED_ANALYTICS": "Advanced Analytics",
     "FEATURE_REPORTS": "Report Builder",
     "FEATURE_API": "API Access",
     "FEATURE_PUSH": "Push Notifications",
     "FEATURE_EMAIL": "Email Notifications",
-    "FEATURE_SUPPORT_EMAIL": "Email Support",
-    "FEATURE_USERS_UNLIMITED": "Unlimited users",
-    "FEATURE_STORAGE_UNLIMITED": "Unlimited storage",
     "FEATURE_2FA": "2FA Authentication",
     "RESEND_CODE": "Resend code",
     "SEND_CODE": "Send code",
@@ -906,7 +934,9 @@
     "EXIT": "Exit",
     "STATUS": "Status",
     "OF": "of",
-    "SELECT_ONE": "— Select —"
+    "SELECT_ONE": "— Select —",
+    "CLEAR_FILTERS": "Clear filters",
+    "RESULTS": "result(s)"
   },
   "ERRORS": {
     "DEFAULT": "An unexpected error occurred",
@@ -1008,6 +1038,7 @@
     "STORAGE": "Storage",
     "API_CALLS": "API Calls",
     "WARNING_LIMIT": "Warning: almost at limit",
+    "LIMIT_REACHED": "Limit reached",
     "INFO_CHANGE_PLAN": "To change your plan or manage your subscription, contact support.",
     "CURRENT_PLAN": "Current Plan",
     "END_DATE": "Expiration:",
@@ -1398,8 +1429,8 @@
     "SECTION_FEATURES": "Features",
     "FIELD_DISPLAY_NAME": "Display Name",
     "FIELD_DESCRIPTION": "Description",
-    "FIELD_PRICE_MONTHLY": "Monthly Price (USD)",
-    "FIELD_PRICE_YEARLY": "Yearly Price (USD)",
+    "FIELD_PRICE_MONTHLY": "Monthly Price (Bs.)",
+    "FIELD_PRICE_YEARLY": "Yearly Price (Bs.)",
     "FIELD_CYCLE_DAYS": "Cycle Days",
     "FIELD_GRACE_DAYS": "Grace Days",
     "SAVE_SUCCESS": "Plan saved successfully",
@@ -1649,5 +1680,244 @@
   "BACKUPS": {
     "CONFIRM_RESTORE_FULL": "Are you SURE you want to restore the entire database? This action is destructive and irreversible.",
     "CONFIRM_RESTORE_TENANT": "Are you sure you want to restore this tenant? Current data will be replaced."
+  },
+  "HELP": {
+    "UI": {
+      "ASSISTANT_TITLE": "Help Assistant",
+      "ROLE_SUBTITLE": "Step-by-step guides for the role of",
+      "SEARCH_PH": "What action or question do you need help with?",
+      "WELCOME_HI": "Hello! 👋",
+      "WELCOME_SUBTITLE": "How can I guide you today? Select one of the categories or use the quick actions to learn how to use the system.",
+      "QUICK_ACTIONS": "Quick Actions",
+      "CATEGORIES": "Categories",
+      "RESULTS_FOR": "Results for",
+      "RESULT": "result",
+      "RESULTS": "results",
+      "NO_GUIDES": "No guides found",
+      "NO_GUIDES_HINT": "Try searching with different keywords or select another category.",
+      "FOOTER": "Need more information? Check the user manual or contact technical support.",
+      "BACK": "Back",
+      "STEPS_HEADER": "Steps to follow",
+      "EXTRA_HELP_TITLE": "Need additional help?",
+      "EXTRA_HELP_DESC": "If this guide doesn't answer your questions, you can contact technical support or your area supervisor.",
+      "CONTACT_SUPPORT": "Contact Support",
+      "CONTACT_SUPPORT_MSG": "The support contact feature is under development. Please contact your IT Administrator.",
+      "NOT_FOUND": "Topic not found"
+    },
+    "CATEGORIES": {
+      "DOCUMENTS": "Documents",
+      "PATIENTS": "Patients",
+      "CLINICAL_HISTORY": "Clinical History",
+      "USERS": "Users & Roles",
+      "DICOM": "DICOM Images",
+      "REPORTS": "Reports",
+      "AUDIT": "Audit",
+      "BACKUPS": "Backups",
+      "SETTINGS": "Settings",
+      "GENERAL": "General Use"
+    },
+    "ROLES": {
+      "SUPERUSER": "Superuser",
+      "ADMIN": "Administrator",
+      "MEDICO": "Physician",
+      "ARCHIVO": "Records / Admissions",
+      "DIRECTOR": "Director",
+      "DEFAULT": "User"
+    },
+    "QUICK": {
+      "UPLOAD_DOCUMENT": "Upload Document",
+      "REGISTER_PATIENT": "Register Patient",
+      "VIEW_CLINICAL_HISTORY": "View Clinical History",
+      "VIEW_DICOM": "View DICOM",
+      "UPLOAD_DICOM": "Upload DICOM",
+      "AUDIT_LOG": "Audit Log",
+      "CHANGE_PASSWORD": "Change Password"
+    },
+    "TOPICS": {
+      "UPLOAD_DOCUMENT": {
+        "TITLE": "How do I upload a new document?",
+        "DESC": "Learn how to register and upload text or digital documents to the system.",
+        "TAGS": "document upload file save attach",
+        "S1": { "TITLE": "Go to Documents", "DESC": "From the side menu, click on \"Documents\"." },
+        "S2": { "TITLE": "Start upload", "DESC": "Click the \"+ Upload Document\" button in the top-right corner." },
+        "S3": { "TITLE": "Fill in information", "DESC": "Enter the title, document type, and select the corresponding patient if it belongs to a clinical record." },
+        "S4": { "TITLE": "Select file and save", "DESC": "Attach the file from your device and press \"Save\". The digital signature of the file will be registered automatically." }
+      },
+      "SEARCH_DOCUMENTS": {
+        "TITLE": "How do I search for documents and records?",
+        "DESC": "Find documents quickly using filters and keywords.",
+        "TAGS": "search document filter find record",
+        "S1": { "TITLE": "Navigate to Documents", "DESC": "Click on \"Documents\" in the main sidebar menu." },
+        "S2": { "TITLE": "Use the search bar", "DESC": "Type the document name, author, or keyword in the top search bar." },
+        "S3": { "TITLE": "Apply advanced filters", "DESC": "Filter by document type, signature status, or date range." },
+        "S4": { "TITLE": "View document detail", "DESC": "Click on the document row to open it in the OnlyOffice editor or download it." }
+      },
+      "MANAGE_TEMPLATES": {
+        "TITLE": "How do I manage document templates?",
+        "DESC": "Learn how to create and organize reusable templates for your clinical documents.",
+        "TAGS": "template create save documents reuse",
+        "S1": { "TITLE": "Go to Templates", "DESC": "In the sidebar, expand \"Documents\" and click \"Templates\"." },
+        "S2": { "TITLE": "Create new template", "DESC": "Click the \"+ New Template\" button in the top-right corner." },
+        "S3": { "TITLE": "Configure details", "DESC": "Enter the template name, assigned department, and define if it will be shared with the entire clinic." },
+        "S4": { "TITLE": "Save template", "DESC": "Click \"Save\" to add it to your list of reusable formats." }
+      },
+      "EDIT_ONLYOFFICE": {
+        "TITLE": "How do I edit clinical documents in OnlyOffice?",
+        "DESC": "Edit your clinical records in real time with the integrated collaborative editor.",
+        "TAGS": "onlyoffice edit write office clinical collaborate",
+        "S1": { "TITLE": "Open a document", "DESC": "Find the document in your \"Documents\" list and click on it to open its detail." },
+        "S2": { "TITLE": "Click Edit", "DESC": "Press the \"Edit in OnlyOffice\" button to open the embedded editor interface." },
+        "S3": { "TITLE": "Make changes", "DESC": "Modify the clinical record text. OnlyOffice saves changes automatically in the background." },
+        "S4": { "TITLE": "Close and save version", "DESC": "When done, click \"Close\". The system will save a new immutable version of the document." }
+      },
+      "REGISTER_PATIENT": {
+        "TITLE": "How do I register a new patient?",
+        "DESC": "Register a patient's personal and contact information in the system.",
+        "TAGS": "patient register new create save",
+        "S1": { "TITLE": "Go to Patients", "DESC": "Select \"Patients\" from the side navigation menu." },
+        "S2": { "TITLE": "Create new patient", "DESC": "Press the \"+ Register Patient\" or \"+ New\" button." },
+        "S3": { "TITLE": "Fill in required fields", "DESC": "Enter ID number, full name, last name, date of birth, gender and phone number." },
+        "S4": { "TITLE": "Save record", "DESC": "Verify there are no errors and press \"Save Patient\". The patient will have their record created." }
+      },
+      "VIEW_CLINICAL_HISTORY": {
+        "TITLE": "How do I view a patient's clinical history?",
+        "DESC": "Access a patient's complete medical record from the clinical history module.",
+        "TAGS": "clinical history record view patient medical",
+        "S1": { "TITLE": "Open Clinical History", "DESC": "In the sidebar, click \"Clinical History\" to see the list of all patients." },
+        "S2": { "TITLE": "Search for the patient", "DESC": "Use the search bar to find the patient by name, last name, or document number." },
+        "S3": { "TITLE": "Open the record", "DESC": "Click on the patient row to open their full clinical history." },
+        "S4": { "TITLE": "Review the information", "DESC": "View background information, allergies, medications, chronic conditions, and documents linked to the record." }
+      },
+      "CREATE_CLINICAL_HISTORY": {
+        "TITLE": "How do I create or edit a clinical history?",
+        "DESC": "Create a new clinical record or update an existing patient's medical information.",
+        "TAGS": "clinical history create edit allergies medications background",
+        "S1": { "TITLE": "Open the clinical history", "DESC": "Navigate to \"Clinical History\", find the patient, and click on them." },
+        "S2": { "TITLE": "Start editing", "DESC": "If the patient doesn't have a record yet, a creation form will appear. If one exists, press \"Edit\" in the top-right corner." },
+        "S3": { "TITLE": "Fill in medical fields", "DESC": "Enter blood type, pathological and non-pathological background, family history, allergies, chronic conditions, and current medications." },
+        "S4": { "TITLE": "Save the clinical history", "DESC": "Press \"Save\" to create or update the record. The system will automatically link the patient's previous documents to the new record." }
+      },
+      "ADD_HC_DOCUMENT": {
+        "TITLE": "How do I add documents to a clinical history?",
+        "DESC": "Link clinical documents (notes, reports, results) directly to a patient's clinical record.",
+        "TAGS": "clinical history document add link record attach",
+        "S1": { "TITLE": "Open the clinical history", "DESC": "From \"Clinical History\" or from the patient detail, open their medical record." },
+        "S2": { "TITLE": "Go to the Documents section", "DESC": "At the bottom of the record you will find the documents linked to the patient." },
+        "S3": { "TITLE": "Create new document", "DESC": "Press \"+ New Document\" to open the OnlyOffice editor already linked to the patient." },
+        "S4": { "TITLE": "Save and return", "DESC": "When you close the editor, the document will be automatically linked to the patient's clinical history." }
+      },
+      "VIEW_DICOM": {
+        "TITLE": "How do I view a DICOM medical study?",
+        "DESC": "Open and navigate DICOM medical studies already stored in the system for a patient.",
+        "TAGS": "dicom image medical viewer tomography x-ray study",
+        "S1": { "TITLE": "Access the DICOM list", "DESC": "Navigate to \"DICOM Studies\" from the sidebar. Studies are grouped by patient." },
+        "S2": { "TITLE": "Select study", "DESC": "Expand the patient group and press \"Open Viewer\" on the desired study card." },
+        "S3": { "TITLE": "Load the interactive viewer", "DESC": "Wait for the viewer to decode the study files directly in your browser." },
+        "S4": { "TITLE": "Manipulate the image", "DESC": "Use the viewer toolbar to rotate, adjust contrast (brightness), zoom, or measure areas of the image." }
+      },
+      "UPLOAD_DICOM": {
+        "TITLE": "How do I upload DICOM images and link them to a patient?",
+        "DESC": "Load .dcm files from your device and associate them with a patient's record in the system.",
+        "TAGS": "dicom upload associate patient file dcm study medical",
+        "S1": { "TITLE": "Go to DICOM Studies", "DESC": "Navigate to \"DICOM Studies\" from the sidebar." },
+        "S2": { "TITLE": "Open the upload panel", "DESC": "In the top-right corner, click the \"Upload\" button (arrow-up icon). The upload panel will expand." },
+        "S3": { "TITLE": "Select the patient", "DESC": "In the \"Patient\" dropdown, choose the patient the images belong to. This is required to save the study in the system." },
+        "S4": { "TITLE": "Add the DICOM files", "DESC": "Drag and drop .dcm files onto the upload area, or click it to select files from your device. You can upload multiple files at once." },
+        "S5": { "TITLE": "Confirm the upload", "DESC": "Press the \"Upload\" button. When done, the system will automatically open the viewer with the new study already linked to the patient." }
+      },
+      "VIEW_DICOM_LOCAL": {
+        "TITLE": "How do I view local DICOM images without uploading them?",
+        "DESC": "Open and view .dcm files directly from your device without saving them to the server.",
+        "TAGS": "dicom local quick viewer file dcm without uploading private",
+        "S1": { "TITLE": "Go to DICOM Studies", "DESC": "Navigate to \"DICOM Studies\" from the sidebar." },
+        "S2": { "TITLE": "Open the Quick Viewer", "DESC": "In the top-right corner, click the \"Quick Viewer\" button (folder icon). A local file selector will open." },
+        "S3": { "TITLE": "Select and view", "DESC": "Choose the .dcm files from your device. The images will be shown in the viewer without being stored in the system." }
+      },
+      "VIEW_REPORTS": {
+        "TITLE": "How do I view clinical reports and statistics?",
+        "DESC": "View dashboard charts, consultation statistics, and reports for your clinic.",
+        "TAGS": "report statistics dashboard chart consultations performance",
+        "S1": { "TITLE": "Go to Dashboard or Reports", "DESC": "Click \"Dashboard\" or \"Reports\" in the main navigation menu." },
+        "S2": { "TITLE": "Review key metrics", "DESC": "Analyze patient visit counts, documents issued, and storage space used." },
+        "S3": { "TITLE": "View statistical charts", "DESC": "See the time evolution of consultations and the distribution of clinical documents by specialty." },
+        "S4": { "TITLE": "Generate printable reports", "DESC": "Use the date filters to export detailed reports or print them using the browser's print option." }
+      },
+      "VIEW_AUDIT_LOGS": {
+        "TITLE": "How do I review the audit log?",
+        "DESC": "Review the chronological log of all operations performed in the system.",
+        "TAGS": "audit log security trail operations traceability",
+        "S1": { "TITLE": "Go to Audit", "DESC": "From the sidebar, click \"Audit\" (available exclusively to the Superuser role)." },
+        "S2": { "TITLE": "Apply filters", "DESC": "Filter the log by user, date range, or action type (upload, deletion, login) using the top controls." },
+        "S3": { "TITLE": "View the log detail", "DESC": "Click any row to open the detail panel with the IP address, exact date/time, and changes made." }
+      },
+      "AUDIT_FILTERS": {
+        "TITLE": "How do I filter and export audit records?",
+        "DESC": "Learn how to refine and export audit logs for compliance or investigation purposes.",
+        "TAGS": "audit filter export search log date user",
+        "S1": { "TITLE": "Open the Audit module", "DESC": "Navigate to \"Audit\" from the admin sidebar menu." },
+        "S2": { "TITLE": "Select filters", "DESC": "Use the action type filters (CREATE, UPDATE, DELETE, LOGIN), the responsible user, and the date range." },
+        "S3": { "TITLE": "Review results", "DESC": "The table updates in real time with matching records. Each row shows the affected resource, user, and timestamp." }
+      },
+      "MANAGE_TENANT_INFO": {
+        "TITLE": "How do I update the clinic's information?",
+        "DESC": "Edit the name, address, and contact details of your registered medical institution.",
+        "TAGS": "settings clinic information name address institution",
+        "S1": { "TITLE": "Go to Settings", "DESC": "In the sidebar, click \"Settings\" and select the \"Information\" tab." },
+        "S2": { "TITLE": "Edit the data", "DESC": "Update the clinic name, phone, address, and other identifying details of the institution." },
+        "S3": { "TITLE": "Save changes", "DESC": "Press \"Save\" to apply the updated information across the system." }
+      },
+      "MANAGE_APPEARANCE": {
+        "TITLE": "How do I customize the system's appearance?",
+        "DESC": "Change colors, typography, and logo to adapt the system to your clinic's visual identity.",
+        "TAGS": "appearance theme colors logo typography customize branding",
+        "S1": { "TITLE": "Open Appearance", "DESC": "From \"Settings\" in the sidebar, select the \"Appearance\" tab." },
+        "S2": { "TITLE": "Choose a preset or edit manually", "DESC": "Select one of the predefined visual identity presets or customize the primary and secondary colors with the color picker." },
+        "S3": { "TITLE": "Configure typography", "DESC": "Adjust the font type, base size, and text weight for the entire interface." },
+        "S4": { "TITLE": "Preview and save", "DESC": "Use the real-time preview panel to verify the changes before pressing \"Save\"." }
+      },
+      "MANAGE_PREFERENCES": {
+        "TITLE": "How do I manage system preferences?",
+        "DESC": "Adjust general operating parameters such as language, timezone, and notifications.",
+        "TAGS": "preferences language timezone notifications settings system",
+        "S1": { "TITLE": "Navigate to Preferences", "DESC": "In the sidebar, go to \"Settings\" and select the \"Preferences\" tab." },
+        "S2": { "TITLE": "Adjust parameters", "DESC": "Update the system language, default timezone, and automatic notification options." },
+        "S3": { "TITLE": "Save configuration", "DESC": "Click \"Save\" to apply the changes across the clinic." }
+      },
+      "MANAGE_SUBSCRIPTION": {
+        "TITLE": "How do I manage and renew the subscription?",
+        "DESC": "Learn how to renew your plan or upgrade to a higher tier to expand your limits.",
+        "TAGS": "subscription plan payment renew upgrade stripe billing",
+        "S1": { "TITLE": "Navigate to Subscription", "DESC": "From the sidebar, click \"Settings\" and select the \"Subscription\" tab." },
+        "S2": { "TITLE": "Review status and limits", "DESC": "View current usage of users, storage, and API calls, along with the expiration date." },
+        "S3": { "TITLE": "Renew or change plan", "DESC": "Click \"Renew now\" to keep your current plan, or \"Select plan\" on the desired higher tier." },
+        "S4": { "TITLE": "Enter payment details", "DESC": "In the secure Stripe modal, verify the total amount, enter your card details, and press \"Pay\"." }
+      },
+      "MANAGE_BACKUPS": {
+        "TITLE": "How do I manage and generate backups?",
+        "DESC": "Generate manual database backups to prevent information loss.",
+        "TAGS": "backup security database save restore",
+        "S1": { "TITLE": "Access Backups", "DESC": "Go to the \"Backups\" module in the administration section." },
+        "S2": { "TITLE": "Generate backup", "DESC": "Press the \"Generate Backup\" button. The system will create a dump of the current Postgres database." },
+        "S3": { "TITLE": "Download the file", "DESC": "Once complete, click the download button to save the compressed file (.zip or .sql) to an external device." }
+      },
+      "MANAGE_USERS": {
+        "TITLE": "How do I register and edit users?",
+        "DESC": "Learn how to manage access and credentials for system workers.",
+        "TAGS": "users roles create permissions edit password",
+        "S1": { "TITLE": "Go to User Management", "DESC": "From the side navigation menu, select \"Users\"." },
+        "S2": { "TITLE": "Register new user", "DESC": "Click \"Register User\" and enter the username, password, email, and select the desired role." },
+        "S3": { "TITLE": "Edit roles and status", "DESC": "To change permissions or suspend an account, click \"Edit\" in the corresponding user row." },
+        "S4": { "TITLE": "Change passwords", "DESC": "If a user forgot their credentials, click the key button (\"Change Password\") to securely reset it." }
+      },
+      "CHANGE_PROFILE_PASSWORD": {
+        "TITLE": "How do I change my personal password?",
+        "DESC": "Keep your account secure by regularly changing your access credentials.",
+        "TAGS": "password credentials profile my account security",
+        "S1": { "TITLE": "Open the profile menu", "DESC": "Click on your name or avatar in the top-right corner of the Navbar." },
+        "S2": { "TITLE": "Select Profile", "DESC": "Click \"My Profile\" or \"Change Password\"." },
+        "S3": { "TITLE": "Enter new password", "DESC": "Enter your current password, then type the new password twice." },
+        "S4": { "TITLE": "Confirm change", "DESC": "Click \"Save Changes\". Your session will remain active with the new password." }
+      }
+    }
   }
 }

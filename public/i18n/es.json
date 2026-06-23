@@ -39,14 +39,17 @@
   },
   "NAV": {
     "DASHBOARD": "Dashboard",
-    "DOCUMENTS": "Documentos",
+    "DOCUMENTS": "Archivos",
+    "DOCUMENT_EXPLORER": "Explorador de documentos",
     "DOCUMENT_LIST": "Todos los documentos",
+    "DOCUMENT_NEW": "Nuevo documento",
     "DOCUMENT_UPLOAD": "Subir documento",
     "DOCUMENT_TEMPLATES": "Ver plantillas",
     "DOCUMENT_TEMPLATE_NEW": "Nueva plantilla",
     "DOCUMENT_WORKFLOW": "Bandeja de revisión",
     "DOCUMENT_EDITOR": "Editor OnlyOffice",
     "DOCUMENT_VERSIONS": "Historial de versiones",
+    "TEMPLATES": "Plantillas",
     "ROLES": "Roles",
     "USERS": "Usuarios",
     "SETTINGS": "Configuración",
@@ -55,6 +58,7 @@
     "PATIENTS": "Pacientes",
     "PATIENT_LIST": "Lista",
     "PATIENT_REGISTER": "Registrar",
+    "CLINICAL_HISTORY": "Historia Clínica",
     "HISTORIAL": "Historiales Clínicos",
     "DICOM": "Imágenes DICOM",
     "DICOM_VIEWER": "Visor de imágenes",
@@ -236,7 +240,12 @@
     "PASSWORD_TITLE": "Cambiar contraseña",
     "PASSWORD_FOR": "Nueva contraseña para",
     "PASSWORD_SAVE": "Guardar contraseña",
-    "FIELD_NEW_PASSWORD": "Nueva contraseña"
+    "FIELD_NEW_PASSWORD": "Nueva contraseña",
+    "SEARCH_PLACEHOLDER": "Buscar por nombre, email o documento...",
+    "FILTER_ALL": "Todos los estados",
+    "FILTER_ALL_ROLES": "Todos los roles",
+    "SEARCH_EMPTY": "Sin resultados para tu búsqueda.",
+    "FILTER_ALL_TENANTS": "Todas las clínicas"
   },
   "DOCUMENTS": {
     "LIST_TITLE": "Documentos",
@@ -545,7 +554,11 @@
     "FIELD_PERMISSIONS": "Permisos",
     "LOADING_PERMISSIONS": "Cargando permisos...",
     "NO_PERMISSIONS": "No hay permisos disponibles.",
-    "PERMISSIONS_SELECTED": "permiso(s) seleccionado(s)"
+    "PERMISSIONS_SELECTED": "permiso(s) seleccionado(s)",
+    "SEARCH_PLACEHOLDER": "Buscar por nombre o descripción...",
+    "FILTER_ALL": "Todos los estados",
+    "SEARCH_EMPTY": "Sin resultados para tu búsqueda.",
+    "FILTER_ALL_TENANTS": "Todas las clínicas"
   },
   "TENANTS": {
     "REGISTER_TITLE": "Registro de Clínica",
@@ -698,14 +711,10 @@
     "FEATURE_DICOM": "Imágenes DICOM",
     "FEATURE_OCR": "Escaneo OCR",
     "FEATURE_CUSTOM_BRANDING": "Personalización de marca",
-    "FEATURE_ADVANCED_ANALYTICS": "Analíticas avanzadas",
     "FEATURE_REPORTS": "Constructor de Reportes",
     "FEATURE_API": "Acceso API",
     "FEATURE_PUSH": "Notificaciones Push",
     "FEATURE_EMAIL": "Notificaciones por Email",
-    "FEATURE_SUPPORT_EMAIL": "Soporte por email",
-    "FEATURE_USERS_UNLIMITED": "Usuarios ilimitados",
-    "FEATURE_STORAGE_UNLIMITED": "Almacenamiento ilimitado",
     "FEATURE_2FA": "Autenticación 2FA",
     "RESEND_CODE": "Reenviar código",
     "SEND_CODE": "Enviar código",
@@ -763,7 +772,22 @@
     "LOGOUT": "Salir",
     "TOGGLE_THEME": "Cambiar tema",
     "TOGGLE_LANG": "EN",
-    "SYSTEM_ONLINE": "En línea"
+    "SYSTEM_ONLINE": "En línea",
+    "VIEW_PROFILE": "Ver Perfil"
+  },
+  "PROFILE": {
+    "TITLE": "Mi Perfil",
+    "SUBTITLE": "Gestiona tu información de usuario y seguridad",
+    "TAB_INFO": "Información Personal",
+    "TAB_PASSWORD": "Seguridad",
+    "LOADING": "Cargando datos...",
+    "SUCCESS_TITLE": "Operación Exitosa",
+    "ERROR_TITLE": "Error en la Solicitud",
+    "SECTION_PERSONAL": "Datos Personales",
+    "SECTION_PASSWORD": "Cambiar Contraseña",
+    "FIELD_CURRENT_PASSWORD": "Contraseña Actual",
+    "FIELD_NEW_PASSWORD": "Nueva Contraseña",
+    "FIELD_CONFIRM_PASSWORD": "Confirmar Nueva Contraseña"
   },
   "PATIENTS": {
     "TITLE": "Pacientes",
@@ -805,7 +829,11 @@
     "BACK": "Volver a la lista",
     "PH_FIRST_NAME": "Nombre",
     "PH_LAST_NAME": "Apellido",
-    "PH_DOC_NUMBER": "Número de documento"
+    "PH_DOC_NUMBER": "Número de documento",
+    "FILTER_ALL_GENDERS": "Todos los géneros",
+    "GENDER_MALE": "Masculino",
+    "GENDER_FEMALE": "Femenino",
+    "FILTER_ALL_TENANTS": "Todas las clínicas"
   },
   "DICOM": {
     "TITLE": "Imágenes DICOM",
@@ -906,7 +934,9 @@
     "EXIT": "Salir",
     "STATUS": "Estado",
     "OF": "de",
-    "SELECT_ONE": "— Seleccionar —"
+    "SELECT_ONE": "— Seleccionar —",
+    "CLEAR_FILTERS": "Limpiar filtros",
+    "RESULTS": "resultado(s)"
   },
   "ERRORS": {
     "DEFAULT": "Ha ocurrido un error inesperado",
@@ -1008,6 +1038,7 @@
     "STORAGE": "Almacenamiento",
     "API_CALLS": "API Calls",
     "WARNING_LIMIT": "Atención: casi al límite",
+    "LIMIT_REACHED": "Límite alcanzado",
     "INFO_CHANGE_PLAN": "Para cambiar tu plan o gestionar tu suscripción, contacta al soporte.",
     "CURRENT_PLAN": "Plan Actual",
     "END_DATE": "Vencimiento:",
@@ -1398,8 +1429,8 @@
     "SECTION_FEATURES": "Funcionalidades",
     "FIELD_DISPLAY_NAME": "Nombre público",
     "FIELD_DESCRIPTION": "Descripción",
-    "FIELD_PRICE_MONTHLY": "Precio mensual (USD)",
-    "FIELD_PRICE_YEARLY": "Precio anual (USD)",
+    "FIELD_PRICE_MONTHLY": "Precio mensual (Bs.)",
+    "FIELD_PRICE_YEARLY": "Precio anual (Bs.)",
     "FIELD_CYCLE_DAYS": "Días del ciclo",
     "FIELD_GRACE_DAYS": "Días de gracia",
     "SAVE_SUCCESS": "Plan guardado correctamente",
@@ -1649,5 +1680,244 @@
   "BACKUPS": {
     "CONFIRM_RESTORE_FULL": "¿Estás SEGURO de restaurar la base de datos completa? Esta acción es destructiva e irreversible.",
     "CONFIRM_RESTORE_TENANT": "¿Estás seguro de restaurar este tenant? Los datos actuales serán reemplazados."
+  },
+  "HELP": {
+    "UI": {
+      "ASSISTANT_TITLE": "Asistente de Ayuda",
+      "ROLE_SUBTITLE": "Guías paso a paso para el rol de",
+      "SEARCH_PH": "¿Qué acción o consulta deseas realizar?",
+      "WELCOME_HI": "¡Hola! 👋",
+      "WELCOME_SUBTITLE": "¿Cómo puedo guiarte hoy? Selecciona una de las categorías o usa los accesos rápidos para aprender a usar el sistema.",
+      "QUICK_ACTIONS": "Accesos Rápidos",
+      "CATEGORIES": "Categorías",
+      "RESULTS_FOR": "Resultados para",
+      "RESULT": "resultado",
+      "RESULTS": "resultados",
+      "NO_GUIDES": "No se encontraron guías",
+      "NO_GUIDES_HINT": "Intenta buscar con palabras clave diferentes o selecciona otra categoría.",
+      "FOOTER": "¿Necesitas más información? Revisa el manual del usuario o ponte en contacto con soporte técnico.",
+      "BACK": "Volver",
+      "STEPS_HEADER": "Pasos a seguir",
+      "EXTRA_HELP_TITLE": "¿Necesitas ayuda adicional?",
+      "EXTRA_HELP_DESC": "Si la guía no responde tus dudas, puedes ponerte en contacto con el soporte técnico o con tu supervisor de área.",
+      "CONTACT_SUPPORT": "Contactar Soporte",
+      "CONTACT_SUPPORT_MSG": "Función de contacto de soporte en desarrollo. Por favor, comunícate con el Administrador de TI.",
+      "NOT_FOUND": "Tema no encontrado"
+    },
+    "CATEGORIES": {
+      "DOCUMENTS": "Documentos",
+      "PATIENTS": "Pacientes",
+      "CLINICAL_HISTORY": "Historia Clínica",
+      "USERS": "Usuarios y Roles",
+      "DICOM": "Imágenes DICOM",
+      "REPORTS": "Reportes",
+      "AUDIT": "Auditoría",
+      "BACKUPS": "Copias de Seguridad",
+      "SETTINGS": "Configuración",
+      "GENERAL": "Uso General"
+    },
+    "ROLES": {
+      "SUPERUSER": "Superusuario",
+      "ADMIN": "Administrador",
+      "MEDICO": "Médico",
+      "ARCHIVO": "Archivo / Admisión",
+      "DIRECTOR": "Director",
+      "DEFAULT": "Usuario"
+    },
+    "QUICK": {
+      "UPLOAD_DOCUMENT": "Subir Documento",
+      "REGISTER_PATIENT": "Registrar Paciente",
+      "VIEW_CLINICAL_HISTORY": "Ver Historia Clínica",
+      "VIEW_DICOM": "Ver DICOM",
+      "UPLOAD_DICOM": "Subir DICOM",
+      "AUDIT_LOG": "Bitácora de Auditoría",
+      "CHANGE_PASSWORD": "Cambiar Clave"
+    },
+    "TOPICS": {
+      "UPLOAD_DOCUMENT": {
+        "TITLE": "¿Cómo subir un nuevo documento?",
+        "DESC": "Aprende a registrar y subir documentos de texto o digitales al sistema.",
+        "TAGS": "documento subir cargar archivo guardar",
+        "S1": { "TITLE": "Ir a la sección de Documentos", "DESC": "Desde el menú lateral, haz clic en \"Documentos\"." },
+        "S2": { "TITLE": "Iniciar carga", "DESC": "Haz clic en el botón \"+ Subir Documento\" en la esquina superior derecha." },
+        "S3": { "TITLE": "Completar información", "DESC": "Ingresa el título, tipo de documento y selecciona el paciente correspondiente si es del historial clínico." },
+        "S4": { "TITLE": "Seleccionar archivo y guardar", "DESC": "Adjunta el archivo desde tu dispositivo y presiona \"Guardar\". Se registrará la firma digital del archivo de forma automática." }
+      },
+      "SEARCH_DOCUMENTS": {
+        "TITLE": "¿Cómo buscar documentos y expedientes?",
+        "DESC": "Encuentra documentos rápidamente usando filtros y palabras clave.",
+        "TAGS": "buscar documento filtro encontrar expediente",
+        "S1": { "TITLE": "Navegar a Documentos", "DESC": "Haz clic en \"Documentos\" en el menú lateral principal." },
+        "S2": { "TITLE": "Usar barra de búsqueda", "DESC": "Escribe el nombre del documento, autor o palabra clave en la barra superior." },
+        "S3": { "TITLE": "Aplicar filtros avanzados", "DESC": "Filtra por tipo de documento, estado de la firma o rango de fechas de creación." },
+        "S4": { "TITLE": "Ver detalle del documento", "DESC": "Haz clic sobre la fila del documento para visualizarlo en el editor de OnlyOffice o descargarlo." }
+      },
+      "MANAGE_TEMPLATES": {
+        "TITLE": "¿Cómo gestionar plantillas de documentos?",
+        "DESC": "Aprende a crear y organizar plantillas reutilizables para tus documentos clínicos.",
+        "TAGS": "plantilla crear guardar documentos reutilizar",
+        "S1": { "TITLE": "Ir a Plantillas", "DESC": "En el menú lateral, expande \"Documentos\" y haz clic en \"Plantillas\"." },
+        "S2": { "TITLE": "Crear nueva plantilla", "DESC": "Haz clic en el botón \"+ Nueva Plantilla\" en la esquina superior derecha." },
+        "S3": { "TITLE": "Configurar detalles", "DESC": "Escribe el nombre de la plantilla, el departamento asignado y define si se compartirá con toda la clínica." },
+        "S4": { "TITLE": "Guardar plantilla", "DESC": "Haz clic en \"Guardar\" para añadirla a tu listado de formatos reutilizables." }
+      },
+      "EDIT_ONLYOFFICE": {
+        "TITLE": "¿Cómo editar documentos clínicos en OnlyOffice?",
+        "DESC": "Edita tus historias clínicas en tiempo real con el editor integrado colaborativo.",
+        "TAGS": "onlyoffice editar escribir office clínico colaborar",
+        "S1": { "TITLE": "Abrir un documento", "DESC": "Busca el documento en tu listado de \"Documentos\" y haz clic sobre él para abrir su detalle." },
+        "S2": { "TITLE": "Hacer clic en Editar", "DESC": "Presiona el botón \"Editar en OnlyOffice\" para abrir la interfaz del editor incorporado." },
+        "S3": { "TITLE": "Realizar cambios", "DESC": "Modifica el texto de la historia clínica. OnlyOffice guarda los cambios automáticamente en segundo plano." },
+        "S4": { "TITLE": "Cerrar y guardar versión", "DESC": "Al terminar, haz clic en \"Cerrar\". El sistema guardará una nueva versión inmutable del documento." }
+      },
+      "REGISTER_PATIENT": {
+        "TITLE": "¿Cómo registrar un nuevo paciente?",
+        "DESC": "Registra los datos personales y de contacto de un paciente en el sistema.",
+        "TAGS": "paciente registrar nuevo crear guardar",
+        "S1": { "TITLE": "Ir a Pacientes", "DESC": "Selecciona \"Pacientes\" desde el menú lateral de navegación." },
+        "S2": { "TITLE": "Crear nuevo paciente", "DESC": "Presiona el botón \"+ Registrar Paciente\" o \"+ Nuevo\"." },
+        "S3": { "TITLE": "Rellenar datos requeridos", "DESC": "Ingresa Cédula de Identidad (CI), Nombre completo, Apellidos, Fecha de Nacimiento, Género y Teléfono." },
+        "S4": { "TITLE": "Guardar registro", "DESC": "Verifica que no existan errores en los datos ingresados y presiona \"Guardar Paciente\". El paciente ya tendrá su expediente creado." }
+      },
+      "VIEW_CLINICAL_HISTORY": {
+        "TITLE": "¿Cómo ver la historia clínica de un paciente?",
+        "DESC": "Accede al expediente médico completo de un paciente desde el módulo de historias clínicas.",
+        "TAGS": "historia clínica HC expediente ver paciente médico",
+        "S1": { "TITLE": "Abrir Historias Clínicas", "DESC": "En el menú lateral, haz clic en \"Historias Clínicas\" para ver el listado de todos los pacientes." },
+        "S2": { "TITLE": "Buscar el paciente", "DESC": "Usa el buscador para encontrar al paciente por nombre, apellido o número de documento." },
+        "S3": { "TITLE": "Abrir el expediente", "DESC": "Haz clic en la fila del paciente para abrir su historia clínica completa." },
+        "S4": { "TITLE": "Revisar la información", "DESC": "Visualiza antecedentes, alergias, medicamentos, condiciones crónicas y los documentos vinculados a la HC." }
+      },
+      "CREATE_CLINICAL_HISTORY": {
+        "TITLE": "¿Cómo crear o editar una historia clínica?",
+        "DESC": "Crea un nuevo expediente clínico o actualiza la información médica de un paciente existente.",
+        "TAGS": "historia clínica HC crear editar alergias medicamentos antecedentes",
+        "S1": { "TITLE": "Abrir la historia clínica", "DESC": "Navega a \"Historias Clínicas\", busca el paciente y haz clic sobre él." },
+        "S2": { "TITLE": "Iniciar edición", "DESC": "Si el paciente aún no tiene HC, el sistema mostrará un formulario de creación. Si ya existe, presiona el botón \"Editar\" en la esquina superior derecha." },
+        "S3": { "TITLE": "Completar campos médicos", "DESC": "Ingresa el tipo de sangre, antecedentes patológicos y no patológicos, antecedentes familiares, alergias, condiciones crónicas y medicamentos actuales." },
+        "S4": { "TITLE": "Guardar la historia clínica", "DESC": "Presiona \"Guardar\" para crear o actualizar el expediente. El sistema vinculará automáticamente los documentos previos del paciente a la nueva HC." }
+      },
+      "ADD_HC_DOCUMENT": {
+        "TITLE": "¿Cómo agregar documentos a una historia clínica?",
+        "DESC": "Vincula documentos clínicos (notas, informes, resultados) directamente a la historia clínica de un paciente.",
+        "TAGS": "historia clínica documento agregar vincular expediente adjuntar",
+        "S1": { "TITLE": "Abrir la historia clínica", "DESC": "Desde \"Historias Clínicas\" o desde el detalle del paciente, abre su expediente médico." },
+        "S2": { "TITLE": "Ir a la sección de Documentos", "DESC": "En la parte inferior de la HC encontrarás los documentos vinculados al paciente." },
+        "S3": { "TITLE": "Crear nuevo documento", "DESC": "Presiona \"+ Nuevo Documento\" para abrir el editor OnlyOffice ya enlazado al paciente." },
+        "S4": { "TITLE": "Guardar y volver", "DESC": "Al cerrar el editor, el documento quedará vinculado automáticamente a la historia clínica del paciente." }
+      },
+      "VIEW_DICOM": {
+        "TITLE": "¿Cómo visualizar un estudio médico DICOM?",
+        "DESC": "Abre y navega estudios médicos DICOM ya almacenados en el sistema para un paciente.",
+        "TAGS": "dicom imagen médica visor tomografía radiografía estudio",
+        "S1": { "TITLE": "Acceder al listado DICOM", "DESC": "Navega al menú \"Estudios DICOM\" desde la barra lateral. Verás los estudios agrupados por paciente." },
+        "S2": { "TITLE": "Seleccionar estudio", "DESC": "Expande el grupo del paciente y presiona el botón \"Abrir Visor\" en la tarjeta del estudio deseado." },
+        "S3": { "TITLE": "Cargar el visor interactivo", "DESC": "Espera que el visor decodifique los archivos del estudio directamente en tu navegador." },
+        "S4": { "TITLE": "Manipular la imagen", "DESC": "Usa la barra de herramientas del visor para rotar, ajustar contraste (brillo), hacer zoom o medir áreas de la imagen." }
+      },
+      "UPLOAD_DICOM": {
+        "TITLE": "¿Cómo subir imágenes DICOM y asociarlas a un paciente?",
+        "DESC": "Carga archivos .dcm desde tu dispositivo y vincúlalos al expediente de un paciente en el sistema.",
+        "TAGS": "dicom subir cargar asociar paciente archivo dcm estudio médico",
+        "S1": { "TITLE": "Ir a Estudios DICOM", "DESC": "Navega al menú \"Estudios DICOM\" desde la barra lateral de navegación." },
+        "S2": { "TITLE": "Abrir el panel de carga", "DESC": "En la esquina superior derecha, haz clic en el botón \"Subir\" (ícono de flecha hacia arriba). Se desplegará el panel de carga." },
+        "S3": { "TITLE": "Seleccionar el paciente", "DESC": "En el selector \"Paciente\", elige al paciente al que pertenecen las imágenes. Es obligatorio para guardar el estudio en el sistema." },
+        "S4": { "TITLE": "Agregar los archivos DICOM", "DESC": "Arrastra y suelta los archivos .dcm en la zona de carga, o haz clic en ella para seleccionarlos desde tu dispositivo. Puedes cargar múltiples archivos a la vez." },
+        "S5": { "TITLE": "Confirmar la subida", "DESC": "Presiona el botón \"Subir\". Al finalizar, el sistema abrirá el visor automáticamente con las imágenes del nuevo estudio ya vinculado al paciente." }
+      },
+      "VIEW_DICOM_LOCAL": {
+        "TITLE": "¿Cómo ver imágenes DICOM locales sin subirlas al sistema?",
+        "DESC": "Abre y visualiza archivos .dcm directamente desde tu dispositivo sin necesidad de guardarlos en el servidor.",
+        "TAGS": "dicom local visor rápido archivo dcm sin subir privado",
+        "S1": { "TITLE": "Ir a Estudios DICOM", "DESC": "Navega al menú \"Estudios DICOM\" desde la barra lateral." },
+        "S2": { "TITLE": "Abrir el Visor Rápido", "DESC": "En la esquina superior derecha, haz clic en el botón \"Visor Rápido\" (ícono de carpeta). Se abrirá el selector de archivos locales." },
+        "S3": { "TITLE": "Seleccionar y visualizar", "DESC": "Elige los archivos .dcm desde tu dispositivo. Las imágenes se mostrarán en el visor sin almacenarse en el sistema." }
+      },
+      "VIEW_REPORTS": {
+        "TITLE": "¿Cómo visualizar los reportes y estadísticas clínicas?",
+        "DESC": "Consulta los gráficos del dashboard, estadísticas de consultas y reportes de tu clínica.",
+        "TAGS": "reporte estadística dashboard gráfico consultas rendimiento",
+        "S1": { "TITLE": "Ir al Dashboard o Reportes", "DESC": "Haz clic en \"Dashboard\" o \"Reportes\" en el menú de navegación principal." },
+        "S2": { "TITLE": "Revisar métricas principales", "DESC": "Analiza los contadores de pacientes atendidos, documentos emitidos y espacio de almacenamiento utilizado." },
+        "S3": { "TITLE": "Ver gráficos estadísticos", "DESC": "Visualiza la evolución temporal de consultas y la distribución de documentos clínicos por especialidad." },
+        "S4": { "TITLE": "Generar reportes imprimibles", "DESC": "Usa los filtros de fecha para exportar reportes detallados o imprimirlos mediante la opción del navegador." }
+      },
+      "VIEW_AUDIT_LOGS": {
+        "TITLE": "¿Cómo revisar la bitácora de auditoría?",
+        "DESC": "Revisa el registro cronológico de todas las operaciones realizadas en el sistema.",
+        "TAGS": "auditoría log seguridad bitácora operaciones trazabilidad",
+        "S1": { "TITLE": "Ir a Auditoría", "DESC": "Desde la barra lateral, haz clic en \"Auditoría\" (disponible exclusivamente para el Superusuario)." },
+        "S2": { "TITLE": "Aplicar filtros", "DESC": "Filtra la bitácora por usuario, rango de fechas o tipo de acción (subida, eliminación, inicio de sesión) usando los controles superiores." },
+        "S3": { "TITLE": "Ver el detalle del registro", "DESC": "Haz clic en cualquier fila para abrir el panel de detalle con la dirección IP, fecha/hora exacta y los cambios realizados." }
+      },
+      "AUDIT_FILTERS": {
+        "TITLE": "¿Cómo filtrar y exportar registros de auditoría?",
+        "DESC": "Aprende a depurar y exportar los logs de auditoría para cumplimiento normativo o investigación.",
+        "TAGS": "auditoría filtro exportar buscar bitácora fecha usuario",
+        "S1": { "TITLE": "Abrir el módulo de Auditoría", "DESC": "Navega a \"Auditoría\" desde el menú lateral de administración." },
+        "S2": { "TITLE": "Seleccionar filtros", "DESC": "Usa los filtros de tipo de acción (CREATE, UPDATE, DELETE, LOGIN), usuario responsable y rango de fechas." },
+        "S3": { "TITLE": "Revisar resultados", "DESC": "La tabla se actualiza en tiempo real con los registros que coinciden. Cada fila muestra el recurso afectado, el usuario y la marca de tiempo." }
+      },
+      "MANAGE_TENANT_INFO": {
+        "TITLE": "¿Cómo actualizar la información de la clínica?",
+        "DESC": "Edita el nombre, dirección y datos de contacto de tu institución médica registrada.",
+        "TAGS": "configuración clínica información nombre dirección institución",
+        "S1": { "TITLE": "Ir a Configuración", "DESC": "En el menú lateral, haz clic en \"Configuración\" y selecciona la pestaña \"Información\"." },
+        "S2": { "TITLE": "Editar los datos", "DESC": "Modifica el nombre de la clínica, teléfono, dirección y otros datos de identificación de la institución." },
+        "S3": { "TITLE": "Guardar cambios", "DESC": "Presiona \"Guardar\" para aplicar la información actualizada en todo el sistema." }
+      },
+      "MANAGE_APPEARANCE": {
+        "TITLE": "¿Cómo personalizar la apariencia del sistema?",
+        "DESC": "Cambia los colores, tipografía y logo para adaptar el sistema a la identidad visual de tu clínica.",
+        "TAGS": "apariencia tema colores logo tipografía personalizar branding",
+        "S1": { "TITLE": "Abrir Apariencia", "DESC": "Desde \"Configuración\" en el menú lateral, selecciona la pestaña \"Apariencia\"." },
+        "S2": { "TITLE": "Elegir preajuste o editar manualmente", "DESC": "Selecciona uno de los preajustes de identidad visual predefinidos o personaliza los colores primarios y secundarios con el selector de color." },
+        "S3": { "TITLE": "Configurar tipografía", "DESC": "Ajusta el tipo de fuente, tamaño base y peso del texto para toda la interfaz." },
+        "S4": { "TITLE": "Previsualizar y guardar", "DESC": "Usa el panel de vista previa en tiempo real para verificar los cambios antes de presionar \"Guardar\"." }
+      },
+      "MANAGE_PREFERENCES": {
+        "TITLE": "¿Cómo gestionar las preferencias del sistema?",
+        "DESC": "Ajusta los parámetros de funcionamiento general como idioma, zona horaria y notificaciones.",
+        "TAGS": "preferencias idioma zona horaria notificaciones configuración sistema",
+        "S1": { "TITLE": "Navegar a Preferencias", "DESC": "En el menú lateral, accede a \"Configuración\" y selecciona la pestaña \"Preferencias\"." },
+        "S2": { "TITLE": "Ajustar parámetros", "DESC": "Modifica el idioma del sistema, zona horaria predeterminada y opciones de notificaciones automáticas." },
+        "S3": { "TITLE": "Guardar configuración", "DESC": "Haz clic en \"Guardar\" para aplicar los cambios a toda la clínica." }
+      },
+      "MANAGE_SUBSCRIPTION": {
+        "TITLE": "¿Cómo gestionar y renovar la suscripción?",
+        "DESC": "Aprende a renovar tu plan o cambiar a uno superior para ampliar tus límites.",
+        "TAGS": "suscripción plan pagar renovar actualizar stripe facturación",
+        "S1": { "TITLE": "Navegar a Suscripción", "DESC": "Desde el menú lateral, haz clic en \"Configuración\" y selecciona la pestaña \"Suscripción\"." },
+        "S2": { "TITLE": "Revisar estado y límites", "DESC": "Visualiza el consumo actual de usuarios, almacenamiento y llamadas a la API junto con la fecha de vencimiento." },
+        "S3": { "TITLE": "Renovar o cambiar plan", "DESC": "Haz clic en \"Renovar ahora\" para mantener tu plan actual, o en \"Seleccionar plan\" en el plan superior deseado." },
+        "S4": { "TITLE": "Ingresar datos de pago", "DESC": "En el modal seguro de Stripe, verifica el total en bolivianos (Bs.), ingresa los datos de tu tarjeta y presiona \"Pagar\"." }
+      },
+      "MANAGE_BACKUPS": {
+        "TITLE": "¿Cómo gestionar y generar copias de seguridad?",
+        "DESC": "Genera respaldos manuales de la base de datos para prevenir pérdidas de información.",
+        "TAGS": "backup respaldo seguridad base de datos guardar",
+        "S1": { "TITLE": "Acceder a Backups", "DESC": "Ingresa al módulo \"Copias de Seguridad\" en la sección de administración." },
+        "S2": { "TITLE": "Generar copia", "DESC": "Presiona el botón \"Generar Respaldo\". El sistema creará un volcado del Postgres actual." },
+        "S3": { "TITLE": "Descargar el archivo", "DESC": "Una vez finalizado, haz clic en el botón de descarga para guardar el archivo comprimido (.zip o .sql) en un dispositivo externo." }
+      },
+      "MANAGE_USERS": {
+        "TITLE": "¿Cómo registrar y editar usuarios?",
+        "DESC": "Aprende a administrar los accesos y credenciales de los trabajadores del sistema.",
+        "TAGS": "usuarios roles crear permisos editar clave",
+        "S1": { "TITLE": "Ir a Gestión de Usuarios", "DESC": "Desde el menú de navegación lateral, selecciona \"Usuarios\"." },
+        "S2": { "TITLE": "Registrar nuevo usuario", "DESC": "Haz clic en \"Registrar Usuario\" e introduce el nombre de usuario, contraseña, email y selecciona el rol deseado." },
+        "S3": { "TITLE": "Editar roles y estado", "DESC": "Para cambiar permisos o suspender una cuenta, haz clic en \"Editar\" en la fila del usuario correspondiente." },
+        "S4": { "TITLE": "Cambiar contraseñas", "DESC": "Si un usuario olvidó sus credenciales, haz clic en el botón de la llave (\"Cambiar Contraseña\") para reestablecerla de forma segura." }
+      },
+      "CHANGE_PROFILE_PASSWORD": {
+        "TITLE": "¿Cómo cambiar mi contraseña personal?",
+        "DESC": "Mantén segura tu cuenta cambiando la clave de acceso de manera regular.",
+        "TAGS": "contraseña clave perfil mi cuenta seguridad",
+        "S1": { "TITLE": "Desplegar menú de perfil", "DESC": "Haz clic sobre tu nombre o avatar en la esquina superior derecha del Navbar." },
+        "S2": { "TITLE": "Seleccionar Perfil", "DESC": "Haz clic en la opción \"Mi Perfil\" o \"Cambiar Contraseña\"." },
+        "S3": { "TITLE": "Introducir nueva clave", "DESC": "Ingresa tu contraseña actual y luego escribe la nueva contraseña dos veces." },
+        "S4": { "TITLE": "Confirmar cambio", "DESC": "Haz clic en \"Guardar Cambios\". Tu sesión se mantendrá activa con la nueva contraseña." }
+      }
+    }
   }
 }
