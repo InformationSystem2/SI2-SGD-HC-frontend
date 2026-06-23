@@ -89,7 +89,7 @@ export class UserRegister implements OnInit {
       documentType:    ['', Validators.required],
       documentNumber:  ['', Validators.required],
       phone:           [''],
-      gender:          ['', Validators.required],
+      gender:          [''],
       isActive:        [true],
       rolesIds:        [[] as string[]],
     },

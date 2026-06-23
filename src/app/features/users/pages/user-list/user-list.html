@@ -1,5 +1,6 @@
 <div class="space-y-4">
 
+  <!-- Header -->
   <div class="hc-page-header">
     <h2 class="hc-page-title">
       <fa-icon [icon]="faUsers" class="text-hc-primary" />
@@ -12,6 +13,82 @@
     </button>
     }
   </div>
+
+  <!-- Barra de búsqueda + filtros -->
+  <div class="flex flex-col sm:flex-row gap-2">
+
+    <!-- Buscador -->
+    <div class="relative flex-1">
+      <fa-icon [icon]="faMagnifyingGlass"
+               class="absolute left-3 top-1/2 -translate-y-1/2 text-hc-text-3 text-sm pointer-events-none" />
+      <input
+        type="search"
+        [value]="search()"
+        (input)="onSearch($any($event.target).value)"
+        placeholder="{{ 'USERS.SEARCH_PLACEHOLDER' | translate }}"
+        class="hc-input pl-9 pr-9"
+      />
+      @if (search()) {
+        <button (click)="clearSearch()"
+                class="absolute right-3 top-1/2 -translate-y-1/2 text-hc-text-3 hover:text-hc-text transition-colors">
+          <fa-icon [icon]="faXmark" />
+        </button>
+      }
+    </div>
+
+    <!-- Filtro estado -->
+    <select
+      class="hc-input w-auto min-w-[130px]"
+      [value]="filterStatus()"
+      (change)="onStatusChange($any($event.target).value)"
+    >
+      <option value="all">{{ 'USERS.FILTER_ALL' | translate }}</option>
+      <option value="active">{{ 'USERS.STATUS_ACTIVE' | translate }}</option>
+      <option value="inactive">{{ 'USERS.STATUS_INACTIVE' | translate }}</option>
+    </select>
+
+    <!-- Filtro rol -->
+    <select
+      class="hc-input w-auto min-w-[140px]"
+      [value]="filterRole()"
+      (change)="onRoleChange($any($event.target).value)"
+    >
+      <option value="">{{ 'USERS.FILTER_ALL_ROLES' | translate }}</option>
+      @for (role of availableRoles(); track role.id) {
+        <option [value]="role.id">{{ role.name }}</option>
+      }
+    </select>
+
+    <!-- Filtro Tenant (Superusuario) -->
+    @if (isSuperuser()) {
+      <select
+        class="hc-input w-auto min-w-[160px] border-amber-500/50 focus:border-amber-500 focus:ring-amber-500"
+        [value]="filterTenant()"
+        (change)="onTenantChange($any($event.target).value)"
+      >
+        <option value="">{{ 'USERS.FILTER_ALL_TENANTS' | translate }}</option>
+        @for (tenant of availableTenants(); track tenant.id) {
+          <option [value]="tenant.slug">{{ tenant.name }}</option>
+        }
+      </select>
+    }
+
+    <!-- Limpiar filtros -->
+    @if (hasActiveFilters()) {
+      <button (click)="clearFilters()"
+              class="hc-btn-ghost flex items-center gap-1.5 whitespace-nowrap text-sm">
+        <fa-icon [icon]="faXmark" />
+        {{ 'COMMON.CLEAR_FILTERS' | translate }}
+      </button>
+    }
+  </div>
+
+  <!-- Contador de resultados -->
+  @if (hasActiveFilters()) {
+    <p class="text-xs text-hc-text-3">
+      {{ totalItems() }} {{ 'COMMON.RESULTS' | translate }}
+    </p>
+  }
 
   @if (userService.error()) {
     <div class="hc-alert-error">{{ userService.error() }}</div>
@@ -95,7 +172,13 @@
             </tr>
           } @empty {
             <tr>
-              <td colspan="6" class="hc-table-empty">{{ 'USERS.EMPTY' | translate }}</td>
+              <td colspan="6" class="hc-table-empty">
+                @if (hasActiveFilters()) {
+                  {{ 'USERS.SEARCH_EMPTY' | translate }}
+                } @else {
+                  {{ 'USERS.EMPTY' | translate }}
+                }
+              </td>
             </tr>
           }
         </tbody>
