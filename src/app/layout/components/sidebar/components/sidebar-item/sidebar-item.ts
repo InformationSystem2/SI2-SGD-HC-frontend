@@ -25,6 +25,7 @@ import {
   faNotesMedical,
   faInbox,
   faBell,
+  faBookmark,
   type IconDefinition,
 } from '@fortawesome/free-solid-svg-icons';
 
@@ -32,6 +33,7 @@ const ICON_MAP: Record<string, IconDefinition> = {
   'layout-dashboard': faGaugeHigh,
   'file-text':        faFileLines,
   'folder-open':      faFolderOpen,
+  'file-template':    faBookmark,
   'users':            faUsers,
   'settings':         faGear,
   'shield':           faShieldHalved,

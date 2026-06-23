@@ -112,6 +112,7 @@
           </div>
         } @else {
           <div class="space-y-5">
+            <!-- Users Limit -->
             <div class="p-5 bg-hc-card rounded-2xl border border-hc-border hover:border-hc-primary/30 hover:shadow-md transition-all duration-300 group">
               <div class="flex items-center justify-between mb-4">
                 <div class="flex items-center gap-3">
@@ -123,7 +124,10 @@
                     <p class="text-xs text-hc-text-3">{{ 'SUBSCRIPTION.PLAN_LIMIT' | translate }}</p>
                   </div>
                 </div>
-                <span class="text-lg font-bold" [class.text-hc-success]="userPercent() < 80" [class.text-hc-warning]="userPercent() >= 80">
+                <span class="text-lg font-bold" 
+                      [class.text-hc-success]="userPercent() < 80" 
+                      [class.text-hc-warning]="userPercent() >= 80 && userPercent() < 100"
+                      [class.text-hc-error]="userPercent() >= 100">
                   {{ usage().currentUsers }} / {{ formatNumber(currentPlanLimits()['maxUsers']) }}
                 </span>
               </div>
@@ -131,21 +135,26 @@
                 <div class="absolute inset-0 bg-gradient-to-r from-hc-primary/20 to-transparent"></div>
                 <div class="h-full rounded-full transition-all duration-700 ease-out relative overflow-hidden"
                   [class]="getBarGradient(userPercent())"
-                  [style.width.%]="userPercent()"
+                  [style.width.%]="userPercent() > 100 ? 100 : userPercent()"
                 >
                   <div class="absolute inset-0 bg-gradient-to-r from-transparent via-white/30 to-transparent animate-[shimmer_2s_ease-in-out_infinite]"></div>
                 </div>
               </div>
               <div class="flex justify-between mt-2 items-center">
                 <span class="text-xs text-hc-text-3">{{ userPercent().toFixed(1) }}% {{ 'SUBSCRIPTION.USED' | translate }}</span>
-                @if (userPercent() >= 80) {
-                  <span class="inline-flex items-center gap-1.5 text-xs font-bold text-hc-warning bg-hc-warning-bg px-2 py-1 rounded-full">
+                @if (userPercent() >= 100) {
+                  <span class="inline-flex items-center gap-1.5 text-xs font-bold text-hc-error bg-hc-error-bg px-2.5 py-1 rounded-full">
+                    <i class="fas fa-exclamation-circle"></i> {{ 'SUBSCRIPTION.LIMIT_REACHED' | translate }}
+                  </span>
+                } @else if (userPercent() >= 80) {
+                  <span class="inline-flex items-center gap-1.5 text-xs font-bold text-hc-warning bg-hc-warning-bg px-2.5 py-1 rounded-full">
                     <i class="fas fa-exclamation-triangle"></i> {{ 'SUBSCRIPTION.WARNING_LIMIT' | translate }}
                   </span>
                 }
               </div>
             </div>
 
+            <!-- Storage Limit -->
             <div class="p-5 bg-hc-card rounded-2xl border border-hc-border hover:border-hc-primary/30 hover:shadow-md transition-all duration-300 group">
               <div class="flex items-center justify-between mb-4">
                 <div class="flex items-center gap-3">
@@ -157,7 +166,10 @@
                     <p class="text-xs text-hc-text-3">{{ 'SUBSCRIPTION.DISK_SPACE' | translate }}</p>
                   </div>
                 </div>
-                <span class="text-lg font-bold" [class.text-hc-success]="storagePercent() < 80" [class.text-hc-warning]="storagePercent() >= 80">
+                <span class="text-lg font-bold" 
+                      [class.text-hc-success]="storagePercent() < 80" 
+                      [class.text-hc-warning]="storagePercent() >= 80 && storagePercent() < 100"
+                      [class.text-hc-error]="storagePercent() >= 100">
                   {{ formatStorage(usage().currentStorageMB) }} / {{ formatStorage(currentPlanLimits()['maxStorageMB']) }}
                 </span>
               </div>
@@ -165,21 +177,26 @@
                 <div class="absolute inset-0 bg-gradient-to-r from-hc-primary/20 to-transparent"></div>
                 <div class="h-full rounded-full transition-all duration-700 ease-out relative overflow-hidden"
                   [class]="getBarGradient(storagePercent())"
-                  [style.width.%]="storagePercent()"
+                  [style.width.%]="storagePercent() > 100 ? 100 : storagePercent()"
                 >
                   <div class="absolute inset-0 bg-gradient-to-r from-transparent via-white/30 to-transparent animate-[shimmer_2s_ease-in-out_infinite]"></div>
                 </div>
               </div>
               <div class="flex justify-between mt-2 items-center">
                 <span class="text-xs text-hc-text-3">{{ storagePercent().toFixed(1) }}% {{ 'SUBSCRIPTION.USED' | translate }}</span>
-                @if (storagePercent() >= 80) {
-                  <span class="inline-flex items-center gap-1.5 text-xs font-bold text-hc-warning bg-hc-warning-bg px-2 py-1 rounded-full">
+                @if (storagePercent() >= 100) {
+                  <span class="inline-flex items-center gap-1.5 text-xs font-bold text-hc-error bg-hc-error-bg px-2.5 py-1 rounded-full">
+                    <i class="fas fa-exclamation-circle"></i> {{ 'SUBSCRIPTION.LIMIT_REACHED' | translate }}
+                  </span>
+                } @else if (storagePercent() >= 80) {
+                  <span class="inline-flex items-center gap-1.5 text-xs font-bold text-hc-warning bg-hc-warning-bg px-2.5 py-1 rounded-full">
                     <i class="fas fa-exclamation-triangle"></i> {{ 'SUBSCRIPTION.WARNING_LIMIT' | translate }}
                   </span>
                 }
               </div>
             </div>
 
+            <!-- Patients Limit -->
             <div class="p-5 bg-hc-card rounded-2xl border border-hc-border hover:border-hc-primary/30 hover:shadow-md transition-all duration-300 group">
               <div class="flex items-center justify-between mb-4">
                 <div class="flex items-center gap-3">
@@ -191,23 +208,36 @@
                     <p class="text-xs text-hc-text-3">{{ 'SUBSCRIPTION.REGISTERED_IN_SYSTEM' | translate }}</p>
                   </div>
                 </div>
-                <span class="text-lg font-bold" [class.text-hc-success]="patientPercent() < 80" [class.text-hc-warning]="patientPercent() >= 80">
+                <span class="text-lg font-bold" 
+                      [class.text-hc-success]="patientPercent() < 80" 
+                      [class.text-hc-warning]="patientPercent() >= 80 && patientPercent() < 100"
+                      [class.text-hc-error]="patientPercent() >= 100">
                   {{ usage().currentPatients }} / {{ formatNumber(currentPlanLimits()['maxPatients']) }}
                 </span>
               </div>
               <div class="relative h-3 bg-hc-border rounded-full overflow-hidden">
                 <div class="h-full rounded-full transition-all duration-700 ease-out relative overflow-hidden"
                   [class]="getBarGradient(patientPercent())"
-                  [style.width.%]="patientPercent()"
+                  [style.width.%]="patientPercent() > 100 ? 100 : patientPercent()"
                 >
                   <div class="absolute inset-0 bg-gradient-to-r from-transparent via-white/30 to-transparent animate-[shimmer_2s_ease-in-out_infinite]"></div>
                 </div>
               </div>
               <div class="flex justify-between mt-2 items-center">
                 <span class="text-xs text-hc-text-3">{{ patientPercent().toFixed(1) }}% {{ 'SUBSCRIPTION.USED' | translate }}</span>
+                @if (patientPercent() >= 100) {
+                  <span class="inline-flex items-center gap-1.5 text-xs font-bold text-hc-error bg-hc-error-bg px-2.5 py-1 rounded-full">
+                    <i class="fas fa-exclamation-circle"></i> {{ 'SUBSCRIPTION.LIMIT_REACHED' | translate }}
+                  </span>
+                } @else if (patientPercent() >= 80) {
+                  <span class="inline-flex items-center gap-1.5 text-xs font-bold text-hc-warning bg-hc-warning-bg px-2.5 py-1 rounded-full">
+                    <i class="fas fa-exclamation-triangle"></i> {{ 'SUBSCRIPTION.WARNING_LIMIT' | translate }}
+                  </span>
+                }
               </div>
             </div>
 
+            <!-- Documents Limit -->
             <div class="p-5 bg-hc-card rounded-2xl border border-hc-border hover:border-hc-primary/30 hover:shadow-md transition-all duration-300 group">
               <div class="flex items-center justify-between mb-4">
                 <div class="flex items-center gap-3">
@@ -219,22 +249,36 @@
                     <p class="text-xs text-hc-text-3">{{ 'SUBSCRIPTION.TOTAL_IN_SYSTEM' | translate }}</p>
                   </div>
                 </div>
-                <span class="text-lg font-bold" [class.text-hc-success]="docPercent() < 80" [class.text-hc-warning]="docPercent() >= 80">
+                <span class="text-lg font-bold" 
+                      [class.text-hc-success]="docPercent() < 80" 
+                      [class.text-hc-warning]="docPercent() >= 80 && docPercent() < 100"
+                      [class.text-hc-error]="docPercent() >= 100">
                   {{ usage().currentDocuments }} / {{ formatNumber(currentPlanLimits()['maxDocuments']) }}
                 </span>
               </div>
               <div class="relative h-3 bg-hc-border rounded-full overflow-hidden">
                 <div class="h-full rounded-full transition-all duration-700 ease-out relative overflow-hidden"
                   [class]="getBarGradient(docPercent())"
-                  [style.width.%]="docPercent()"
+                  [style.width.%]="docPercent() > 100 ? 100 : docPercent()"
                 >
                   <div class="absolute inset-0 bg-gradient-to-r from-transparent via-white/30 to-transparent animate-[shimmer_2s_ease-in-out_infinite]"></div>
                 </div>
               </div>
               <div class="flex justify-between mt-2 items-center">
                 <span class="text-xs text-hc-text-3">{{ docPercent().toFixed(1) }}% {{ 'SUBSCRIPTION.USED' | translate }}</span>
+                @if (docPercent() >= 100) {
+                  <span class="inline-flex items-center gap-1.5 text-xs font-bold text-hc-error bg-hc-error-bg px-2.5 py-1 rounded-full">
+                    <i class="fas fa-exclamation-circle"></i> {{ 'SUBSCRIPTION.LIMIT_REACHED' | translate }}
+                  </span>
+                } @else if (docPercent() >= 80) {
+                  <span class="inline-flex items-center gap-1.5 text-xs font-bold text-hc-warning bg-hc-warning-bg px-2.5 py-1 rounded-full">
+                    <i class="fas fa-exclamation-triangle"></i> {{ 'SUBSCRIPTION.WARNING_LIMIT' | translate }}
+                  </span>
+                }
               </div>
             </div>
+
+            <!-- DICOM Studies Limit -->
             <div class="p-5 bg-hc-card rounded-2xl border border-hc-border hover:border-hc-primary/30 hover:shadow-md transition-all duration-300 group">
               <div class="flex items-center justify-between mb-4">
                 <div class="flex items-center gap-3">
@@ -246,28 +290,36 @@
                     <p class="text-xs text-hc-text-3">{{ 'SUBSCRIPTION.DICOM_DESC' | translate }}</p>
                   </div>
                 </div>
-                <span class="text-lg font-bold" [class.text-hc-success]="dicomPercent() < 80" [class.text-hc-warning]="dicomPercent() >= 80">
+                <span class="text-lg font-bold" 
+                      [class.text-hc-success]="dicomPercent() < 80" 
+                      [class.text-hc-warning]="dicomPercent() >= 80 && dicomPercent() < 100"
+                      [class.text-hc-error]="dicomPercent() >= 100">
                   {{ usage().currentDicomStudies }} / {{ formatNumber(currentPlanLimits()['maxDicomStudies']) }}
                 </span>
               </div>
               <div class="relative h-3 bg-hc-border rounded-full overflow-hidden">
                 <div class="h-full rounded-full transition-all duration-700 ease-out relative overflow-hidden"
                   [class]="getBarGradient(dicomPercent())"
-                  [style.width.%]="dicomPercent()"
+                  [style.width.%]="dicomPercent() > 100 ? 100 : dicomPercent()"
                 >
                   <div class="absolute inset-0 bg-gradient-to-r from-transparent via-white/30 to-transparent animate-[shimmer_2s_ease-in-out_infinite]"></div>
                 </div>
               </div>
               <div class="flex justify-between mt-2 items-center">
                 <span class="text-xs text-hc-text-3">{{ dicomPercent().toFixed(1) }}% {{ 'SUBSCRIPTION.USED' | translate }}</span>
-                @if (dicomPercent() >= 80) {
-                  <span class="inline-flex items-center gap-1.5 text-xs font-bold text-hc-warning bg-hc-warning-bg px-2 py-1 rounded-full">
+                @if (dicomPercent() >= 100) {
+                  <span class="inline-flex items-center gap-1.5 text-xs font-bold text-hc-error bg-hc-error-bg px-2.5 py-1 rounded-full">
+                    <i class="fas fa-exclamation-circle"></i> {{ 'SUBSCRIPTION.LIMIT_REACHED' | translate }}
+                  </span>
+                } @else if (dicomPercent() >= 80) {
+                  <span class="inline-flex items-center gap-1.5 text-xs font-bold text-hc-warning bg-hc-warning-bg px-2.5 py-1 rounded-full">
                     <i class="fas fa-exclamation-triangle"></i> {{ 'SUBSCRIPTION.WARNING_LIMIT' | translate }}
                   </span>
                 }
               </div>
             </div>
 
+            <!-- Staff Roles Limit -->
             <div class="p-5 bg-hc-card rounded-2xl border border-hc-border hover:border-hc-primary/30 hover:shadow-md transition-all duration-300 group">
               <div class="flex items-center justify-between mb-4">
                 <div class="flex items-center gap-3">
@@ -279,22 +331,29 @@
                     <p class="text-xs text-hc-text-3">{{ 'SUBSCRIPTION.ROLES_DESC' | translate }}</p>
                   </div>
                 </div>
-                <span class="text-lg font-bold" [class.text-hc-success]="rolePercent() < 80" [class.text-hc-warning]="rolePercent() >= 80">
+                <span class="text-lg font-bold" 
+                      [class.text-hc-success]="rolePercent() < 80" 
+                      [class.text-hc-warning]="rolePercent() >= 80 && rolePercent() < 100"
+                      [class.text-hc-error]="rolePercent() >= 100">
                   {{ usage().currentRoles }} / {{ formatNumber(currentPlanLimits()['maxStaffRoles']) }}
                 </span>
               </div>
               <div class="relative h-3 bg-hc-border rounded-full overflow-hidden">
                 <div class="h-full rounded-full transition-all duration-700 ease-out relative overflow-hidden"
                   [class]="getBarGradient(rolePercent())"
-                  [style.width.%]="rolePercent()"
+                  [style.width.%]="rolePercent() > 100 ? 100 : rolePercent()"
                 >
                   <div class="absolute inset-0 bg-gradient-to-r from-transparent via-white/30 to-transparent animate-[shimmer_2s_ease-in-out_infinite]"></div>
                 </div>
               </div>
               <div class="flex justify-between mt-2 items-center">
                 <span class="text-xs text-hc-text-3">{{ rolePercent().toFixed(1) }}% {{ 'SUBSCRIPTION.USED' | translate }}</span>
-                @if (rolePercent() >= 80) {
-                  <span class="inline-flex items-center gap-1.5 text-xs font-bold text-hc-warning bg-hc-warning-bg px-2 py-1 rounded-full">
+                @if (rolePercent() >= 100) {
+                  <span class="inline-flex items-center gap-1.5 text-xs font-bold text-hc-error bg-hc-error-bg px-2.5 py-1 rounded-full">
+                    <i class="fas fa-exclamation-circle"></i> {{ 'SUBSCRIPTION.LIMIT_REACHED' | translate }}
+                  </span>
+                } @else if (rolePercent() >= 80) {
+                  <span class="inline-flex items-center gap-1.5 text-xs font-bold text-hc-warning bg-hc-warning-bg px-2.5 py-1 rounded-full">
                     <i class="fas fa-exclamation-triangle"></i> {{ 'SUBSCRIPTION.WARNING_LIMIT' | translate }}
                   </span>
                 }
