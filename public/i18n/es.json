@@ -248,6 +248,7 @@
     "FILTER_ALL_TENANTS": "Todas las clínicas"
   },
   "DOCUMENTS": {
+    "SEARCH_PLACEHOLDER": "Buscar por nombre, paciente, estado...",
     "LIST_TITLE": "Documentos",
     "LIST_EMPTY": "No hay documentos registrados.",
     "UPLOAD_BTN": "Subir documento",

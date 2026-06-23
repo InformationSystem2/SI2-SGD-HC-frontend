@@ -83,6 +83,7 @@ export interface ExternalDocumentRequest {
   fileUrl: string;
   issueDate: string;
   notes?: string;
+  title?: string;
 }
 
 export interface VersionHistoryResponseDto {

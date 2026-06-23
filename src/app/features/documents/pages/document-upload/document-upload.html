@@ -116,6 +116,22 @@
         }
       </div>
 
+      <!-- Título -->
+      <div class="flex flex-col gap-1">
+        <label for="title" class="text-sm font-medium text-hc-text-2">
+          Título del Documento
+        </label>
+        <input
+          id="title"
+          formControlName="title"
+          type="text"
+          placeholder="Si se deja vacío, se usará el nombre del archivo"
+          class="rounded-lg border border-hc-border bg-hc-surface px-3 py-2
+                 text-sm text-hc-text placeholder:text-hc-text-3
+                 focus:outline-none focus:ring-2 focus:ring-hc-primary/50"
+        />
+      </div>
+
       <!-- Fecha de emisión -->
       <div class="flex flex-col gap-1">
         <label for="issueDate" class="text-sm font-medium text-hc-text-2">

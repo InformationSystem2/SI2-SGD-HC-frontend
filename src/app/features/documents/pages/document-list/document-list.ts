@@ -3,6 +3,7 @@ import { Router } from '@angular/router';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import {
   faFileLines, faSpinner, faUpload, faEye, faEdit, faTrash, faBookOpen,
+  faMagnifyingGlass, faXmark,
 } from '@fortawesome/free-solid-svg-icons';
 import { TranslatePipe, TranslateService } from '@ngx-translate/core';
 import { DocumentService } from '../../services/document.service';
@@ -26,16 +27,46 @@ export class DocumentList implements OnInit {
   readonly faEdit      = faEdit;
   readonly faTrash     = faTrash;
   readonly faBookOpen  = faBookOpen;
+  readonly faMagnifyingGlass = faMagnifyingGlass;
+  readonly faXmark            = faXmark;
 
   readonly deletingId = signal<string | null>(null);
 
+  // Search filter
+  readonly search = signal('');
+
+  onSearch(v: string) {
+    this.search.set(v);
+    this.page.set(0);
+  }
+
+  clearSearch() {
+    this.search.set('');
+    this.page.set(0);
+  }
+
+  readonly filtered = computed(() => {
+    const q = this.search().toLowerCase().trim();
+    return this.documentService.documents().filter(doc => {
+      const title = this.docTitle(doc).toLowerCase();
+      const patient = (doc.patientName ?? '').toLowerCase();
+      const status = (doc.status ?? '').toLowerCase();
+      const statusLbl = this.statusLabel(doc.status).toLowerCase();
+      return !q ||
+        title.includes(q) ||
+        patient.includes(q) ||
+        status.includes(q) ||
+        statusLbl.includes(q);
+    });
+  });
+
   readonly PAGE_SIZE   = 20;
   readonly page        = signal(0);
-  readonly totalItems  = computed(() => this.documentService.documents().length);
+  readonly totalItems  = computed(() => this.filtered().length);
   readonly totalPages  = computed(() => Math.ceil(this.totalItems() / this.PAGE_SIZE) || 1);
   readonly paged       = computed(() => {
     const s = this.page() * this.PAGE_SIZE;
-    return this.documentService.documents().slice(s, s + this.PAGE_SIZE);
+    return this.filtered().slice(s, s + this.PAGE_SIZE);
   });
   readonly visiblePages = computed(() => {
     const total = this.totalPages(), cur = this.page();

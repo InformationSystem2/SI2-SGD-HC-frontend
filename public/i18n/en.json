@@ -363,6 +363,7 @@
     "FILTER_ALL_TENANTS": "All Clinics"
   },
   "DOCUMENTS": {
+    "SEARCH_PLACEHOLDER": "Search by name, patient, status...",
     "LIST_TITLE": "Documents",
     "LIST_EMPTY": "No documents found.",
     "UPLOAD_BTN": "Upload document",

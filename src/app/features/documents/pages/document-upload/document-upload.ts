@@ -44,6 +44,7 @@ export class DocumentUpload implements OnInit {
   form = this.fb.group({
     patientId: ['', Validators.required],
     issueDate: [new Date().toISOString().split('T')[0], Validators.required],
+    title:     [''],
     notes:     [''],
   });
 
@@ -64,6 +65,12 @@ export class DocumentUpload implements OnInit {
     }
 
     this.selectedFile.set(file);
+
+    // Auto-fill title with filename without extension if empty
+    if (file && !this.form.value.title) {
+      const nameWithoutExt = file.name.replace(/\.[^/.]+$/, "");
+      this.form.patchValue({ title: nameWithoutExt });
+    }
   }
 
   /** Detecta archivos DICOM por extensión o tipo MIME. */
@@ -112,6 +119,7 @@ export class DocumentUpload implements OnInit {
           fileUrl:   url,
           issueDate: v.issueDate!,
           notes:     v.notes ?? undefined,
+          title:     v.title || undefined,
         }).subscribe({
           next: () => {
             this.uploading.set(false);

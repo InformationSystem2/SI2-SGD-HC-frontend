@@ -5,6 +5,7 @@ import {
   inject,
   OnInit,
   signal,
+  computed,
 } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
@@ -13,6 +14,7 @@ import {
   faArrowLeft, faFileWord, faFileExcel, faFilePowerpoint, faFilePdf,
   faSpinner, faCircleCheck, faTriangleExclamation,
   faUpload, faPlus, faExpand, faCompress,
+  faChevronDown, faChevronUp, faInfoCircle,
 } from '@fortawesome/free-solid-svg-icons';
 import { TranslatePipe } from '@ngx-translate/core';
 import { DocumentEditorModule } from '@onlyoffice/document-editor-angular';
@@ -20,6 +22,7 @@ import { environment } from '../../../../../environments/environment';
 import { PatientService } from '../../../patients/services/patient.service';
 import { DocumentService } from '../../services/document.service';
 import { Document, DocumentStatus } from '../../models/document.model';
+import { DocumentVersionHistoryComponent } from '../../components/document-version-history/document-version-history';
 
 type EditorMode = 'create' | 'edit' | 'view';
 type CreateTab  = 'new' | 'upload';
@@ -38,7 +41,7 @@ interface OOSession {
 
 @Component({
   selector: 'app-document-editor',
-  imports: [ReactiveFormsModule, FontAwesomeModule, TranslatePipe, DocumentEditorModule],
+  imports: [ReactiveFormsModule, FontAwesomeModule, TranslatePipe, DocumentEditorModule, DocumentVersionHistoryComponent],
   templateUrl: './document-editor.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
@@ -63,6 +66,9 @@ export class DocumentEditorPage implements OnInit {
   readonly faPlus                = faPlus;
   readonly faExpand              = faExpand;
   readonly faCompress            = faCompress;
+  readonly faChevronDown         = faChevronDown;
+  readonly faChevronUp           = faChevronUp;
+  readonly faInfoCircle          = faInfoCircle;
 
   readonly fullscreen = signal(false);
 
@@ -81,6 +87,12 @@ export class DocumentEditorPage implements OnInit {
   readonly uploading    = signal(false);
   readonly selectedFile = signal<File | null>(null);
   readonly docType      = signal<OoDocType>('WORD');
+
+  readonly showMetadataPanel = signal(false);
+
+  toggleMetadataPanel(): void {
+    this.showMetadataPanel.update(v => !v);
+  }
 
   readonly docTypes: { value: OoDocType; label: string; ext: string; accept: string }[] = [
     { value: 'WORD',  label: 'Documento Word',        ext: 'docx', accept: '.docx' },
@@ -103,7 +115,34 @@ export class DocumentEditorPage implements OnInit {
     { value: 'FINALIZED',         label: 'Finalizado' },
   ];
 
+  statusLabel(status: string): string {
+    return ({
+      DRAFT:          'Borrador',
+      PENDING_REVIEW: 'En revisión',
+      REJECTED:       'Rechazado',
+      FINALIZED:      'Finalizado',
+    } as Record<string, string>)[status] ?? status;
+  }
+
+  statusClass(status: string): string {
+    return ({
+      DRAFT:          'bg-yellow-100 text-yellow-700 dark:bg-yellow-900/30 dark:text-yellow-400',
+      PENDING_REVIEW: 'bg-blue-100   text-blue-700   dark:bg-blue-900/30   dark:text-blue-400',
+      REJECTED:       'bg-red-100    text-red-700    dark:bg-red-900/30    dark:text-red-400',
+      FINALIZED:      'bg-green-100  text-green-700  dark:bg-green-900/30  dark:text-green-400',
+    } as Record<string, string>)[status] ?? 'bg-hc-muted text-hc-text-2';
+  }
+
+  contentEntries(): { key: string; value: any }[] {
+    const content = this.doc()?.clinicalContent ?? {};
+    return Object.entries(content).map(([key, value]) => ({
+      key:     key.replace(/_/g, ' '),
+      value,
+    }));
+  }
+
   metadataForm = this.fb.group({
+    title:      [''],
     issueDate:  ['', Validators.required],
     expiryDate: [''],
     status:     ['' as DocumentStatus],
@@ -178,6 +217,7 @@ export class DocumentEditorPage implements OnInit {
       next: d => {
         this.doc.set(d);
         this.metadataForm.patchValue({
+          title:      d.clinicalContent?.['titulo'] as string ?? d.templateName ?? '',
           issueDate:  d.issueDate,
           expiryDate: d.expiryDate ?? '',
           status:     d.status,
@@ -213,10 +253,17 @@ export class DocumentEditorPage implements OnInit {
     this.metadataSaved.set(false);
 
     const v = this.metadataForm.value;
+    const currentClinicalContent = this.doc()?.clinicalContent ?? {};
+    const updatedClinicalContent = {
+      ...currentClinicalContent,
+      titulo: v.title || undefined,
+    };
+
     this.documentService.update(docId, {
       issueDate:  v.issueDate!,
       expiryDate: v.expiryDate || undefined,
       status:     v.status as DocumentStatus || undefined,
+      clinicalContent: updatedClinicalContent,
     }).subscribe({
       next: updatedDoc => {
         this.savingMetadata.set(false);

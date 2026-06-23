@@ -11,6 +11,27 @@
     </button>
   </div>
 
+  <!-- Búsqueda -->
+  <div class="flex flex-col sm:flex-row gap-2">
+    <div class="relative flex-1">
+      <fa-icon [icon]="faMagnifyingGlass"
+               class="absolute left-3 top-1/2 -translate-y-1/2 text-hc-text-3 text-sm pointer-events-none" />
+      <input
+        type="search"
+        [value]="search()"
+        (input)="onSearch($any($event.target).value)"
+        [placeholder]="'DOCUMENTS.SEARCH_PLACEHOLDER' | translate"
+        class="hc-input pl-9 pr-9"
+      />
+      @if (search()) {
+        <button (click)="clearSearch()"
+                class="absolute right-3 top-1/2 -translate-y-1/2 text-hc-text-3 hover:text-hc-text transition-colors">
+          <fa-icon [icon]="faXmark" />
+        </button>
+      }
+    </div>
+  </div>
+
   @if (documentService.error()) {
     <div class="hc-alert-error">{{ documentService.error() }}</div>
   }
