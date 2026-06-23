@@ -14,24 +14,65 @@
     }
   </div>
 
-  <!-- Search bar -->
-  <div class="relative">
-    <fa-icon [icon]="faMagnifyingGlass"
-             class="absolute left-3 top-1/2 -translate-y-1/2 text-hc-text-3 text-sm pointer-events-none" />
-    <input
-      type="search"
-      [value]="search()"
-      (input)="onSearch($any($event.target).value)"
-      [placeholder]="'PATIENTS.SEARCH_PLACEHOLDER' | translate"
-      class="hc-input pl-9 pr-9"
-    />
-    @if (search()) {
-      <button (click)="clearSearch()"
-              class="absolute right-3 top-1/2 -translate-y-1/2 text-hc-text-3 hover:text-hc-text transition-colors">
+  <!-- Búsqueda + filtros -->
+  <div class="flex flex-col sm:flex-row gap-2">
+
+    <!-- Buscador -->
+    <div class="relative flex-1">
+      <fa-icon [icon]="faMagnifyingGlass"
+               class="absolute left-3 top-1/2 -translate-y-1/2 text-hc-text-3 text-sm pointer-events-none" />
+      <input
+        type="search"
+        [value]="search()"
+        (input)="onSearch($any($event.target).value)"
+        [placeholder]="'PATIENTS.SEARCH_PLACEHOLDER' | translate"
+        class="hc-input pl-9 pr-9"
+      />
+      @if (search()) {
+        <button (click)="clearSearch()"
+                class="absolute right-3 top-1/2 -translate-y-1/2 text-hc-text-3 hover:text-hc-text transition-colors">
+          <fa-icon [icon]="faXmark" />
+        </button>
+      }
+    </div>
+
+    <!-- Filtro género -->
+    <select
+      class="hc-input w-auto min-w-[130px]"
+      [value]="filterGender()"
+      (change)="onGenderChange($any($event.target).value)"
+    >
+      <option value="all">{{ 'PATIENTS.FILTER_ALL_GENDERS' | translate }}</option>
+      <option value="MALE">{{ 'PATIENTS.GENDER_MALE' | translate }}</option>
+      <option value="FEMALE">{{ 'PATIENTS.GENDER_FEMALE' | translate }}</option>
+    </select>
+
+    <!-- Filtro Tenant (Superusuario) -->
+    @if (isSuperuser()) {
+      <select
+        class="hc-input w-auto min-w-[160px] border-amber-500/50 focus:border-amber-500 focus:ring-amber-500"
+        [value]="filterTenant()"
+        (change)="onTenantChange($any($event.target).value)"
+      >
+        <option value="">{{ 'PATIENTS.FILTER_ALL_TENANTS' | translate }}</option>
+        @for (tenant of availableTenants(); track tenant.id) {
+          <option [value]="tenant.slug">{{ tenant.name }}</option>
+        }
+      </select>
+    }
+
+    @if (hasActiveFilters()) {
+      <button (click)="clearFilters()"
+              class="hc-btn-ghost flex items-center gap-1.5 whitespace-nowrap text-sm">
         <fa-icon [icon]="faXmark" />
+        {{ 'COMMON.CLEAR_FILTERS' | translate }}
       </button>
     }
   </div>
+
+  @if (hasActiveFilters()) {
+    <p class="text-xs text-hc-text-3">{{ totalItems() }} {{ 'COMMON.RESULTS' | translate }}</p>
+  }
 
   <!-- Error -->
   @if (patientService.error()) {
@@ -77,6 +118,11 @@
                             [title]="'PATIENTS.VIEW' | translate">
                       <fa-icon [icon]="faEye" />
                     </button>
+                    <button (click)="goToClinicalHistory(patient.id)"
+                            class="p-1.5 rounded-md bg-hc-muted hover:bg-hc-primary hover:text-white text-hc-text-2 transition-colors"
+                            title="Historia Clínica">
+                      <fa-icon [icon]="faFileMedical" />
+                    </button>
                   }
                   @if (auth.hasPermission('patient:update')) {
                     <button (click)="goToEdit(patient.id)"
@@ -98,7 +144,7 @@
           } @empty {
             <tr>
               <td colspan="6" class="hc-table-empty">
-                @if (search()) {
+                @if (hasActiveFilters()) {
                   {{ 'PATIENTS.SEARCH_EMPTY' | translate }}
                 } @else {
                   {{ 'PATIENTS.EMPTY' | translate }}

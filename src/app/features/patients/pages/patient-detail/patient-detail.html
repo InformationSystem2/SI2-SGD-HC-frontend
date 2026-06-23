@@ -95,6 +95,22 @@
       }
 
     </div>
+
+    <!-- Acceso a la Historia Clínica (sección aparte) -->
+    <div class="bg-hc-card rounded-xl border border-hc-border shadow-sm p-6 flex items-center justify-between gap-4">
+      <div class="flex items-center gap-3">
+        <fa-icon [icon]="faFileMedical" class="text-hc-primary text-lg" />
+        <div>
+          <h3 class="text-sm font-semibold text-hc-text">Historia Clínica</h3>
+          <p class="text-xs text-hc-text-3">Antecedentes, alergias y expediente del paciente.</p>
+        </div>
+      </div>
+      <button (click)="goToClinicalHistory()"
+              class="flex items-center gap-1.5 px-4 py-2 bg-hc-primary text-white rounded-lg text-xs font-semibold hover:bg-hc-primary-dark transition-colors shadow-sm whitespace-nowrap">
+        <fa-icon [icon]="faFileMedical" />
+        Ver Historia Clínica
+      </button>
+    </div>
   }
 
 </div>

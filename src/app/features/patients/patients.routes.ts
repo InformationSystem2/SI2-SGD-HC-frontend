@@ -18,6 +18,14 @@ export const patientsRoutes: Routes = [
     loadComponent: () => import('./pages/patient-detail/patient-detail').then(m => m.PatientDetail),
   },
   {
+    path: 'clinical-history',
+    loadComponent: () => import('./pages/clinical-history-index/clinical-history-index').then(m => m.ClinicalHistoryIndex),
+  },
+  {
+    path: 'clinical-history/:id',
+    loadComponent: () => import('./pages/clinical-history/clinical-history').then(m => m.ClinicalHistoryPage),
+  },
+  {
     path: '',
     redirectTo: 'list',
     pathMatch: 'full',
