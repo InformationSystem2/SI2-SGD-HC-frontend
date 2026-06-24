@@ -4,8 +4,10 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import {
   faArrowLeft, faEdit, faSpinner, faFileWord, faCircleCheck,
+  faMagnifyingGlass, faRotateRight,
 } from '@fortawesome/free-solid-svg-icons';
 import { DocumentService } from '../../services/document.service';
+import { OcrService, OcrResult } from '../../services/ocr.service';
 import { Document, DocumentStatus } from '../../models/document.model';
 import { TranslatePipe } from '@ngx-translate/core';
 import { AuthService } from '../../../../core/auth/services/auth.service';
@@ -22,6 +24,7 @@ export class DocumentEdit implements OnInit {
   private router = inject(Router);
   private fb     = inject(FormBuilder);
   private docSvc = inject(DocumentService);
+  private ocrSvc = inject(OcrService);
   readonly auth = inject(AuthService);
 
   readonly faArrowLeft   = faArrowLeft;
@@ -29,12 +32,18 @@ export class DocumentEdit implements OnInit {
   readonly faSpinner     = faSpinner;
   readonly faFileWord    = faFileWord;
   readonly faCircleCheck = faCircleCheck;
+  readonly faExpand      = faMagnifyingGlass;
+  readonly faRotateRight = faRotateRight;
 
   readonly doc      = signal<Document | null>(null);
   readonly loading  = signal(true);
   readonly saving   = signal(false);
   readonly saved    = signal(false);
   readonly error    = signal<string | null>(null);
+
+  readonly ocrResult  = signal<OcrResult | null>(null);
+  readonly ocrLoading = signal(false);
+  readonly ocrError   = signal<string | null>(null);
 
   readonly statuses: { value: DocumentStatus; label: string }[] = [
     { value: 'DRAFT',          label: 'Borrador' },
@@ -73,12 +82,41 @@ export class DocumentEdit implements OnInit {
         }
 
         this.loading.set(false);
+        this.loadOcr(d.id);
       },
       error: e => {
         this.error.set(e.error?.message ?? 'Error al cargar el documento');
         this.loading.set(false);
       },
     });
+  }
+
+  private loadOcr(docId: string): void {
+    this.ocrSvc.getOcr(docId).subscribe({
+      next:  r => this.ocrResult.set(r),
+      error: () => this.ocrResult.set(null),
+    });
+  }
+
+  processOcr(): void {
+    const id = this.doc()?.id;
+    if (!id) return;
+    this.ocrLoading.set(true);
+    this.ocrError.set(null);
+    this.ocrSvc.triggerOcr(id).subscribe({
+      next:  r => { this.ocrResult.set(r); this.ocrLoading.set(false); },
+      error: e => { this.ocrError.set(e.error?.message ?? 'Error al procesar OCR'); this.ocrLoading.set(false); },
+    });
+  }
+
+  objectKeys(obj: any): string[] { return obj ? Object.keys(obj) : []; }
+
+  datosKeys(obj: any): string[] {
+    return Object.keys(obj).filter(k => k !== 'tipo_documento');
+  }
+
+  isObject(val: any): boolean {
+    return val !== null && typeof val === 'object' && !Array.isArray(val);
   }
 
   docTitle(): string {

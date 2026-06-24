@@ -15,6 +15,7 @@ import {
   faSpinner, faCircleCheck, faTriangleExclamation,
   faUpload, faPlus, faExpand, faCompress,
   faChevronDown, faChevronUp, faInfoCircle,
+  faMagnifyingGlass, faRotateRight,
 } from '@fortawesome/free-solid-svg-icons';
 import { TranslatePipe } from '@ngx-translate/core';
 import { DocumentEditorModule } from '@onlyoffice/document-editor-angular';
@@ -23,6 +24,7 @@ import { PatientService } from '../../../patients/services/patient.service';
 import { DocumentService } from '../../services/document.service';
 import { Document, DocumentStatus } from '../../models/document.model';
 import { DocumentVersionHistoryComponent } from '../../components/document-version-history/document-version-history';
+import { OcrService, OcrResult } from '../../services/ocr.service';
 
 type EditorMode = 'create' | 'edit' | 'view';
 type CreateTab  = 'new' | 'upload';
@@ -53,6 +55,7 @@ export class DocumentEditorPage implements OnInit {
 
   readonly patientService  = inject(PatientService);
   readonly documentService = inject(DocumentService);
+  private ocrSvc           = inject(OcrService);
 
   readonly faArrowLeft           = faArrowLeft;
   readonly faFileWord            = faFileWord;
@@ -69,6 +72,8 @@ export class DocumentEditorPage implements OnInit {
   readonly faChevronDown         = faChevronDown;
   readonly faChevronUp           = faChevronUp;
   readonly faInfoCircle          = faInfoCircle;
+  readonly faScan                = faMagnifyingGlass;
+  readonly faRotateRight         = faRotateRight;
 
   readonly fullscreen = signal(false);
 
@@ -89,6 +94,10 @@ export class DocumentEditorPage implements OnInit {
   readonly docType      = signal<OoDocType>('WORD');
 
   readonly showMetadataPanel = signal(false);
+
+  readonly ocrResult  = signal<OcrResult | null>(null);
+  readonly ocrLoading = signal(false);
+  readonly ocrError   = signal<string | null>(null);
 
   toggleMetadataPanel(): void {
     this.showMetadataPanel.update(v => !v);
@@ -222,6 +231,8 @@ export class DocumentEditorPage implements OnInit {
           expiryDate: d.expiryDate ?? '',
           status:     d.status,
         });
+        if (viewOnly) this.metadataForm.disable();
+        this.loadOcr(docId);
       },
       error: () => {}
     });
@@ -388,6 +399,34 @@ export class DocumentEditorPage implements OnInit {
   onDocumentStateChange = (event: object): void => {
     if ((event as { data?: boolean })?.data === false) this.saved.set(true);
   };
+
+  private loadOcr(docId: string): void {
+    this.ocrSvc.getOcr(docId).subscribe({
+      next:  r => this.ocrResult.set(r),
+      error: () => this.ocrResult.set(null),
+    });
+  }
+
+  processOcr(): void {
+    const id = this.doc()?.id;
+    if (!id) return;
+    this.ocrLoading.set(true);
+    this.ocrError.set(null);
+    this.ocrSvc.triggerOcr(id).subscribe({
+      next:  r => { this.ocrResult.set(r); this.ocrLoading.set(false); },
+      error: e => { this.ocrError.set(e.error?.message ?? 'Error al procesar OCR'); this.ocrLoading.set(false); },
+    });
+  }
+
+  objectKeys(obj: any): string[] { return obj ? Object.keys(obj) : []; }
+
+  datosKeys(obj: any): string[] {
+    return Object.keys(obj).filter(k => k !== 'tipo_documento');
+  }
+
+  isObject(val: any): boolean {
+    return val !== null && typeof val === 'object' && !Array.isArray(val);
+  }
 
   setTab(tab: CreateTab): void { this.activeTab.set(tab); }
 
