@@ -1,6 +1,6 @@
 # SGD-HC — Frontend · Angular
 
-**Sistema de Gestión Documental y Clínico**  
+**Sistema de Gestión Documental y Clínico.**  
 Sistemas de Información II · Universidad Autónoma Gabriel René Moreno (UAGRM)
 
 | Recurso | Enlace |
